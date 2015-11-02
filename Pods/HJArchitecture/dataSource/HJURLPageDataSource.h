@@ -1,5 +1,5 @@
 //
-//  HJPageURLDataSource.h
+//  HJURLPageDataSource.h
 //  SinaNews
 //
 //  Created by jixuhui on 15/8/31.
@@ -7,9 +7,9 @@
 //
 
 #import "HJURLDataSource.h"
-#import "HJPageURLTask.h"
+#import "HJURLPageTask.h"
 
-@interface HJPageURLDataSource : HJURLDataSource <IHJPageURLTask>
+@interface HJURLPageDataSource : HJURLDataSource <IHJURLPageTask>
 @property(nonatomic,assign)NSInteger responseStatusCode;
 @property(nonatomic,assign)NSInteger dataStatusCode;
 -(void) loadMoreData;

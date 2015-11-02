@@ -11,8 +11,8 @@
 
 @interface HJDataController : NSObject <HJDataSourceDelegate>
 
-@property(nonatomic,strong) HJDataSource * dataSource;
-@property(nonatomic,assign) id delegate;
+@property(nonatomic,strong) IBOutlet HJDataSource * dataSource;
+@property(nonatomic,assign) IBOutlet id delegate;
 
 -(void) refreshData;
 

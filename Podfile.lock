@@ -20,33 +20,33 @@ PODS:
   - AFNetworking/UIKit (2.6.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - HJArchitecture (0.2.0):
-    - HJArchitecture/common (= 0.2.0)
-    - HJArchitecture/dataController (= 0.2.0)
-    - HJArchitecture/dataSource (= 0.2.0)
-    - HJArchitecture/service (= 0.2.0)
-    - HJArchitecture/task (= 0.2.0)
-  - HJArchitecture/common (0.2.0)
-  - HJArchitecture/dataController (0.2.0):
+  - HJArchitecture (0.4.0):
+    - HJArchitecture/common (= 0.4.0)
+    - HJArchitecture/dataController (= 0.4.0)
+    - HJArchitecture/dataSource (= 0.4.0)
+    - HJArchitecture/service (= 0.4.0)
+    - HJArchitecture/task (= 0.4.0)
+  - HJArchitecture/common (0.4.0)
+  - HJArchitecture/dataController (0.4.0):
     - HJArchitecture/common
     - HJArchitecture/dataSource
     - MJRefresh
-  - HJArchitecture/dataSource (0.2.0):
+  - HJArchitecture/dataSource (0.4.0):
     - HJArchitecture/service
     - HJArchitecture/task
-  - HJArchitecture/service (0.2.0):
+  - HJArchitecture/service (0.4.0):
     - AFNetworking
     - HJArchitecture/common
     - HJArchitecture/task
-  - HJArchitecture/task (0.2.0)
+  - HJArchitecture/task (0.4.0)
   - MJRefresh (2.4.12)
 
 DEPENDENCIES:
-  - HJArchitecture (= 0.2.0)
+  - HJArchitecture (= 0.4.0)
 
 SPEC CHECKSUMS:
   AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
-  HJArchitecture: 6fb553b494a0b00ecb36d9b7f389cf019d7029e0
+  HJArchitecture: 71a85a9e257824aab65b3a221ffd7f9585da5923
   MJRefresh: ca8e9589895977df32d379d46e6b8a5450b3ff44
 
 COCOAPODS: 0.38.2

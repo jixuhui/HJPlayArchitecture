@@ -54,7 +54,7 @@
     [super setDataSource:dataSource];
     
     if ([self.dataSource isKindOfClass:[HJURLDataSource class]]) {
-        _dataSource = (HJPageURLDataSource *)self.dataSource;
+        _dataSource = (HJURLPageDataSource *)self.dataSource;
     }else{
         _dataSource = nil;
     }

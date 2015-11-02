@@ -33,7 +33,7 @@
     self.tableDataController.cellClassName = @"TestTableViewCell";
     self.tableDataController.cellHeight = 60.0f;
     
-    HJPageURLDataSource *dataSource = [[HJPageURLDataSource alloc]init];
+    HJURLPageDataSource *dataSource = [[HJURLPageDataSource alloc]init];
     dataSource.urlString = SNEP_MiaoChe_URL_CarTypeList;
     dataSource.dataKey = @"content";
     dataSource.otherParameters = [[NSMutableDictionary alloc]initWithCapacity:2];

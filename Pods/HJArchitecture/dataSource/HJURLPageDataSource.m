@@ -1,15 +1,15 @@
 //
-//  HJPageURLDataSource.m
+//  HJURLPageDataSource.m
 //  SinaNews
 //
 //  Created by jixuhui on 15/8/31.
 //  Copyright (c) 2015年 sina. All rights reserved.
 //
 
-#import "HJPageURLDataSource.h"
+#import "HJURLPageDataSource.h"
 #import "HJURLService.h"
 
-@implementation HJPageURLDataSource
+@implementation HJURLPageDataSource
 {
     Class _originalClass;
 }

@@ -9,31 +9,25 @@
 #import <Foundation/Foundation.h>
 
 #import "HJDataController.h"
-#import "HJPageURLDataSource.h"
+#import "HJURLPageDataSource.h"
 #import "IHJViewBindDataProtocol.h"
 #import "MJRefresh.h"
 #import "HJActivityIndicatorCoverView.h"
 #import "HJTableViewCell.h"
 
-@protocol IHJTableDataController <UITableViewDelegate,UITableViewDataSource>
-
-@property(nonatomic,strong) UITableView * contentTableView;
-@property(nonatomic,strong) MJRefreshNormalHeader * refreshControl;
-@property(nonatomic,strong) MJRefreshBackNormalFooter * loadMoreControl;
-@property(nonatomic,strong) HJActivityIndicatorCoverView * coverView;
+@interface HJTableDataController : HJDataController <UITableViewDelegate,UITableViewDataSource>
+{
+    HJURLPageDataSource *_dataSource;
+}
+@property(nonatomic,strong) IBOutlet UITableView * contentTableView;
+@property(nonatomic,strong) IBOutlet MJRefreshNormalHeader * refreshControl;
+@property(nonatomic,strong) IBOutlet MJRefreshBackNormalFooter * loadMoreControl;
+@property(nonatomic,strong) IBOutlet HJActivityIndicatorCoverView * coverView;
 @property(nonatomic,assign,getter=isLoading) BOOL loading;
 @property(nonatomic,strong) NSString *cellClassName;
 @property(nonatomic,assign) float cellHeight;
 
 -(void)reloadDataWithCover;
-
-@end
-
-@interface HJTableDataController : HJDataController <IHJTableDataController>
-{
-    HJPageURLDataSource *_dataSource;
-}
-
 @end
 
 @protocol HJTableDataControllerDelegate <HJDataControllerDelegate>
