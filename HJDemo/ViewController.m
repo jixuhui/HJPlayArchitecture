@@ -20,6 +20,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    self.navigationController.navigationBar.topItem.title = @"资讯";
+    
     [self initManagers];
     [self initSubviews];
     
@@ -56,14 +58,13 @@
 
 - (void) initTableView
 {
-    CGRect tableFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds));
-    
-    _contentTableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
+//    CGRect tableFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds));
+//    
+//    _contentTableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
     _contentTableView.delegate = self.tableDataController;
     _contentTableView.dataSource = self.tableDataController;
     _contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _contentTableView.backgroundView = nil;
-    _contentTableView.backgroundColor = [UIColor lightGrayColor];
     
     //    [_contentTableView sn_setInitialInsetsOfTop:self.tableEdgeInsets.top bottom:self.tableEdgeInsets.bottom];
     [self.view addSubview:_contentTableView];

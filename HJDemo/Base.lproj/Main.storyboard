@@ -3,13 +3,12 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--图片-->
         <scene sceneID="61M-yO-XxL">
             <objects>
-                <viewController id="5NG-Ia-POi" sceneMemberID="viewController">
+                <viewController id="5NG-Ia-POi" customClass="HomeViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7ik-2M-ycm"/>
                         <viewControllerLayoutGuide type="bottom" id="mTh-cZ-SYe"/>
@@ -17,9 +16,34 @@
                     <view key="view" contentMode="scaleToFill" id="8Yz-TY-McJ">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3eH-pk-dTU">
+                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Lwy-I5-43t">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                                <connections>
+                                    <outlet property="dataSource" destination="5NG-Ia-POi" id="BeY-yy-joL"/>
+                                    <outlet property="delegate" destination="5NG-Ia-POi" id="t1L-ca-Cce"/>
+                                </connections>
+                            </collectionView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="3eH-pk-dTU" firstAttribute="leading" secondItem="8Yz-TY-McJ" secondAttribute="leading" id="IMG-qw-3N3"/>
+                            <constraint firstItem="3eH-pk-dTU" firstAttribute="bottom" secondItem="mTh-cZ-SYe" secondAttribute="top" id="Q35-kv-zTy"/>
+                            <constraint firstAttribute="trailing" secondItem="3eH-pk-dTU" secondAttribute="trailing" id="RwE-yj-DqZ"/>
+                            <constraint firstItem="3eH-pk-dTU" firstAttribute="top" secondItem="7ik-2M-ycm" secondAttribute="bottom" id="r1X-qi-nQU"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="图片" image="tabbar_picture.png" id="KXx-5Z-bzc"/>
+                    <tabBarItem key="tabBarItem" title="图片" image="tabbar_picture.png" selectedImage="tabbar_picture_hl.png" id="KXx-5Z-bzc"/>
+                    <connections>
+                        <outlet property="curCollectionView" destination="3eH-pk-dTU" id="1fa-QZ-vQb"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kQy-1V-7If" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -44,14 +68,13 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="8Md-e0-PJR" firstAttribute="top" secondItem="goD-aU-GlR" secondAttribute="bottom" id="8lb-4q-21s"/>
-                            <constraint firstItem="Ei3-14-qu9" firstAttribute="top" secondItem="8Md-e0-PJR" secondAttribute="bottom" id="E2Z-ik-9Bx"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="8Md-e0-PJR" secondAttribute="trailing" constant="-20" id="Lay-zW-Raj"/>
-                            <constraint firstItem="8Md-e0-PJR" firstAttribute="leading" secondItem="00E-HL-1pg" secondAttribute="leadingMargin" constant="-20" id="Sdt-p9-AKE"/>
-                            <constraint firstItem="Ei3-14-qu9" firstAttribute="top" secondItem="8Md-e0-PJR" secondAttribute="bottom" id="vX1-dJ-kM6"/>
+                            <constraint firstItem="8Md-e0-PJR" firstAttribute="bottom" secondItem="Ei3-14-qu9" secondAttribute="top" id="79c-l8-Lst"/>
+                            <constraint firstAttribute="trailing" secondItem="8Md-e0-PJR" secondAttribute="trailing" id="bas-2Q-sKq"/>
+                            <constraint firstItem="8Md-e0-PJR" firstAttribute="leading" secondItem="00E-HL-1pg" secondAttribute="leading" id="gnH-OJ-7xM"/>
+                            <constraint firstItem="8Md-e0-PJR" firstAttribute="top" secondItem="goD-aU-GlR" secondAttribute="bottom" id="q8H-zi-tTQ"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="资讯" image="tabbar_news.png" id="J7h-lG-sVT"/>
+                    <tabBarItem key="tabBarItem" title="资讯" image="tabbar_news.png" selectedImage="tabbar_news_hl.png" id="J7h-lG-sVT"/>
                     <connections>
                         <outlet property="contentTableView" destination="8Md-e0-PJR" id="Up1-l2-Hc6"/>
                     </connections>
@@ -98,6 +121,8 @@
     </scenes>
     <resources>
         <image name="tabbar_news.png" width="22" height="22"/>
+        <image name="tabbar_news_hl.png" width="22" height="22"/>
         <image name="tabbar_picture.png" width="22" height="22"/>
+        <image name="tabbar_picture_hl.png" width="22" height="22"/>
     </resources>
 </document>
