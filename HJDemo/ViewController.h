@@ -18,7 +18,7 @@
 }
 
 @property (nonatomic, strong) HJTableDataController *tableDataController;
-@property (nonatomic, strong) UITableView*                      contentTableView;
+@property (nonatomic, strong) IBOutlet UITableView*                      contentTableView;
 @property (nonatomic, strong) MJRefreshNormalHeader*                 refreshControl;
 @property (nonatomic, strong) MJRefreshBackNormalFooter*                loadMoreControl;
 

@@ -17,6 +17,11 @@
 		A765DB871BE30B33009380AD /* HJDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB861BE30B33009380AD /* HJDemoUITests.m */; };
 		A765DB961BE31DF2009380AD /* TestTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB951BE31DF2009380AD /* TestTableViewCell.m */; };
 		A78991DD1BEAFBF70093445D /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991DC1BEAFBF70093445D /* HomeViewController.m */; };
+		A78991E31BEC5B610093445D /* DemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991E21BEC5B610093445D /* DemoViewController.m */; };
+		A78991E61BEC81890093445D /* GlobeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991E51BEC81890093445D /* GlobeViewController.m */; };
+		A78991E91BEC81FE0093445D /* GlobeCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991E81BEC81FE0093445D /* GlobeCollectionViewLayout.m */; };
+		A78991F21BECA14B0093445D /* MASViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991F11BECA14B0093445D /* MASViewController.m */; };
+		A78991F51BECA1850093445D /* UIView+Masonry_LJC.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991F41BECA1850093445D /* UIView+Masonry_LJC.m */; };
 		A7FC3D7F1BE99EE600BB57E6 /* tabbar_news@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FC3D6F1BE99EE600BB57E6 /* tabbar_news@2x.png */; };
 		A7FC3D801BE99EE600BB57E6 /* tabbar_news@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FC3D701BE99EE600BB57E6 /* tabbar_news@3x.png */; };
 		A7FC3D811BE99EE600BB57E6 /* tabbar_news_hl@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FC3D711BE99EE600BB57E6 /* tabbar_news_hl@2x.png */; };
@@ -59,8 +64,8 @@
 		A765DB621BE30B32009380AD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A765DB641BE30B32009380AD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A765DB651BE30B32009380AD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		A765DB671BE30B32009380AD /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		A765DB681BE30B32009380AD /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		A765DB671BE30B32009380AD /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = HJDemo/ViewController.h; sourceTree = SOURCE_ROOT; };
+		A765DB681BE30B32009380AD /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = HJDemo/ViewController.m; sourceTree = SOURCE_ROOT; };
 		A765DB6B1BE30B32009380AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A765DB6D1BE30B32009380AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A765DB701BE30B32009380AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -71,10 +76,21 @@
 		A765DB821BE30B32009380AD /* HJDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HJDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A765DB861BE30B33009380AD /* HJDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HJDemoUITests.m; sourceTree = "<group>"; };
 		A765DB881BE30B33009380AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A765DB941BE31DF2009380AD /* TestTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestTableViewCell.h; sourceTree = "<group>"; };
-		A765DB951BE31DF2009380AD /* TestTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestTableViewCell.m; sourceTree = "<group>"; };
-		A78991DB1BEAFBF70093445D /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
-		A78991DC1BEAFBF70093445D /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		A765DB941BE31DF2009380AD /* TestTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestTableViewCell.h; path = ../TestTableViewCell.h; sourceTree = "<group>"; };
+		A765DB951BE31DF2009380AD /* TestTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestTableViewCell.m; path = ../TestTableViewCell.m; sourceTree = "<group>"; };
+		A78991DB1BEAFBF70093445D /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HomeViewController.h; path = ../HomeViewController.h; sourceTree = "<group>"; };
+		A78991DC1BEAFBF70093445D /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HomeViewController.m; path = ../HomeViewController.m; sourceTree = "<group>"; };
+		A78991E11BEC5B610093445D /* DemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DemoViewController.h; path = ../DemoViewController.h; sourceTree = "<group>"; };
+		A78991E21BEC5B610093445D /* DemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DemoViewController.m; path = ../DemoViewController.m; sourceTree = "<group>"; };
+		A78991E41BEC81890093445D /* GlobeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlobeViewController.h; path = ../GlobeViewController.h; sourceTree = "<group>"; };
+		A78991E51BEC81890093445D /* GlobeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GlobeViewController.m; path = ../GlobeViewController.m; sourceTree = "<group>"; };
+		A78991E71BEC81FE0093445D /* GlobeCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlobeCollectionViewLayout.h; path = ../GlobeCollectionViewLayout.h; sourceTree = "<group>"; };
+		A78991E81BEC81FE0093445D /* GlobeCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GlobeCollectionViewLayout.m; path = ../GlobeCollectionViewLayout.m; sourceTree = "<group>"; };
+		A78991F01BECA14B0093445D /* MASViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASViewController.h; sourceTree = "<group>"; };
+		A78991F11BECA14B0093445D /* MASViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASViewController.m; sourceTree = "<group>"; };
+		A78991F31BECA1850093445D /* UIView+Masonry_LJC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Masonry_LJC.h"; sourceTree = "<group>"; };
+		A78991F41BECA1850093445D /* UIView+Masonry_LJC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Masonry_LJC.m"; sourceTree = "<group>"; };
+		A78991F71BECA76F0093445D /* HJDemo-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-prefix.pch"; sourceTree = "<group>"; };
 		A7FC3D6F1BE99EE600BB57E6 /* tabbar_news@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_news@2x.png"; sourceTree = "<group>"; };
 		A7FC3D701BE99EE600BB57E6 /* tabbar_news@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_news@3x.png"; sourceTree = "<group>"; };
 		A7FC3D711BE99EE600BB57E6 /* tabbar_news_hl@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_news_hl@2x.png"; sourceTree = "<group>"; };
@@ -154,14 +170,11 @@
 		A765DB601BE30B32009380AD /* HJDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A78991EF1BECA11C0093445D /* View */,
+				A78991EE1BECA10B0093445D /* Manager */,
+				A78991ED1BECA0D00093445D /* ViewController */,
 				A765DB641BE30B32009380AD /* AppDelegate.h */,
 				A765DB651BE30B32009380AD /* AppDelegate.m */,
-				A765DB671BE30B32009380AD /* ViewController.h */,
-				A765DB681BE30B32009380AD /* ViewController.m */,
-				A78991DB1BEAFBF70093445D /* HomeViewController.h */,
-				A78991DC1BEAFBF70093445D /* HomeViewController.m */,
-				A765DB941BE31DF2009380AD /* TestTableViewCell.h */,
-				A765DB951BE31DF2009380AD /* TestTableViewCell.m */,
 				A765DB6A1BE30B32009380AD /* Main.storyboard */,
 				A765DB6D1BE30B32009380AD /* Assets.xcassets */,
 				A765DB6F1BE30B32009380AD /* LaunchScreen.storyboard */,
@@ -176,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				A765DB621BE30B32009380AD /* main.m */,
+				A78991F71BECA76F0093445D /* HJDemo-prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -204,6 +218,43 @@
 				A7FC3D6E1BE99EE600BB57E6 /* tabbar */,
 			);
 			path = Resource;
+			sourceTree = "<group>";
+		};
+		A78991ED1BECA0D00093445D /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A765DB671BE30B32009380AD /* ViewController.h */,
+				A765DB681BE30B32009380AD /* ViewController.m */,
+				A78991DB1BEAFBF70093445D /* HomeViewController.h */,
+				A78991DC1BEAFBF70093445D /* HomeViewController.m */,
+				A78991E11BEC5B610093445D /* DemoViewController.h */,
+				A78991E21BEC5B610093445D /* DemoViewController.m */,
+				A78991E41BEC81890093445D /* GlobeViewController.h */,
+				A78991E51BEC81890093445D /* GlobeViewController.m */,
+				A78991F01BECA14B0093445D /* MASViewController.h */,
+				A78991F11BECA14B0093445D /* MASViewController.m */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		A78991EE1BECA10B0093445D /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				A78991E71BEC81FE0093445D /* GlobeCollectionViewLayout.h */,
+				A78991E81BEC81FE0093445D /* GlobeCollectionViewLayout.m */,
+				A78991F31BECA1850093445D /* UIView+Masonry_LJC.h */,
+				A78991F41BECA1850093445D /* UIView+Masonry_LJC.m */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		A78991EF1BECA11C0093445D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A765DB941BE31DF2009380AD /* TestTableViewCell.h */,
+				A765DB951BE31DF2009380AD /* TestTableViewCell.m */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		A7FC3D6E1BE99EE600BB57E6 /* tabbar */ = {
@@ -419,10 +470,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78991F51BECA1850093445D /* UIView+Masonry_LJC.m in Sources */,
+				A78991E61BEC81890093445D /* GlobeViewController.m in Sources */,
 				A765DB691BE30B32009380AD /* ViewController.m in Sources */,
 				A765DB961BE31DF2009380AD /* TestTableViewCell.m in Sources */,
 				A765DB661BE30B32009380AD /* AppDelegate.m in Sources */,
 				A78991DD1BEAFBF70093445D /* HomeViewController.m in Sources */,
+				A78991E91BEC81FE0093445D /* GlobeCollectionViewLayout.m in Sources */,
+				A78991F21BECA14B0093445D /* MASViewController.m in Sources */,
+				A78991E31BEC5B610093445D /* DemoViewController.m in Sources */,
 				A765DB631BE30B32009380AD /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -565,6 +621,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: xuhui ji (2DE9SSH853)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/HJDemo/HJDemo-Prefix.pch";
 				INFOPLIST_FILE = HJDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sina.hubbert.demo.HJDemo;
@@ -581,6 +639,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/HJDemo/HJDemo-Prefix.pch";
 				INFOPLIST_FILE = HJDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sina.hubbert.demo.HJDemo;

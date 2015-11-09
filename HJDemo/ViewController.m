@@ -10,7 +10,9 @@
 
 #import "TestTableViewCell.h"
 
-@interface ViewController ()
+#import "MASViewController.h"
+
+@interface ViewController ()<HJTableDataControllerDelegate>
 
 @end
 
@@ -20,12 +22,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    self.navigationController.navigationBar.topItem.title = @"资讯";
-    
     [self initManagers];
     [self initSubviews];
     
     [self.tableDataController reloadDataWithCover];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.navigationController.navigationBar.topItem.title = @"资讯";
 }
 
 - (void)initManagers
@@ -33,7 +40,6 @@
     self.tableDataController = [[HJTableDataController alloc]init];
     self.tableDataController.delegate = self;
     self.tableDataController.cellClassName = @"TestTableViewCell";
-    self.tableDataController.cellHeight = 60.0f;
     
     HJURLPageDataSource *dataSource = [[HJURLPageDataSource alloc]init];
     dataSource.urlString = SNEP_MiaoChe_URL_CarTypeList;
@@ -47,7 +53,6 @@
     dataSource.delegate = self.tableDataController;
 }
 
-
 - (void)initSubviews
 {
     [self initTableView];
@@ -58,21 +63,15 @@
 
 - (void) initTableView
 {
-//    CGRect tableFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds));
-//    
-//    _contentTableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
-    _contentTableView.delegate = self.tableDataController;
-    _contentTableView.dataSource = self.tableDataController;
-    _contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _contentTableView.backgroundView = nil;
+    self.contentTableView.estimatedRowHeight = 60;
+    self.contentTableView.rowHeight = UITableViewAutomaticDimension;
+    self.contentTableView.delegate = self.tableDataController;
+    self.contentTableView.dataSource = self.tableDataController;
+    self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    //    [_contentTableView sn_setInitialInsetsOfTop:self.tableEdgeInsets.top bottom:self.tableEdgeInsets.bottom];
-    [self.view addSubview:_contentTableView];
+    [self.view addSubview:self.contentTableView];
     
-    self.tableDataController.contentTableView = _contentTableView;
-    
-    _contentTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    //    _contentTableView.sn_scrollsToTop = YES;
+    self.tableDataController.contentTableView = self.contentTableView;
 }
 
 - (void) initRefreshControl
@@ -105,6 +104,12 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)HJTableDataController:(HJTableDataController *)dataController didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MASViewController *masVC = [[MASViewController alloc]init];
+    [self.navigationController pushViewController:masVC animated:YES];
 }
 
 @end

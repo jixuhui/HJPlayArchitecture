@@ -47,7 +47,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kQy-1V-7If" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1299" y="1216"/>
+            <point key="canvasLocation" x="1254" y="1096"/>
         </scene>
         <!--资讯-->
         <scene sceneID="jFr-Yb-XyS">
@@ -76,12 +76,12 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="资讯" image="tabbar_news.png" selectedImage="tabbar_news_hl.png" id="J7h-lG-sVT"/>
                     <connections>
-                        <outlet property="contentTableView" destination="8Md-e0-PJR" id="Up1-l2-Hc6"/>
+                        <outlet property="contentTableView" destination="8Md-e0-PJR" id="5IF-f3-fjz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7BC-56-NJz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1299" y="555"/>
+            <point key="canvasLocation" x="1254" y="451"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="OaI-mE-DJ5">
@@ -96,6 +96,7 @@
                     <connections>
                         <segue destination="O33-8B-kSV" kind="relationship" relationship="viewControllers" id="MCa-Lw-IO2"/>
                         <segue destination="5NG-Ia-POi" kind="relationship" relationship="viewControllers" id="PCh-sH-4qQ"/>
+                        <segue destination="Duq-4t-RqN" kind="relationship" relationship="viewControllers" id="g2Z-M5-QV9"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vVg-na-qyP" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -118,11 +119,32 @@
             </objects>
             <point key="canvasLocation" x="-225" y="560"/>
         </scene>
+        <!--测试-->
+        <scene sceneID="bQp-Qw-snv">
+            <objects>
+                <viewController id="Duq-4t-RqN" customClass="DemoViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="RUB-Oz-8Ww"/>
+                        <viewControllerLayoutGuide type="bottom" id="oZ0-NF-IB3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8wd-0f-l8T">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="测试" image="tabbar_video.png" selectedImage="tabbar_video_hl.png" id="Aqw-t1-rRc"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aq3-s8-cIC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1254" y="1781"/>
+        </scene>
     </scenes>
     <resources>
         <image name="tabbar_news.png" width="22" height="22"/>
         <image name="tabbar_news_hl.png" width="22" height="22"/>
         <image name="tabbar_picture.png" width="22" height="22"/>
         <image name="tabbar_picture_hl.png" width="22" height="22"/>
+        <image name="tabbar_video.png" width="22" height="22"/>
+        <image name="tabbar_video_hl.png" width="22" height="22"/>
     </resources>
 </document>

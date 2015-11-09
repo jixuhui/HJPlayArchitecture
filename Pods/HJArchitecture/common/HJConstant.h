@@ -33,8 +33,7 @@
 
 //------other
 
-#define kScreenWidth					[UIScreen mainScreen].bounds.size.width
-#define kScreenHeight					[UIScreen mainScreen].bounds.size.height
 #define kLoadMoreCellHeigth                     55
+#define WS(weakSelf)  __weak __typeof(&*self)weakSelf = self;
 
 #endif

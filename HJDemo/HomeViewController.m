@@ -7,7 +7,7 @@
 //
 
 #import "HomeViewController.h"
-#import "HJArchitecture.h"
+#import "GlobeViewController.h"
 
 #define screenHeight [[UIScreen mainScreen]bounds].size.height //屏幕高度
 #define screenWidth [[UIScreen mainScreen]bounds].size.width   //屏幕宽度
@@ -32,6 +32,13 @@
     [self.view addSubview:self.curCollectionView];
     
     [self doRequest];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.navigationController.navigationBar.topItem.title = @"图片";
 }
 
 - (void)doRequest {
@@ -120,6 +127,9 @@
 {
     UICollectionViewCell * cell = [collectionView cellForItemAtIndexPath:indexPath];
     cell.backgroundColor = [UIColor greenColor];
+    
+    GlobeViewController *globeVC = [[GlobeViewController alloc]init];
+    [self.navigationController pushViewController:globeVC animated:YES];
 }
 
 //返回这个UICollectionView是否可以被选择

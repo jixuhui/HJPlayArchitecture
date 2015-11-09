@@ -23,7 +23,6 @@
 @synthesize coverView = _coverView;
 @synthesize loading = _loading;
 @synthesize cellClassName = _cellClassName;
-@synthesize cellHeight = _cellHeight;
 //private
 
 #pragma mark - life cycle
@@ -32,7 +31,7 @@
 {
     self = [super init];
     if (self) {
-        self.cellHeight = 60;
+
     }
     return self;
 }
@@ -146,14 +145,14 @@
     }
     
     [cell setDataItem:[_dataSource.dataObjects objectAtIndex:indexPath.row]];
-    [cell setCellHeight:self.cellHeight];
+    [cell setCellHeight:self.contentTableView.rowHeight];
     
     return cell;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.cellHeight;
+    return self.contentTableView.rowHeight;
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

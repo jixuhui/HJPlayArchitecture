@@ -25,7 +25,6 @@
 @property(nonatomic,strong) IBOutlet HJActivityIndicatorCoverView * coverView;
 @property(nonatomic,assign,getter=isLoading) BOOL loading;
 @property(nonatomic,strong) NSString *cellClassName;
-@property(nonatomic,assign) float cellHeight;
 
 -(void)reloadDataWithCover;
 @end
