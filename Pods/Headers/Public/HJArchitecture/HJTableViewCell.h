@@ -1,1 +1,1 @@
-../../../HJArchitecture/common/HJTableViewCell.h
+../../../HJArchitecture/Common/HJTableViewCell.h

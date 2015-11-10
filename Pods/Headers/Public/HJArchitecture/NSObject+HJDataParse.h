@@ -1,1 +1,1 @@
-../../../HJArchitecture/common/NSObject+HJDataParse.h
+../../../HJArchitecture/Common/NSObject+HJDataParse.h

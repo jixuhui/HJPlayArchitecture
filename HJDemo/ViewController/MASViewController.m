@@ -7,7 +7,7 @@
 //
 
 #import "MASViewController.h"
-#import "UIView+Masonry_LJC.h"
+#import "HJArchitecture.h"
 
 @interface MASViewController ()
 

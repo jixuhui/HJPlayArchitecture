@@ -21,7 +21,6 @@
 		A78991E61BEC81890093445D /* GlobeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991E51BEC81890093445D /* GlobeViewController.m */; };
 		A78991E91BEC81FE0093445D /* GlobeCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991E81BEC81FE0093445D /* GlobeCollectionViewLayout.m */; };
 		A78991F21BECA14B0093445D /* MASViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991F11BECA14B0093445D /* MASViewController.m */; };
-		A78991F51BECA1850093445D /* UIView+Masonry_LJC.m in Sources */ = {isa = PBXBuildFile; fileRef = A78991F41BECA1850093445D /* UIView+Masonry_LJC.m */; };
 		A7FC3D7F1BE99EE600BB57E6 /* tabbar_news@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FC3D6F1BE99EE600BB57E6 /* tabbar_news@2x.png */; };
 		A7FC3D801BE99EE600BB57E6 /* tabbar_news@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FC3D701BE99EE600BB57E6 /* tabbar_news@3x.png */; };
 		A7FC3D811BE99EE600BB57E6 /* tabbar_news_hl@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FC3D711BE99EE600BB57E6 /* tabbar_news_hl@2x.png */; };
@@ -88,8 +87,6 @@
 		A78991E81BEC81FE0093445D /* GlobeCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GlobeCollectionViewLayout.m; path = ../GlobeCollectionViewLayout.m; sourceTree = "<group>"; };
 		A78991F01BECA14B0093445D /* MASViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASViewController.h; sourceTree = "<group>"; };
 		A78991F11BECA14B0093445D /* MASViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASViewController.m; sourceTree = "<group>"; };
-		A78991F31BECA1850093445D /* UIView+Masonry_LJC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Masonry_LJC.h"; sourceTree = "<group>"; };
-		A78991F41BECA1850093445D /* UIView+Masonry_LJC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Masonry_LJC.m"; sourceTree = "<group>"; };
 		A78991F71BECA76F0093445D /* HJDemo-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-prefix.pch"; sourceTree = "<group>"; };
 		A7FC3D6F1BE99EE600BB57E6 /* tabbar_news@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_news@2x.png"; sourceTree = "<group>"; };
 		A7FC3D701BE99EE600BB57E6 /* tabbar_news@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_news@3x.png"; sourceTree = "<group>"; };
@@ -242,8 +239,6 @@
 			children = (
 				A78991E71BEC81FE0093445D /* GlobeCollectionViewLayout.h */,
 				A78991E81BEC81FE0093445D /* GlobeCollectionViewLayout.m */,
-				A78991F31BECA1850093445D /* UIView+Masonry_LJC.h */,
-				A78991F41BECA1850093445D /* UIView+Masonry_LJC.m */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -470,7 +465,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A78991F51BECA1850093445D /* UIView+Masonry_LJC.m in Sources */,
 				A78991E61BEC81890093445D /* GlobeViewController.m in Sources */,
 				A765DB691BE30B32009380AD /* ViewController.m in Sources */,
 				A765DB961BE31DF2009380AD /* TestTableViewCell.m in Sources */,

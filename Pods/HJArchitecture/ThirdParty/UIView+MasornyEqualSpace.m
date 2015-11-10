@@ -1,14 +1,17 @@
 //
-//  UIView+Masonry_LJC.m
-//  HJDemo
+//  UIView+MasornyEqualSpace.m
+//  Pods
 //
-//  Created by jixuhui on 15/11/6.
-//  Copyright © 2015年 Hubbert. All rights reserved.
+//  Created by jixuhui on 15/11/10.
+//
 //
 
-#import "UIView+Masonry_LJC.h"
+#import "UIView+MasornyEqualSpace.h"
+#import "HJConstant.h"
+#import "Masonry.h"
 
-@implementation UIView (Masonry_LJC)
+@implementation UIView (MasornyEqualSpace)
+
 - (void) distributeSpacingHorizontallyWith:(NSArray*)views
 {
     NSMutableArray *spaces = [NSMutableArray arrayWithCapacity:views.count+1];
@@ -24,16 +27,16 @@
         }];
     }
     
-    UIView *v0 = spaces[0];
+    UIView *s0 = spaces[0];
     
     WS(ws);
     
-    [v0 mas_makeConstraints:^(MASConstraintMaker *make) {
+    [s0 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(ws.mas_left);
         make.centerY.equalTo(((UIView*)views[0]).mas_centerY);
     }];
     
-    UIView *lastSpace = v0;
+    UIView *lastSpace = s0;
     for ( int i = 0 ; i < views.count; ++i )
     {
         UIView *obj = views[i];
@@ -46,7 +49,7 @@
         [space mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(obj.mas_right);
             make.centerY.equalTo(obj.mas_centerY);
-            make.width.equalTo(v0);
+            make.width.equalTo(s0);
         }];
         
         lastSpace = space;
@@ -106,4 +109,5 @@
         make.bottom.equalTo(ws.mas_bottom);
     }];
 }
+
 @end

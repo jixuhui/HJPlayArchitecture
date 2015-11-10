@@ -1,1 +1,1 @@
-../../../HJArchitecture/common/IHJViewBindDataProtocol.h
+../../../HJArchitecture/Common/IHJViewBindDataProtocol.h

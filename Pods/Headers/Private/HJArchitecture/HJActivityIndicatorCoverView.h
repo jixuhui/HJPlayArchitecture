@@ -1,1 +1,1 @@
-../../../HJArchitecture/common/HJActivityIndicatorCoverView.h
+../../../HJArchitecture/Common/HJActivityIndicatorCoverView.h

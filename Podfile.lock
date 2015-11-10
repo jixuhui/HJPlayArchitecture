@@ -20,35 +20,38 @@ PODS:
   - AFNetworking/UIKit (2.6.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - HJArchitecture (1.1.1):
-    - HJArchitecture/common (= 1.1.1)
-    - HJArchitecture/dataController (= 1.1.1)
-    - HJArchitecture/dataSource (= 1.1.1)
-    - HJArchitecture/service (= 1.1.1)
-    - HJArchitecture/task (= 1.1.1)
-  - HJArchitecture/common (1.1.1)
-  - HJArchitecture/dataController (1.1.1):
-    - HJArchitecture/common
-    - HJArchitecture/dataSource
+  - HJArchitecture (1.2.2):
+    - HJArchitecture/Common (= 1.2.2)
+    - HJArchitecture/DataController (= 1.2.2)
+    - HJArchitecture/DataSource (= 1.2.2)
+    - HJArchitecture/Service (= 1.2.2)
+    - HJArchitecture/Task (= 1.2.2)
+    - HJArchitecture/ThirdParty (= 1.2.2)
+  - HJArchitecture/Common (1.2.2)
+  - HJArchitecture/DataController (1.2.2):
+    - HJArchitecture/Common
+    - HJArchitecture/DataSource
     - MJRefresh
-  - HJArchitecture/dataSource (1.1.1):
-    - HJArchitecture/service
-    - HJArchitecture/task
-  - HJArchitecture/service (1.1.1):
+  - HJArchitecture/DataSource (1.2.2):
+    - HJArchitecture/Service
+    - HJArchitecture/Task
+  - HJArchitecture/Service (1.2.2):
     - AFNetworking
-    - HJArchitecture/common
-    - HJArchitecture/task
-  - HJArchitecture/task (1.1.1)
+    - HJArchitecture/Common
+    - HJArchitecture/Task
+  - HJArchitecture/Task (1.2.2)
+  - HJArchitecture/ThirdParty (1.2.2):
+    - HJArchitecture/Common
+    - Masonry
   - Masonry (0.6.3)
   - MJRefresh (2.4.12)
 
 DEPENDENCIES:
-  - HJArchitecture (= 1.1.1)
-  - Masonry
+  - HJArchitecture (= 1.2.2)
 
 SPEC CHECKSUMS:
   AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
-  HJArchitecture: 70803119ff3e28115cfdcb6e8eebcfc10dd231b9
+  HJArchitecture: f059f8725b07f4ebe695c2af56d30cd4786315c4
   Masonry: ff105a956abcd19a618b2028b121cb638d7a8e2f
   MJRefresh: ca8e9589895977df32d379d46e6b8a5450b3ff44
 

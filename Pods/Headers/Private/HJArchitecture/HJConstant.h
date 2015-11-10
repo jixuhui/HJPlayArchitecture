@@ -1,1 +1,1 @@
-../../../HJArchitecture/common/HJConstant.h
+../../../HJArchitecture/Common/HJConstant.h

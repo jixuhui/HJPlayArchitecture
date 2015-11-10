@@ -1,1 +1,1 @@
-../../../HJArchitecture/dataController/HJTableDataController.h
+../../../HJArchitecture/DataController/HJTableDataController.h
