@@ -1,5 +1,5 @@
 //
-//  DemoViewController.h
+//  ThirdViewController.h
 //  HJDemo
 //
 //  Created by jixuhui on 15/11/6.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DemoViewController : UIViewController
+@interface ThirdViewController : UIViewController
 
 @end

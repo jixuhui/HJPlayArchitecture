@@ -1,24 +1,24 @@
 //
-//  HomeViewController.m
+//  SecondViewController.m
 //  HJDemo
 //
 //  Created by jixuhui on 15/11/5.
 //  Copyright © 2015年 Hubbert. All rights reserved.
 //
 
-#import "HomeViewController.h"
+#import "SecondViewController.h"
 #import "GlobeViewController.h"
 
 #define screenHeight [[UIScreen mainScreen]bounds].size.height //屏幕高度
 #define screenWidth [[UIScreen mainScreen]bounds].size.width   //屏幕宽度
 #define colletionCell 3  //设置具体几列
-@interface HomeViewController ()<UICollectionViewDataSource,UICollectionViewDelegate>{
+@interface SecondViewController ()<UICollectionViewDataSource,UICollectionViewDelegate>{
     NSMutableArray  *hArr; //记录每个cell的高度
 }
 
 @end
 
-@implementation HomeViewController
+@implementation SecondViewController
 @synthesize curCollectionView = _curCollectionView;
 
 - (void)viewDidLoad {
@@ -26,10 +26,21 @@
     hArr = [[NSMutableArray alloc] init];
     UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc]init];
     [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical]; //设置横向还是竖向
-    self.curCollectionView.collectionViewLayout=flowLayout;
+    self.curCollectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    
     [self.curCollectionView setBackgroundColor:[UIColor clearColor]];
     [self.curCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"UICollectionViewCell"];
+    self.curCollectionView.dataSource = self;
+    self.curCollectionView.delegate = self;
     [self.view addSubview:self.curCollectionView];
+    
+    WS(ws);
+    
+    UIEdgeInsets padding = UIEdgeInsetsMake(0, 0, 0, 0);
+    
+    [self.curCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(ws.view).with.insets(padding);
+    }];
     
     [self doRequest];
 }

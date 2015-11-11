@@ -1,5 +1,5 @@
 //
-//  HomeViewController.h
+//  SecondViewController.h
 //  HJDemo
 //
 //  Created by jixuhui on 15/11/5.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HomeViewController : UIViewController
+@interface SecondViewController : UIViewController
 @property(nonatomic,strong)IBOutlet UICollectionView *curCollectionView;
 @end

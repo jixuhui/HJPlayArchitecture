@@ -3,3 +3,4 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios,'7.0'
 pod 'HJArchitecture', '0.0.1'
+pod 'RDVTabBarController', '1.1.9'

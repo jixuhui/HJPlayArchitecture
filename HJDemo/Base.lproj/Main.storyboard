@@ -8,7 +8,7 @@
         <!--图片-->
         <scene sceneID="61M-yO-XxL">
             <objects>
-                <viewController id="5NG-Ia-POi" customClass="HomeViewController" sceneMemberID="viewController">
+                <viewController id="5NG-Ia-POi" customClass="SecondViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7ik-2M-ycm"/>
                         <viewControllerLayoutGuide type="bottom" id="mTh-cZ-SYe"/>
@@ -52,7 +52,7 @@
         <!--资讯-->
         <scene sceneID="jFr-Yb-XyS">
             <objects>
-                <viewController id="O33-8B-kSV" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="O33-8B-kSV" customClass="FirstViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="goD-aU-GlR"/>
                         <viewControllerLayoutGuide type="bottom" id="Ei3-14-qu9"/>
@@ -92,6 +92,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="selectedImageTintColor">
+                                <color key="value" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </tabBar>
                     <connections>
                         <segue destination="O33-8B-kSV" kind="relationship" relationship="viewControllers" id="MCa-Lw-IO2"/>
@@ -122,7 +127,7 @@
         <!--测试-->
         <scene sceneID="bQp-Qw-snv">
             <objects>
-                <viewController id="Duq-4t-RqN" customClass="DemoViewController" sceneMemberID="viewController">
+                <viewController id="Duq-4t-RqN" customClass="ThirdViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="RUB-Oz-8Ww"/>
                         <viewControllerLayoutGuide type="bottom" id="oZ0-NF-IB3"/>

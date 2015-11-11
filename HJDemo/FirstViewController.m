@@ -6,17 +6,17 @@
 //  Copyright © 2015年 Hubbert. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "FirstViewController.h"
 
 #import "TestTableViewCell.h"
 
 #import "MASViewController.h"
 
-@interface ViewController ()<HJTableDataControllerDelegate>
+@interface FirstViewController ()<HJTableDataControllerDelegate>
 
 @end
 
-@implementation ViewController
+@implementation FirstViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -63,6 +63,7 @@
 
 - (void) initTableView
 {
+    self.contentTableView = [[UITableView alloc]initWithFrame:self.view.bounds];
     self.contentTableView.estimatedRowHeight = 60;
     self.contentTableView.rowHeight = UITableViewAutomaticDimension;
     self.contentTableView.delegate = self.tableDataController;
@@ -72,6 +73,14 @@
     [self.view addSubview:self.contentTableView];
     
     self.tableDataController.contentTableView = self.contentTableView;
+    
+    WS(ws);
+    
+    UIEdgeInsets padding = UIEdgeInsetsMake(0, 0, 0, 0);
+    
+    [self.contentTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(ws.view).with.insets(padding);
+    }];
 }
 
 - (void) initRefreshControl

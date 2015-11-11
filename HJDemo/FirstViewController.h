@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  FirstViewController.h
 //  HJDemo
 //
 //  Created by jixuhui on 15/10/30.
@@ -12,7 +12,7 @@
 #import "HJActivityIndicatorCoverView.h"
 #import "HJConstant.h"
 
-@interface ViewController : UIViewController
+@interface FirstViewController : UIViewController
 {
     HJActivityIndicatorCoverView *coverView;
 }
