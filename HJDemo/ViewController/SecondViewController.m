@@ -35,6 +35,8 @@
     self.curCollectionView.delegate = self;
     [self.view addSubview:self.curCollectionView];
     
+    [self.curCollectionView setContentInset:UIEdgeInsetsMake(0, 0, 50, 0)];
+    
     WS(ws);
     
     [self.curCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {

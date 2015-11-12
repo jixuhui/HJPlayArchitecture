@@ -69,6 +69,7 @@
     self.contentTableView.delegate = self.tableDataController;
     self.contentTableView.dataSource = self.tableDataController;
     self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.contentTableView setContentInset:UIEdgeInsetsMake(0, 0, 50, 0)];
     
     [self.view addSubview:self.contentTableView];
     
