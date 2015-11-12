@@ -7,9 +7,7 @@
 //
 
 #import "FirstViewController.h"
-
 #import "TestTableViewCell.h"
-
 #import "MASViewController.h"
 
 @interface FirstViewController ()<HJTableDataControllerDelegate>
@@ -33,6 +31,8 @@
     [super viewDidAppear:animated];
     
     self.navigationController.navigationBar.topItem.title = @"资讯";
+    
+    [self.contentTableView deselectRowAtIndexPath:[self.contentTableView indexPathForSelectedRow] animated:YES];
 }
 
 - (void)initManagers
@@ -76,10 +76,8 @@
     
     WS(ws);
     
-    UIEdgeInsets padding = UIEdgeInsetsMake(0, 0, 0, 0);
-    
     [self.contentTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(ws.view).with.insets(padding);
+        make.edges.equalTo(ws.view).with.insets(self.padding);
     }];
 }
 
@@ -117,6 +115,8 @@
 
 -(void)HJTableDataController:(HJTableDataController *)dataController didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self setTabBarHidden:YES animated:YES];
+    
     MASViewController *masVC = [[MASViewController alloc]init];
     [self.navigationController pushViewController:masVC animated:YES];
 }

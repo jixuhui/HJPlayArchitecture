@@ -8,6 +8,8 @@
 
 #import "MASViewController.h"
 #import "HJArchitecture.h"
+#import "DemoManager.h"
+#import "RDVTabBarController.h"
 
 @interface MASViewController ()
 

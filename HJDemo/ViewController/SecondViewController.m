@@ -8,6 +8,7 @@
 
 #import "SecondViewController.h"
 #import "GlobeViewController.h"
+#import "RDVTabBarController.h"
 
 #define screenHeight [[UIScreen mainScreen]bounds].size.height //屏幕高度
 #define screenWidth [[UIScreen mainScreen]bounds].size.width   //屏幕宽度
@@ -36,10 +37,8 @@
     
     WS(ws);
     
-    UIEdgeInsets padding = UIEdgeInsetsMake(0, 0, 0, 0);
-    
     [self.curCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(ws.view).with.insets(padding);
+        make.edges.equalTo(ws.view).with.insets(self.padding);
     }];
     
     [self doRequest];
@@ -50,6 +49,10 @@
     [super viewDidAppear:animated];
     
     self.navigationController.navigationBar.topItem.title = @"图片";
+    
+    NSArray *itemsPaths = [self.curCollectionView indexPathsForSelectedItems];
+    
+    [self.curCollectionView deselectItemAtIndexPath:[itemsPaths firstObject] animated:YES];
 }
 
 - (void)doRequest {
@@ -111,6 +114,11 @@
     }
     cell.frame = CGRectMake(positonX, positionY,screenWidth/colletionCell-8,currentHeight) ;//重新定义cell位置、宽高
     
+    UIView *bgV = [[UIView alloc]initWithFrame:cell.frame];
+    bgV.backgroundColor = [UIColor greenColor];
+    
+    cell.selectedBackgroundView = bgV;
+    
     [cell.contentView addSubview:label];
     return cell;
 }
@@ -136,8 +144,8 @@
 //UICollectionView被选中时调用的方法
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewCell * cell = [collectionView cellForItemAtIndexPath:indexPath];
-    cell.backgroundColor = [UIColor greenColor];
+    
+    [self setTabBarHidden:YES animated:YES];
     
     GlobeViewController *globeVC = [[GlobeViewController alloc]init];
     [self.navigationController pushViewController:globeVC animated:YES];

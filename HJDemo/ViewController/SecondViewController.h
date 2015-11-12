@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BarControllerContentViewController.h"
 
-@interface SecondViewController : UIViewController
+@interface SecondViewController : BarControllerContentViewController
 @property(nonatomic,strong)IBOutlet UICollectionView *curCollectionView;
 @end

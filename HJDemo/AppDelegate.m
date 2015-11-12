@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 
+#import "HJArchitecture.h"
+
 #import "RDVTabBarController.h"
 #import "RDVTabBarItem.h"
 #import "RDVTabBar.h"
@@ -15,6 +17,8 @@
 #import "FirstViewController.h"
 #import "SecondViewController.h"
 #import "ThirdViewController.h"
+
+#import "DemoManager.h"
 
 @interface AppDelegate ()
 
@@ -52,29 +56,49 @@
                                                    initWithRootViewController:thirdViewController];
     
     RDVTabBarController *tabBarController = [[RDVTabBarController alloc] init];
+    
     [tabBarController setViewControllers:@[firstNavigationController, secondNavigationController,
                                            thirdNavigationController]];
+    
+    [DemoManager shareManager].tabBarContoller = tabBarController;
+    
     self.viewController = tabBarController;
     
     [self customizeTabBarForController:tabBarController];
 }
 
 - (void)customizeTabBarForController:(RDVTabBarController *)tabBarController {
-    UIImage *finishedImage = [UIImage imageNamed:@"tabbar_selected_background"];
-    UIImage *unfinishedImage = [UIImage imageNamed:@"tabbar_normal_background"];
+//    UIImage *finishedImage = [UIImage imageNamed:@"tabbar_selected_background"];
+//    UIImage *unfinishedImage = [UIImage imageNamed:@"tabbar_normal_background"];
     NSArray *tabBarItemImages = @[@"first", @"second", @"third"];
     
     NSInteger index = 0;
     for (RDVTabBarItem *item in [[tabBarController tabBar] items]) {
-        [item setBackgroundSelectedImage:finishedImage withUnselectedImage:unfinishedImage];
+//        [item setBackgroundSelectedImage:finishedImage withUnselectedImage:unfinishedImage];
         UIImage *selectedimage = [UIImage imageNamed:[NSString stringWithFormat:@"%@_selected",
                                                       [tabBarItemImages objectAtIndex:index]]];
         UIImage *unselectedimage = [UIImage imageNamed:[NSString stringWithFormat:@"%@_normal",
                                                         [tabBarItemImages objectAtIndex:index]]];
         [item setFinishedSelectedImage:selectedimage withFinishedUnselectedImage:unselectedimage];
         
+        item.title = [tabBarItemImages objectAtIndex:index];
+        
+        item.selectedTitleAttributes = @{
+                                         NSFontAttributeName: [UIFont boldSystemFontOfSize:12],
+                                         NSForegroundColorAttributeName:[UIColor greenColor],
+                                         };
+        
+        item.unselectedTitleAttributes = @{
+                                           NSFontAttributeName: [UIFont systemFontOfSize:12],
+                                           NSForegroundColorAttributeName:[UIColor blackColor],
+                                           };
+        
         index++;
     }
+    
+    RDVTabBar *tabBar = tabBarController.tabBar;
+    
+    tabBar.translucent = YES;
 }
 
 - (void)customizeInterface {

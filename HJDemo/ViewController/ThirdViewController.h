@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BarControllerContentViewController.h"
 
-@interface ThirdViewController : UIViewController
+@interface ThirdViewController : BarControllerContentViewController
 
 @end

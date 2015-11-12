@@ -8,6 +8,8 @@
 
 #import "GlobeViewController.h"
 #import "GlobeCollectionViewLayout.h"
+#import "Masonry.h"
+#import "HJArchitecture.h"
 
 @interface GlobeViewController ()<UICollectionViewDataSource,UICollectionViewDelegate>
 
@@ -17,15 +19,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     // Do any additional setup after loading the view, typically from a nib.
     GlobeCollectionViewLayout * layout = [[GlobeCollectionViewLayout alloc]init];
-    UICollectionView * collect  = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, 320, 400) collectionViewLayout:layout];
+    UICollectionView * collect  = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:layout];
     collect.delegate=self;
     collect.dataSource=self;
     //这里设置的偏移量是为了无缝进行循环的滚动，具体在上一篇博客中有解释
     collect.contentOffset = CGPointMake(320, 400);
     [collect registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellid"];
     [self.view addSubview:collect];
+    
+    WS(ws);
+    
+    UIEdgeInsets padding = UIEdgeInsetsMake(0, 0, 0, 0);
+    
+    [collect mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(ws.view).width.insets(padding);
+    }];
 }
 
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{

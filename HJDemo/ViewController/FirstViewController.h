@@ -11,8 +11,9 @@
 #import "MJRefresh.h"
 #import "HJActivityIndicatorCoverView.h"
 #import "HJConstant.h"
+#import "BarControllerContentViewController.h"
 
-@interface FirstViewController : UIViewController
+@interface FirstViewController : BarControllerContentViewController
 {
     HJActivityIndicatorCoverView *coverView;
 }
