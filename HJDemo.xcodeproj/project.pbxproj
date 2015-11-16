@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		049F0BE01BF6B153001DEFDC /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049F0BDF1BF6B153001DEFDC /* Task.swift */; };
+		049F0BE21BF6B82C001DEFDC /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049F0BE11BF6B82C001DEFDC /* Service.swift */; };
+		04C6012E1BF7864C00CF76B5 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6012D1BF7864C00CF76B5 /* DataSource.swift */; };
+		04C601301BF786E100CF76B5 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6012F1BF786E100CF76B5 /* Category.swift */; };
 		A7535CD21BF47D9B00BB6900 /* BarControllerContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7535CD11BF47D9B00BB6900 /* BarControllerContentViewController.m */; };
 		A765DB631BE30B32009380AD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB621BE30B32009380AD /* main.m */; };
 		A765DB661BE30B32009380AD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB651BE30B32009380AD /* AppDelegate.m */; };
@@ -80,6 +84,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		049F0BDF1BF6B153001DEFDC /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		049F0BE11BF6B82C001DEFDC /* Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
+		04C6012C1BF7683A00CF76B5 /* HJDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-Bridging-Header.h"; sourceTree = "<group>"; };
+		04C6012D1BF7864C00CF76B5 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		04C6012F1BF786E100CF76B5 /* Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		495D6D58F07E5099D5DCD6F6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A7535CD01BF47D9B00BB6900 /* BarControllerContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarControllerContentViewController.h; sourceTree = "<group>"; };
 		A7535CD11BF47D9B00BB6900 /* BarControllerContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarControllerContentViewController.m; sourceTree = "<group>"; };
@@ -182,6 +191,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		049F0BDE1BF6B083001DEFDC /* Steed */ = {
+			isa = PBXGroup;
+			children = (
+				049F0BDF1BF6B153001DEFDC /* Task.swift */,
+				049F0BE11BF6B82C001DEFDC /* Service.swift */,
+				04C6012D1BF7864C00CF76B5 /* DataSource.swift */,
+				04C6012F1BF786E100CF76B5 /* Category.swift */,
+			);
+			path = Steed;
+			sourceTree = "<group>";
+		};
 		7CDA0125B79B976A9C1D8563 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -216,6 +236,7 @@
 		A765DB601BE30B32009380AD /* HJDemo */ = {
 			isa = PBXGroup;
 			children = (
+				049F0BDE1BF6B083001DEFDC /* Steed */,
 				A7F0F9871BF43DD200C0F427 /* View */,
 				A7F0F9821BF43D8100C0F427 /* Manager */,
 				A7F0F96C1BF43D6400C0F427 /* ViewController */,
@@ -225,6 +246,7 @@
 				A765DB6D1BE30B32009380AD /* Assets.xcassets */,
 				A765DB6F1BE30B32009380AD /* LaunchScreen.storyboard */,
 				A765DB721BE30B32009380AD /* Info.plist */,
+				04C6012C1BF7683A00CF76B5 /* HJDemo-Bridging-Header.h */,
 				A765E66D1BE7757100BF83A4 /* Resource */,
 				A765DB611BE30B32009380AD /* Supporting Files */,
 			);
@@ -567,14 +589,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04C6012E1BF7864C00CF76B5 /* DataSource.swift in Sources */,
 				A7F0F97F1BF43D6400C0F427 /* SecondViewController.m in Sources */,
+				049F0BE21BF6B82C001DEFDC /* Service.swift in Sources */,
 				A7F0F97C1BF43D6400C0F427 /* FirstViewController.m in Sources */,
 				A7F0F9851BF43D8100C0F427 /* GlobeCollectionViewLayout.m in Sources */,
+				049F0BE01BF6B153001DEFDC /* Task.swift in Sources */,
 				A7F0F98A1BF43DD200C0F427 /* TestTableViewCell.m in Sources */,
 				A7F0F9811BF43D6400C0F427 /* ThirdViewController.m in Sources */,
 				A765DB661BE30B32009380AD /* AppDelegate.m in Sources */,
 				A765DB631BE30B32009380AD /* main.m in Sources */,
 				A7535CD21BF47D9B00BB6900 /* BarControllerContentViewController.m in Sources */,
+				04C601301BF786E100CF76B5 /* Category.swift in Sources */,
 				A7F0F97E1BF43D6400C0F427 /* MASViewController.m in Sources */,
 				A7F0F97D1BF43D6400C0F427 /* GlobeViewController.m in Sources */,
 				A7F0F98D1BF43EDD00C0F427 /* DemoManager.m in Sources */,
