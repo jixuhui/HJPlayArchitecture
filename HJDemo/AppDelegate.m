@@ -10,13 +10,14 @@
 
 #import "HJArchitecture.h"
 
-#import "RDVTabBarController.h"
 #import "RDVTabBarItem.h"
 #import "RDVTabBar.h"
 
 #import "FirstViewController.h"
 #import "SecondViewController.h"
 #import "ThirdViewController.h"
+
+#import "MASViewController.h"
 
 #import "DemoManager.h"
 
@@ -32,7 +33,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     [self setupViewControllers];
-    [self.window setRootViewController:self.viewController];
+    [self.window setRootViewController:self.tabBarController];
     [self.window makeKeyAndVisible];
     
     [self customizeInterface];
@@ -62,7 +63,7 @@
     
     [DemoManager shareManager].tabBarContoller = tabBarController;
     
-    self.viewController = tabBarController;
+    self.tabBarController = tabBarController;
     
     [self customizeTabBarForController:tabBarController];
 }
@@ -130,6 +131,18 @@
     [navigationBarAppearance setBackgroundImage:backgroundImage
                                   forBarMetrics:UIBarMetricsDefault];
     [navigationBarAppearance setTitleTextAttributes:textAttributes];
+}
+
+- (BOOL)application:(nonnull UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * __nullable))restorationHandler{
+    
+    NSLog(@"idetifier...%@",userActivity);
+    
+    [self.tabBarController setSelectedIndex:0];
+    
+    MASViewController *masVC = [[MASViewController alloc]init];
+    [(UINavigationController *)self.tabBarController.selectedViewController pushViewController:masVC animated:YES];
+    
+    return YES;
 }
 
 @end

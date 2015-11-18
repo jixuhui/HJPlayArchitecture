@@ -9,6 +9,7 @@
 #import "FirstViewController.h"
 #import "TestTableViewCell.h"
 #import "MASViewController.h"
+#import <CoreSpotlight/CoreSpotlight.h>
 
 @interface FirstViewController ()<HJTableDataControllerDelegate>
 
@@ -120,6 +121,49 @@
     
     MASViewController *masVC = [[MASViewController alloc]init];
     [self.navigationController pushViewController:masVC animated:YES];
+}
+
+- (void)saveData{
+    NSMutableArray *seachableItems = [NSMutableArray new];
+    [self.tableDataController.dataSource.dataObjects enumerateObjectsUsingBlock:^(NSDictionary *__nonnull obj, NSUInteger idx, BOOL * __nonnull stop) {
+        CSSearchableItemAttributeSet *attributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"views"];
+        attributeSet.title = @"AutoCar";
+        attributeSet.contentDescription = [NSString stringWithFormat:NSLocalizedString(@"a easy way to open %@", nil),[obj dataForKey:@"name"]];
+//        UIImage *thumbImage = [UIImage imageNamed:[NSString stringWithFormat:@"icon_%@.png",obj]];
+//        attributeSet.thumbnailData = UIImagePNGRepresentation(thumbImage);//beta 1 there is a bug
+        
+        CSSearchableItem *item = [[CSSearchableItem alloc] initWithUniqueIdentifier:[NSString stringWithFormat:@"20151118%lu",idx] domainIdentifier:@"com.sina.hubbert.demo.HJDemo" attributeSet:attributeSet];
+        [seachableItems addObject:item];
+    }];
+    
+    [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:seachableItems
+                                                   completionHandler:^(NSError * __nullable error) {
+                                                       if (!error)
+                                                           NSLog(@"%@",error.localizedDescription);
+                                                   }];
+}
+
+- (void)resetData{
+    [[CSSearchableIndex defaultSearchableIndex] deleteAllSearchableItemsWithCompletionHandler:^(NSError * __nullable error) {
+        if (!error)
+            NSLog(@"%@",error.localizedDescription);
+    }];
+    [self saveData];
+}
+
+- (void)deleteDataAtIndex:(NSInteger)index{
+    NSString *identifier = [NSString stringWithFormat:@"20151118%lu",index];
+    [[CSSearchableIndex defaultSearchableIndex] deleteSearchableItemsWithIdentifiers:@[identifier] completionHandler:^(NSError * __nullable error) {
+        if (!error)
+            NSLog(@"%@",error.localizedDescription);
+    }];
+}
+
+#pragma mark - table data controller
+
+-(void)HJDataControllerDidLoaded:(HJDataController *)controller
+{
+    [self resetData];
 }
 
 @end

@@ -19,6 +19,7 @@
 		A765DB711BE30B32009380AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A765DB6F1BE30B32009380AD /* LaunchScreen.storyboard */; };
 		A765DB7C1BE30B32009380AD /* HJDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB7B1BE30B32009380AD /* HJDemoTests.m */; };
 		A765DB871BE30B33009380AD /* HJDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB861BE30B33009380AD /* HJDemoUITests.m */; };
+		A78FD2B41BFC81E800529A40 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */; };
 		A7F0F9551BF332F500C0F427 /* first_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = A7F0F9411BF332F500C0F427 /* first_normal.png */; };
 		A7F0F9561BF332F500C0F427 /* first_normal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7F0F9421BF332F500C0F427 /* first_normal@2x.png */; };
 		A7F0F9571BF332F500C0F427 /* first_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = A7F0F9431BF332F500C0F427 /* first_selected.png */; };
@@ -107,6 +108,7 @@
 		A765DB861BE30B33009380AD /* HJDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HJDemoUITests.m; sourceTree = "<group>"; };
 		A765DB881BE30B33009380AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A78991F71BECA76F0093445D /* HJDemo-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-prefix.pch"; sourceTree = "<group>"; };
+		A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		A7F0F93F1BF30FBB00C0F427 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		A7F0F9411BF332F500C0F427 /* first_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = first_normal.png; sourceTree = "<group>"; };
 		A7F0F9421BF332F500C0F427 /* first_normal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first_normal@2x.png"; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A78FD2B41BFC81E800529A40 /* CoreSpotlight.framework in Frameworks */,
 				F63F35435544B082A39F335B /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -205,6 +208,7 @@
 		7CDA0125B79B976A9C1D8563 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */,
 				F69D30181ADEE4B71B75FE6A /* libPods.a */,
 			);
 			name = Frameworks;

@@ -11,4 +11,11 @@
 #import "HJArchitecture.h"
 #define MAS_SHORTHAND
 #import "Masonry.h"
+
+#ifndef DEBUG
+
+#define NSLog(...) {}
+
+#endif
+
 #endif
