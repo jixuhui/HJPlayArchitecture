@@ -755,7 +755,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sina.hubbert.demo.HJDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "29b31cff-bea2-4e7d-8311-954e9c09bee9";
+				PROVISIONING_PROFILE = "8e8d9209-eaad-451b-a1df-7964978bfd08";
 				SWIFT_OBJC_BRIDGING_HEADER = "HJDemo/HJDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -773,7 +773,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sina.hubbert.demo.HJDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "29b31cff-bea2-4e7d-8311-954e9c09bee9";
+				PROVISIONING_PROFILE = "8e8d9209-eaad-451b-a1df-7964978bfd08";
 				SWIFT_OBJC_BRIDGING_HEADER = "HJDemo/HJDemo-Bridging-Header.h";
 			};
 			name = Release;

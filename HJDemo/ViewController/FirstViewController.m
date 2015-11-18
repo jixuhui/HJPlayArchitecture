@@ -125,10 +125,12 @@
 
 - (void)saveData{
     NSMutableArray *seachableItems = [NSMutableArray new];
-    [self.tableDataController.dataSource.dataObjects enumerateObjectsUsingBlock:^(NSDictionary *__nonnull obj, NSUInteger idx, BOOL * __nonnull stop) {
+    //必须copy下，直接用dataobjects 如果先delete后，搜索不到
+    NSArray *tempArr = [self.tableDataController.dataSource.dataObjects mutableCopy ];
+    [tempArr enumerateObjectsUsingBlock:^(NSDictionary *__nonnull obj, NSUInteger idx, BOOL * __nonnull stop) {
         CSSearchableItemAttributeSet *attributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"views"];
         attributeSet.title = @"AutoCar";
-        attributeSet.contentDescription = [NSString stringWithFormat:NSLocalizedString(@"a easy way to open %@", nil),[obj dataForKey:@"name"]];
+        attributeSet.contentDescription = [NSString stringWithFormat:NSLocalizedString(@"换行测试------------------------------- %@", nil),[obj dataForKey:@"name"]];
 //        UIImage *thumbImage = [UIImage imageNamed:[NSString stringWithFormat:@"icon_%@.png",obj]];
 //        attributeSet.thumbnailData = UIImagePNGRepresentation(thumbImage);//beta 1 there is a bug
         
