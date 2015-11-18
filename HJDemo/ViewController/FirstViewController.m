@@ -124,10 +124,8 @@
 }
 
 - (void)saveData{
-    NSMutableArray *seachableItems = [NSMutableArray new];
-    //必须copy下，直接用dataobjects 如果先delete后，搜索不到
-    NSArray *tempArr = [self.tableDataController.dataSource.dataObjects mutableCopy ];
-    [tempArr enumerateObjectsUsingBlock:^(NSDictionary *__nonnull obj, NSUInteger idx, BOOL * __nonnull stop) {
+    __block NSMutableArray *seachableItems = [[NSMutableArray alloc]initWithCapacity:5];
+    [self.tableDataController.dataSource.dataObjects enumerateObjectsUsingBlock:^(NSDictionary *__nonnull obj, NSUInteger idx, BOOL * __nonnull stop) {
         CSSearchableItemAttributeSet *attributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"views"];
         attributeSet.title = @"AutoCar";
         attributeSet.contentDescription = [NSString stringWithFormat:NSLocalizedString(@"换行测试------------------------------- %@", nil),[obj dataForKey:@"name"]];
@@ -146,11 +144,15 @@
 }
 
 - (void)resetData{
+    WS(ws);
     [[CSSearchableIndex defaultSearchableIndex] deleteAllSearchableItemsWithCompletionHandler:^(NSError * __nullable error) {
-        if (!error)
+        //必须放到block里保证删除结束后再去添加
+        if (error){
             NSLog(@"%@",error.localizedDescription);
+        }else {
+            [ws saveData];
+        }
     }];
-    [self saveData];
 }
 
 - (void)deleteDataAtIndex:(NSInteger)index{
