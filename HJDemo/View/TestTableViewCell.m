@@ -56,22 +56,20 @@
     
     //_imageView constraints
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(self.left).with.offset(15);
-        make.top.mas_equalTo(self.top).with.offset(10);
-        make.bottom.mas_equalTo(self.bottom).with.offset(10);
-        make.right.equalTo(_titleLabel.left).with.offset(15);
+        make.left.equalTo(self.contentView.left).with.offset(self.cellMarginLeft);
+        make.right.equalTo(_titleLabel.left).with.offset(-15);
+        make.centerY.equalTo(self.contentView.centerY);
         
-        make.width.mas_equalTo(75);
+        make.height.equalTo(_titleLabel.height);
+        make.width.mas_equalTo(100);
     }];
     
     //_titleLabel constraints
-    _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-//    NSLayoutConstraint *trailingLayout = [NSLayoutConstraint constraintWithItem:_titleLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:self.cellMarginLeft];
-    NSLayoutConstraint *leadinLayout = [NSLayoutConstraint constraintWithItem:_titleLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-self.cellMarginLeft];
-    NSLayoutConstraint *topLayout = [NSLayoutConstraint constraintWithItem:_titleLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:5];
-    NSLayoutConstraint *bottomLayout = [NSLayoutConstraint constraintWithItem:_titleLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-5];
-    
-    [self.contentView addConstraints:@[leadinLayout,topLayout,bottomLayout]];
+    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-self.cellMarginLeft);
+        make.top.equalTo(self.contentView.top).with.offset(5);
+        make.bottom.equalTo(self.contentView.bottom).with.offset(-5);
+    }];
     
     //_bottomLine constraints
     _bottomLine.translatesAutoresizingMaskIntoConstraints = NO;
@@ -93,7 +91,6 @@
         [self.contentView addSubview:_imageView];
     }
     [_imageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
-    [_imageView sizeToFit];
 }
 
 -(void)layoutTitleLabel
