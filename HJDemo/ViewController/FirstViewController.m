@@ -129,8 +129,8 @@
         CSSearchableItemAttributeSet *attributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"views"];
         attributeSet.title = @"AutoCar";
         attributeSet.contentDescription = [NSString stringWithFormat:NSLocalizedString(@"换行测试------------------------------- %@", nil),[obj dataForKey:@"name"]];
-//        UIImage *thumbImage = [UIImage imageNamed:[NSString stringWithFormat:@"icon_%@.png",obj]];
-//        attributeSet.thumbnailData = UIImagePNGRepresentation(thumbImage);//beta 1 there is a bug
+        UIImage *thumbImage = [UIImage imageNamed:@"tabbar_news.png"];
+        attributeSet.thumbnailData = UIImagePNGRepresentation(thumbImage);//beta 1 there is a bug
         
         CSSearchableItem *item = [[CSSearchableItem alloc] initWithUniqueIdentifier:[NSString stringWithFormat:@"20151118%lu",idx] domainIdentifier:@"com.sina.hubbert.demo.HJDemo" attributeSet:attributeSet];
         [seachableItems addObject:item];
