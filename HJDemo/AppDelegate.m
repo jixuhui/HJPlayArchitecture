@@ -30,6 +30,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [self createItemsWithIcons];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     [self setupViewControllers];
@@ -133,6 +135,8 @@
     [navigationBarAppearance setTitleTextAttributes:textAttributes];
 }
 
+#pragma mark - other delegate
+
 - (BOOL)application:(nonnull UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * __nullable))restorationHandler{
     
     NSLog(@"idetifier...%@",userActivity);
@@ -143,6 +147,53 @@
     [(UINavigationController *)self.tabBarController.selectedViewController pushViewController:masVC animated:YES];
     
     return YES;
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+    
+    NSLog(@"A shortcut item was pressed. It was %@.", shortcutItem.localizedTitle);
+    
+    [self launchViewControllerWithType:shortcutItem.type];
+    
+}
+
+- (void)launchViewControllerWithType:(NSString *)type
+{
+    if (CHECK_VALID_STRING(type)) {
+        NSArray *typeSepArr = [type componentsSeparatedByString:@"."];
+        
+        if (CHECK_VALID_ARRAY(typeSepArr)&&[typeSepArr count]==3) {
+            NSString *identifier = [typeSepArr lastObject];
+            
+            [self.tabBarController setSelectedIndex:[identifier integerValue]];
+            
+        }
+    }else{
+        NSLog(@"type is error info!");
+    }
+}
+
+#pragma mark - other methods
+
+- (void)createItemsWithIcons {
+    
+    // icons with my own images
+    UIApplicationShortcutIcon *icon1 = [UIApplicationShortcutIcon iconWithTemplateImageName:@"home_screen_search"];
+    UIApplicationShortcutIcon *icon2 = [UIApplicationShortcutIcon iconWithTemplateImageName:@"home_screen_hot"];
+    UIApplicationShortcutIcon *icon3 = [UIApplicationShortcutIcon iconWithTemplateImageName:@"home_screen_tuijian"];
+    
+    UIMutableApplicationShortcutItem *item1 = [[UIMutableApplicationShortcutItem alloc]initWithType:@"com.demo.0" localizedTitle:@"搜索" localizedSubtitle:@"" icon:icon1 userInfo:nil];
+    UIMutableApplicationShortcutItem *item2 = [[UIMutableApplicationShortcutItem alloc]initWithType:@"com.demo.1" localizedTitle:@"今日热点" localizedSubtitle:@"" icon:icon2 userInfo:nil];
+    UIMutableApplicationShortcutItem *item3 = [[UIMutableApplicationShortcutItem alloc]initWithType:@"com.demo.2" localizedTitle:@"推荐新闻" localizedSubtitle:@"" icon:icon3 userInfo:nil];
+    
+    // add all items to an array
+    NSArray *items = @[item1, item2, item3];
+    
+    // add this array to the potentially existing static UIApplicationShortcutItems
+//    NSArray *existingItems = [UIApplication sharedApplication].shortcutItems;
+//    NSArray *updatedItems = [existingItems arrayByAddingObjectsFromArray:items];
+    [UIApplication sharedApplication].shortcutItems = items;
+    
 }
 
 @end

@@ -9,9 +9,12 @@
 #import "FirstViewController.h"
 #import "TestTableViewCell.h"
 #import "MASViewController.h"
+#import "DemoBaseTableDataController.h"
 #import <CoreSpotlight/CoreSpotlight.h>
 
-@interface FirstViewController ()<HJTableDataControllerDelegate>
+@interface FirstViewController ()<DemoBaseTableDataControllerDelegate,UIViewControllerPreviewingDelegate>
+
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPress;
 
 @end
 
@@ -36,9 +39,15 @@
     [self.contentTableView deselectRowAtIndexPath:[self.contentTableView indexPathForSelectedRow] animated:YES];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+}
+
 - (void)initManagers
 {
-    self.tableDataController = [[HJTableDataController alloc]init];
+    self.tableDataController = [[DemoBaseTableDataController alloc]init];
     self.tableDataController.delegate = self;
     self.tableDataController.cellClassName = @"TestTableViewCell";
     
@@ -168,6 +177,74 @@
 -(void)HJDataControllerDidLoaded:(HJDataController *)controller
 {
     [self resetData];
+}
+
+-(void)DemoBaseTableDataController:(DemoBaseTableDataController *)controller withCell:(UITableViewCell *)cell
+{
+    if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
+        
+        [self registerForPreviewingWithDelegate:(id)self sourceView:cell];
+        
+        // no need for our alternative anymore
+        self.longPress.enabled = NO;
+        
+    } else {
+        
+        // handle a 3D Touch alternative (long gesture recognizer)
+        self.longPress.enabled = YES;
+        
+    }
+}
+
+# pragma mark - 3D Touch Delegate
+
+- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
+    
+    HJTableViewCell *cell = (HJTableViewCell *)[(id<UIViewControllerPreviewing>)previewingContext sourceView];
+    NSLog(@"dataItem of cell...%@",cell.dataItem);
+    
+    UIViewController *previewController = [[MASViewController alloc]init];
+    
+    return previewController;
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
+    
+    HJTableViewCell *cell = (HJTableViewCell *)[(id<UIViewControllerPreviewing>)previewingContext sourceView];
+    NSLog(@"dataItem of cell...%@",cell.dataItem);
+    
+    [self showViewController:[[MASViewController alloc] init] sender:self];
+    
+}
+
+#pragma mark - 3D Touch Alternative
+
+- (void)showPeek {
+    
+    // disable gesture so it's not called multiple times
+    self.longPress.enabled = NO;
+    
+    // present the preview view controller (peek)
+    MASViewController *preview = [[MASViewController alloc]init];
+    
+    UIViewController *presenter = [self grabTopViewController];
+    [presenter showViewController:preview sender:self];
+    
+}
+
+- (UIViewController *)grabTopViewController {
+    
+    // helper method to always give the top most view controller
+    // avoids "view is not in the window hierarchy" error
+    // http://stackoverflow.com/questions/26022756/warning-attempt-to-present-on-whose-view-is-not-in-the-window-hierarchy-sw
+    
+    UIViewController *top = [UIApplication sharedApplication].keyWindow.rootViewController;
+    
+    while (top.presentedViewController) {
+        top = top.presentedViewController;
+    }
+    
+    return top;
 }
 
 @end

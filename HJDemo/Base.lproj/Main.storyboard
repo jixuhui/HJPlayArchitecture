@@ -8,7 +8,7 @@
         <!--图片-->
         <scene sceneID="61M-yO-XxL">
             <objects>
-                <viewController id="5NG-Ia-POi" customClass="SecondViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SecondViewController" id="5NG-Ia-POi" customClass="SecondViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7ik-2M-ycm"/>
                         <viewControllerLayoutGuide type="bottom" id="mTh-cZ-SYe"/>
@@ -34,10 +34,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="3eH-pk-dTU" firstAttribute="leading" secondItem="8Yz-TY-McJ" secondAttribute="leading" id="IMG-qw-3N3"/>
-                            <constraint firstItem="3eH-pk-dTU" firstAttribute="bottom" secondItem="mTh-cZ-SYe" secondAttribute="top" id="Q35-kv-zTy"/>
-                            <constraint firstAttribute="trailing" secondItem="3eH-pk-dTU" secondAttribute="trailing" id="RwE-yj-DqZ"/>
-                            <constraint firstItem="3eH-pk-dTU" firstAttribute="top" secondItem="7ik-2M-ycm" secondAttribute="bottom" id="r1X-qi-nQU"/>
+                            <constraint firstItem="3eH-pk-dTU" firstAttribute="leading" secondItem="8Yz-TY-McJ" secondAttribute="leading" id="A0l-OY-XpP"/>
+                            <constraint firstItem="3eH-pk-dTU" firstAttribute="bottom" secondItem="mTh-cZ-SYe" secondAttribute="top" id="FUb-bn-lV2"/>
+                            <constraint firstAttribute="trailing" secondItem="3eH-pk-dTU" secondAttribute="trailing" id="M37-us-M5l"/>
+                            <constraint firstItem="3eH-pk-dTU" firstAttribute="top" secondItem="7ik-2M-ycm" secondAttribute="bottom" id="ypG-SK-ldP"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="图片" image="tabbar_picture.png" selectedImage="tabbar_picture_hl.png" id="KXx-5Z-bzc"/>
@@ -52,7 +52,7 @@
         <!--资讯-->
         <scene sceneID="jFr-Yb-XyS">
             <objects>
-                <viewController id="O33-8B-kSV" customClass="FirstViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FirstViewController" id="O33-8B-kSV" customClass="FirstViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="goD-aU-GlR"/>
                         <viewControllerLayoutGuide type="bottom" id="Ei3-14-qu9"/>
@@ -111,7 +111,7 @@
         <!--Navigation Controller-->
         <scene sceneID="jqg-LO-05U">
             <objects>
-                <navigationController id="frn-SH-opd" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationVC" id="frn-SH-opd" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="hfZ-Sc-aZZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -127,7 +127,7 @@
         <!--测试-->
         <scene sceneID="bQp-Qw-snv">
             <objects>
-                <viewController id="Duq-4t-RqN" customClass="ThirdViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ThirdViewConroller" id="Duq-4t-RqN" customClass="ThirdViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="RUB-Oz-8Ww"/>
                         <viewControllerLayoutGuide type="bottom" id="oZ0-NF-IB3"/>

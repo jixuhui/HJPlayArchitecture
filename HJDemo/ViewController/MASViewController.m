@@ -83,14 +83,28 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark - Preview Actions
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
+    
+    // setup a list of preview actions
+    UIPreviewAction *action1 = [UIPreviewAction actionWithTitle:@"收藏" style:UIPreviewActionStyleDefault handler:^(UIPreviewAction * _Nonnull action, UIViewController * _Nonnull previewViewController) {
+        NSLog(@"收藏 triggered");
+    }];
+    
+    UIPreviewAction *action2 = [UIPreviewAction actionWithTitle:@"分享" style:UIPreviewActionStyleDefault handler:^(UIPreviewAction * _Nonnull action, UIViewController * _Nonnull previewViewController) {
+        NSLog(@"分享 triggered");
+    }];
+    
+    // add them to an arrary
+    NSArray *actions = @[action1, action2];
+    
+    // add all actions to a group
+//    UIPreviewActionGroup *group1 = [UIPreviewActionGroup actionGroupWithTitle:@"" style:UIPreviewActionStyleDefault actions:actions];
+//    NSArray *group = @[group1];
+    
+    // and return them (return the array of actions instead to see all items ungrouped)
+    return actions;
 }
-*/
 
 @end
