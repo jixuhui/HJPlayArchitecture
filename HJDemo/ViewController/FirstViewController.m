@@ -210,6 +210,8 @@
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
     
+    [self setTabBarHidden:YES animated:YES];
+    
     HJTableViewCell *cell = (HJTableViewCell *)[(id<UIViewControllerPreviewing>)previewingContext sourceView];
     NSLog(@"dataItem of cell...%@",cell.dataItem);
     
