@@ -17,6 +17,8 @@
 #import "HJDataSource.h"
 #import "HJURLDataSource.h"
 #import "HJURLPageDataSource.h"
+#import "HJURLConnectionPageDataSource.h"
+#import "HJURLSessionPageDataSource.h"
 #import "HJURLService.h"
 #import "HJURLTask.h"
 #import "HJURLPageTask.h"

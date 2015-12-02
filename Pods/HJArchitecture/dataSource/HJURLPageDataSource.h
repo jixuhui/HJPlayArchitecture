@@ -8,9 +8,23 @@
 
 #import "HJURLDataSource.h"
 #import "HJURLPageTask.h"
+#import "HJURLService.h"
 
 @interface HJURLPageDataSource : HJURLDataSource <IHJURLPageTask>
+
 @property(nonatomic,assign)NSInteger responseStatusCode;
 @property(nonatomic,assign)NSInteger dataStatusCode;
--(void) loadMoreData;
+
+- (void)loadMoreData;
+
+- (void)handleTask;
+
+- (id)getSuccessBlock;
+
+- (id)getFailBlock;
+
+- (void)handleSuccessWithResponse:(id)responseObject;
+
+- (void)handleFailureWithError:(NSError *)error;
+
 @end

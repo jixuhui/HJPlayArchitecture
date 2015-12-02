@@ -20,27 +20,27 @@ PODS:
   - AFNetworking/UIKit (2.6.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - HJArchitecture (0.0.1):
-    - HJArchitecture/Common (= 0.0.1)
-    - HJArchitecture/DataController (= 0.0.1)
-    - HJArchitecture/DataSource (= 0.0.1)
-    - HJArchitecture/Service (= 0.0.1)
-    - HJArchitecture/Task (= 0.0.1)
-    - HJArchitecture/ThirdParty (= 0.0.1)
-  - HJArchitecture/Common (0.0.1)
-  - HJArchitecture/DataController (0.0.1):
+  - HJArchitecture (0.0.3):
+    - HJArchitecture/Common (= 0.0.3)
+    - HJArchitecture/DataController (= 0.0.3)
+    - HJArchitecture/DataSource (= 0.0.3)
+    - HJArchitecture/Service (= 0.0.3)
+    - HJArchitecture/Task (= 0.0.3)
+    - HJArchitecture/ThirdParty (= 0.0.3)
+  - HJArchitecture/Common (0.0.3)
+  - HJArchitecture/DataController (0.0.3):
     - HJArchitecture/Common
     - HJArchitecture/DataSource
     - MJRefresh
-  - HJArchitecture/DataSource (0.0.1):
+  - HJArchitecture/DataSource (0.0.3):
     - HJArchitecture/Service
     - HJArchitecture/Task
-  - HJArchitecture/Service (0.0.1):
+  - HJArchitecture/Service (0.0.3):
     - AFNetworking
     - HJArchitecture/Common
     - HJArchitecture/Task
-  - HJArchitecture/Task (0.0.1)
-  - HJArchitecture/ThirdParty (0.0.1):
+  - HJArchitecture/Task (0.0.3)
+  - HJArchitecture/ThirdParty (0.0.3):
     - HJArchitecture/Common
     - Masonry
   - Masonry (0.6.3)
@@ -51,13 +51,13 @@ PODS:
   - SDWebImage/Core (3.7.3)
 
 DEPENDENCIES:
-  - HJArchitecture (= 0.0.1)
+  - HJArchitecture (= 0.0.3)
   - RDVTabBarController (= 1.1.9)
   - SDWebImage (= 3.7.3)
 
 SPEC CHECKSUMS:
   AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
-  HJArchitecture: 47943261d2f0d1985bf6731142bbaa0995a60206
+  HJArchitecture: 65eda577c5151f485f5eb34e445e6da3341a9814
   Masonry: ff105a956abcd19a618b2028b121cb638d7a8e2f
   MJRefresh: ca8e9589895977df32d379d46e6b8a5450b3ff44
   RDVTabBarController: 67794f7a7a37f8e32f046f85ac67d06ab92d624a

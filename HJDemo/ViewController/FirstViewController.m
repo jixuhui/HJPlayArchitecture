@@ -51,7 +51,7 @@
     self.tableDataController.delegate = self;
     self.tableDataController.cellClassName = @"TestTableViewCell";
     
-    HJURLPageDataSource *dataSource = [[HJURLPageDataSource alloc]init];
+    HJURLSessionPageDataSource *dataSource = [[HJURLSessionPageDataSource alloc]init];
     dataSource.urlString = SNEP_MiaoChe_URL_CarTypeList;
     dataSource.dataKey = @"content";
     dataSource.otherParameters = [[NSMutableDictionary alloc]initWithCapacity:2];
