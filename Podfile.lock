@@ -20,6 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.6.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - GHODictionary (1.0.9)
   - HJArchitecture (0.0.4):
     - HJArchitecture/Common (= 0.0.4)
     - HJArchitecture/DataController (= 0.0.4)
@@ -45,6 +46,8 @@ PODS:
     - Masonry
   - Masonry (0.6.3)
   - MJRefresh (2.4.12)
+  - MPMessagePack (1.3.2):
+    - GHODictionary
   - RDVTabBarController (1.1.9)
   - SDWebImage (3.7.3):
     - SDWebImage/Core (= 3.7.3)
@@ -52,14 +55,17 @@ PODS:
 
 DEPENDENCIES:
   - HJArchitecture (= 0.0.4)
+  - MPMessagePack
   - RDVTabBarController (= 1.1.9)
   - SDWebImage (= 3.7.3)
 
 SPEC CHECKSUMS:
   AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
+  GHODictionary: 1f7873492445e0f33ac19575a358c3c91926b564
   HJArchitecture: 0b5f1c6b4cc5dbf0b3e3cab1ba923fbd61b7eea7
   Masonry: ff105a956abcd19a618b2028b121cb638d7a8e2f
   MJRefresh: ca8e9589895977df32d379d46e6b8a5450b3ff44
+  MPMessagePack: 23bbb933ef1046edcf104e3556ab4a6b4b0a69d4
   RDVTabBarController: 67794f7a7a37f8e32f046f85ac67d06ab92d624a
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
 
