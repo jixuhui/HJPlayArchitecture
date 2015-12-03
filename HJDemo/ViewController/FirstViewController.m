@@ -85,10 +85,11 @@
     
     self.tableDataController.contentTableView = self.contentTableView;
     
-    WS(ws);
+    WEAKSELF
     
     [self.contentTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(ws.view).with.insets(self.padding);
+        STRONGSELF
+        make.edges.equalTo(strongSelf.view).with.insets(strongSelf.padding);
     }];
 }
 
@@ -153,13 +154,14 @@
 }
 
 - (void)resetData{
-    WS(ws);
+    WEAKSELF
     [[CSSearchableIndex defaultSearchableIndex] deleteAllSearchableItemsWithCompletionHandler:^(NSError * __nullable error) {
+        STRONGSELF
         //必须放到block里保证删除结束后再去添加
         if (error){
             NSLog(@"%@",error.localizedDescription);
         }else {
-            [ws saveData];
+            [strongSelf saveData];
         }
     }];
 }
@@ -181,7 +183,8 @@
 
 -(void)DemoBaseTableDataController:(DemoBaseTableDataController *)controller withCell:(UITableViewCell *)cell
 {
-    if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
+    //必须对该API进行版本判断
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(IOS_9_0) && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
         
         [self registerForPreviewingWithDelegate:(id)self sourceView:cell];
         

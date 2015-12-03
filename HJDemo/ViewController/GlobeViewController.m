@@ -35,12 +35,13 @@
     [collect registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellid"];
     [self.view addSubview:collect];
     
-    WS(ws);
+    WEAKSELF
     
     UIEdgeInsets padding = UIEdgeInsetsMake(0, 0, 0, 0);
     
     [collect mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(ws.view).width.insets(padding);
+        STRONGSELF
+        make.edges.equalTo(strongSelf.view).width.insets(padding);
     }];
 }
 

@@ -23,13 +23,14 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    WS(ws);
+    WEAKSELF
     
     UIView *sv = [UIView new];
     sv.backgroundColor = [UIColor grayColor];
     [self.view addSubview:sv];
     [sv mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(ws.view);
+        STRONGSELF
+        make.center.equalTo(strongSelf.view);
         make.size.mas_equalTo(CGSizeMake(300, 300));
     }];
     

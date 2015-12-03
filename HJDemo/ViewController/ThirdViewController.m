@@ -84,12 +84,13 @@
 
 -(void)layoutCurTextViewWithHeight:(float)height
 {    
-    WS(ws);
+    WEAKSELF
     
     [_curTextView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(ws.view.top).with.offset(50);
-        make.left.equalTo(ws.view).with.offset(100);
-        make.right.equalTo(ws.view).with.offset(-100);
+        STRONGSELF
+        make.centerY.equalTo(strongSelf.view.top).with.offset(50);
+        make.left.equalTo(strongSelf.view).with.offset(100);
+        make.right.equalTo(strongSelf.view).with.offset(-100);
 //        make.height.equalTo(@(height));//或者如此设置变量值
         make.height.mas_equalTo(height);
     }];

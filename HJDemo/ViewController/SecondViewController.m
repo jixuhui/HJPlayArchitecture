@@ -35,10 +35,11 @@
     self.curCollectionView.delegate = self;
     [self.view addSubview:self.curCollectionView];
     
-    WS(ws);
+    WEAKSELF
     
     [self.curCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(ws.view).with.insets(self.padding);
+        STRONGSELF
+        make.edges.equalTo(strongSelf.view).with.insets(self.padding);
     }];
     
     [self doRequest];

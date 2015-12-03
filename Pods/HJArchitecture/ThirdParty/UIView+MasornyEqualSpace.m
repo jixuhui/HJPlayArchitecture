@@ -29,10 +29,11 @@
     
     UIView *s0 = spaces[0];
     
-    WS(ws);
+    WEAKSELF
     
     [s0 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(ws.mas_left);
+        STRONGSELF
+        make.left.equalTo(strongSelf.mas_left);
         make.centerY.equalTo(((UIView*)views[0]).mas_centerY);
     }];
     
@@ -56,7 +57,8 @@
     }
     
     [lastSpace mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(ws.mas_right);
+        STRONGSELF
+        make.right.equalTo(strongSelf.mas_right);
     }];
     
 }
