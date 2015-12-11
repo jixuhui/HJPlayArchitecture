@@ -10,5 +10,4 @@
 #import "BarControllerContentViewController.h"
 
 @interface ThirdViewController : BarControllerContentViewController
-
 @end

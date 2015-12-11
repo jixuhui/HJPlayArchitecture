@@ -8,11 +8,14 @@
 
 #import "ThirdViewController.h"
 #import "Masonry.h"
+#import "HJMutipleDelegateViewController.h"
 
-@interface ThirdViewController ()<UITextViewDelegate>
+@interface ThirdViewController ()<UITextViewDelegate,UITableViewDataSource,UITableViewDelegate>
 {
     UITextView * _curTextView;
     UILabel *_penLabel;
+    UITableView *_tableView;
+    NSArray *_cellTextArray;
 }
 @property(nonatomic)NSString *contentStr;
 @end
@@ -26,12 +29,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    [self initSubViews];
+//    [self initSubViews];
+//    
+//    [self initLayoutSubViews];
+//    
+//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doTap:)];
+//    [self.view addGestureRecognizer:tap];
     
-    [self initLayoutSubViews];
+    [self initDataSource];
     
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doTap:)];
-    [self.view addGestureRecognizer:tap];
+    [self initTableView];
+    
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -39,6 +47,8 @@
     [super viewDidAppear:animated];
     
     self.navigationController.navigationBar.topItem.title = @"测试";
+    
+    [_tableView deselectRowAtIndexPath:[_tableView indexPathForSelectedRow] animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -47,6 +57,31 @@
 }
 
 #pragma mark - init
+
+- (void)initDataSource
+{
+    _cellTextArray = @[@"navig",@"auto_textfield",@"autowrite"];
+}
+
+- (void)initTableView
+{
+    _tableView = [[UITableView alloc]init];
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    _tableView.separatorInset = UIEdgeInsetsMake(0, 15, 1, 15);
+    [self.view addSubview:_tableView];
+    
+    WEAKSELF
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        STRONGSELF
+        make.left.equalTo(strongSelf.view.left);
+        make.top.equalTo(strongSelf.view.top);
+        make.width.equalTo(strongSelf.view.width);
+        make.height.equalTo(strongSelf.view.height);
+    }];
+    
+    [_tableView reloadData];
+}
 
 -(void)initSubViews
 {
@@ -134,6 +169,43 @@
     [UIView animateWithDuration:0.5 animations:^{
         [self.view layoutIfNeeded];
     }];
+}
+
+#pragma mark
+#pragma delegate
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return [_cellTextArray count];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 60;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+    }
+    
+    NSString *text = [_cellTextArray objectAtIndex:indexPath.row];
+    
+    cell.textLabel.text = text;
+    
+    return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    //由storyboard根据myView的storyBoardID来获取我们要切换的视图
+    UIViewController *myView = [story instantiateViewControllerWithIdentifier:@"mutipleDelegateVC"];
+    //由navigationController推向我们要推向的view
+    [self.navigationController pushViewController:myView animated:YES];
+    
+    
+    [self setTabBarHidden:YES animated:YES];
 }
 
 @end
