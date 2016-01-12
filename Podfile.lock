@@ -21,27 +21,27 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - GHODictionary (1.0.9)
-  - HJArchitecture (0.0.7):
-    - HJArchitecture/Common (= 0.0.7)
-    - HJArchitecture/DataController (= 0.0.7)
-    - HJArchitecture/DataSource (= 0.0.7)
-    - HJArchitecture/Service (= 0.0.7)
-    - HJArchitecture/Task (= 0.0.7)
-    - HJArchitecture/ThirdParty (= 0.0.7)
-  - HJArchitecture/Common (0.0.7)
-  - HJArchitecture/DataController (0.0.7):
+  - HJArchitecture (0.0.8):
+    - HJArchitecture/Common (= 0.0.8)
+    - HJArchitecture/DataController (= 0.0.8)
+    - HJArchitecture/DataSource (= 0.0.8)
+    - HJArchitecture/Service (= 0.0.8)
+    - HJArchitecture/Task (= 0.0.8)
+    - HJArchitecture/ThirdParty (= 0.0.8)
+  - HJArchitecture/Common (0.0.8)
+  - HJArchitecture/DataController (0.0.8):
     - HJArchitecture/Common
     - HJArchitecture/DataSource
     - MJRefresh
-  - HJArchitecture/DataSource (0.0.7):
+  - HJArchitecture/DataSource (0.0.8):
     - HJArchitecture/Service
     - HJArchitecture/Task
-  - HJArchitecture/Service (0.0.7):
+  - HJArchitecture/Service (0.0.8):
     - AFNetworking (~> 2.6.3)
     - HJArchitecture/Common
     - HJArchitecture/Task
-  - HJArchitecture/Task (0.0.7)
-  - HJArchitecture/ThirdParty (0.0.7):
+  - HJArchitecture/Task (0.0.8)
+  - HJArchitecture/ThirdParty (0.0.8):
     - HJArchitecture/Common
     - Masonry
   - Masonry (0.6.3)
@@ -54,7 +54,7 @@ PODS:
   - SDWebImage/Core (3.7.3)
 
 DEPENDENCIES:
-  - HJArchitecture (= 0.0.7)
+  - HJArchitecture (= 0.0.8)
   - MPMessagePack
   - RDVTabBarController (= 1.1.9)
   - SDWebImage (= 3.7.3)
@@ -62,7 +62,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
   GHODictionary: 1f7873492445e0f33ac19575a358c3c91926b564
-  HJArchitecture: 8ae43e15b9172671adaced080187c3c9b2b7fd4e
+  HJArchitecture: a2e7216e800e1073900858aed33187c5f6b16647
   Masonry: ff105a956abcd19a618b2028b121cb638d7a8e2f
   MJRefresh: fafde8f18f4afd66b434331a9beb67a6c0264056
   MPMessagePack: 0de75102afb01a48cb312b9570336f46659b410f

@@ -7,6 +7,7 @@
 //
 
 #import "HJActivityIndicatorCoverView.h"
+#import "HJConstant.h"
 
 // failRetryImage
 #define Image_FailRetry_Width   60
@@ -54,7 +55,7 @@
 {
     _indicator.center = self.center;
     _indicator.frame = CGRectOffset(_indicator.frame, 0, -26);
-    _retryButton.center = self.center;
+    _retryButton.center = _indicator.center;
 }
 
 - (void)reloadUIElements
@@ -64,25 +65,26 @@
         _indicator = [[UIActivityIndicatorView alloc] init];
         [self addSubview:_indicator];
     }
+    UIImage *retryImg = [UIImage imageNamed:HJArchitectureSrcName(@"refresh.png")] ?: [UIImage imageNamed:HJArchitectureFrameworkSrcName(@"refresh.png")];
     switch (_style)
     {
-        case HJActivityIndicatorCoverViewStyle_other:
+            case HJActivityIndicatorCoverViewStyle_other:
             self.backgroundColor = [UIColor whiteColor];
             _indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-            [_retryButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
-            [_retryButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateHighlighted];
+            [_retryButton setImage:retryImg forState:UIControlStateNormal];
+            [_retryButton setImage:retryImg forState:UIControlStateHighlighted];
             break;
-        case HJActivityIndicatorCoverViewStyle_article:
+            case HJActivityIndicatorCoverViewStyle_article:
             self.backgroundColor = [UIColor whiteColor];
             _indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-            [_retryButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
-            [_retryButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateHighlighted];
+            [_retryButton setImage:retryImg forState:UIControlStateNormal];
+            [_retryButton setImage:retryImg forState:UIControlStateHighlighted];
             break;
-        case HJActivityIndicatorCoverViewStyle_photo:
+            case HJActivityIndicatorCoverViewStyle_photo:
             self.backgroundColor = [UIColor blackColor];
             _indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
-            [_retryButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
-            [_retryButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateHighlighted];
+            [_retryButton setImage:retryImg forState:UIControlStateNormal];
+            [_retryButton setImage:retryImg forState:UIControlStateHighlighted];
         default:
             break;
     }

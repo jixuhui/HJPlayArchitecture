@@ -61,4 +61,9 @@
 #define WEAKSELF __typeof(self) __weak weakSelf = self;
 #define STRONGSELF __typeof(weakSelf) __strong strongSelf = weakSelf;
 
+//----------------------------图片路径----------------------------
+
+#define HJArchitectureSrcName(file) [@"HJArchitecture.bundle" stringByAppendingPathComponent:file]
+#define HJArchitectureFrameworkSrcName(file) [@"Frameworks/HJArchitecture.framework/HJArchitecture.bundle" stringByAppendingPathComponent:file]
+
 #endif
