@@ -97,7 +97,7 @@
 {
     _refreshControl = [[MJRefreshNormalHeader alloc] init];
     
-    self.contentTableView.header = _refreshControl;
+    self.contentTableView.mj_header = _refreshControl;
     
     self.tableDataController.refreshControl = _refreshControl;
 }
@@ -106,7 +106,7 @@
 {
     _loadMoreControl = [[MJRefreshBackNormalFooter alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kLoadMoreCellHeigth)];
     
-    self.contentTableView.footer = _loadMoreControl;
+    self.contentTableView.mj_footer = _loadMoreControl;
     
     self.tableDataController.loadMoreControl = _loadMoreControl;
 }

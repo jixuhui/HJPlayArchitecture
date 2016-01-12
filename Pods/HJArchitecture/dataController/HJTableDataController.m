@@ -250,7 +250,7 @@
     if(!([_dataSource respondsToSelector:@selector(hasMoreData)]
        && [(id)_dataSource hasMoreData]))
     {
-        _contentTableView.footer = nil;
+        _contentTableView.mj_footer = nil;
         return ;
     }
     
@@ -262,7 +262,7 @@
         }
         else
         {
-            _contentTableView.footer = nil;
+            _contentTableView.mj_footer = nil;
         }
     }
     else
@@ -277,7 +277,7 @@
 -(void)addFooterViewForMoreData
 {
     self.loading = NO;
-    _contentTableView.footer = _loadMoreControl;
+    _contentTableView.mj_footer = _loadMoreControl;
     [self.contentTableView reloadData];
 }
 

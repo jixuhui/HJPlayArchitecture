@@ -28,7 +28,7 @@
 -(void)cancelTask:(id<IHJURLTask>)task;
 @end
 
-@interface HJURLService : AFHTTPRequestOperationManager <IHJURLService>
+@interface HJURLService : NSObject <IHJURLService>
 
 
 
