@@ -9,6 +9,7 @@
 #import "ThirdViewController.h"
 #import "Masonry.h"
 #import "HJMutipleDelegateViewController.h"
+#import "ChartViewController.h"
 
 @interface ThirdViewController ()<UITextViewDelegate,UITableViewDataSource,UITableViewDelegate>
 {
@@ -28,13 +29,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
-//    [self initSubViews];
-//    
-//    [self initLayoutSubViews];
-//    
-//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doTap:)];
-//    [self.view addGestureRecognizer:tap];
     
     [self initDataSource];
     
@@ -60,7 +54,7 @@
 
 - (void)initDataSource
 {
-    _cellTextArray = @[@"navig",@"auto_textfield",@"autowrite"];
+    _cellTextArray = @[@"navig",@"auto_textfield",@"autowrite",@"chart"];
 }
 
 - (void)initTableView
@@ -184,25 +178,34 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    HJTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell = [[HJTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
     
     NSString *text = [_cellTextArray objectAtIndex:indexPath.row];
     
     cell.textLabel.text = text;
+    cell.actionName = text;
     
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    //由storyboard根据myView的storyBoardID来获取我们要切换的视图
-    UIViewController *myView = [story instantiateViewControllerWithIdentifier:@"mutipleDelegateVC"];
-    //由navigationController推向我们要推向的view
-    [self.navigationController pushViewController:myView animated:YES];
+    HJTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if ([cell isKindOfClass:[HJTableViewCell class]]) {
+        if ([cell.actionName isEqualToString:@"chart"]) {
+            ChartViewController *chartVC = [[ChartViewController alloc]init];
+            [self.navigationController pushViewController:chartVC animated:YES];
+        }else {
+            UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            //由storyboard根据myView的storyBoardID来获取我们要切换的视图
+            UIViewController *myView = [story instantiateViewControllerWithIdentifier:@"mutipleDelegateVC"];
+            //由navigationController推向我们要推向的view
+            [self.navigationController pushViewController:myView animated:YES];
+        }
+    }
     
     
     [self setTabBarHidden:YES animated:YES];

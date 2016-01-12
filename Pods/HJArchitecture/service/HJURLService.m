@@ -41,6 +41,8 @@
         task.requestType = @"get";
     }
     
+    self.operationManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
     if ([[task.requestType uppercaseString] isEqualToString:@"GET"]) {
         operation = [self.operationManager GET:task.urlString parameters:[task otherParameters] success:success failure:failure];
     }else if ([[task.requestType uppercaseString] isEqualToString:@"POST"]) {
@@ -60,6 +62,8 @@
     if (!task.requestType) {
         task.requestType = @"get";
     }
+    
+    self.sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     if ([[task.requestType uppercaseString] isEqualToString:@"GET"]) {
         sessionDataTask = [self.sessionManager GET:task.urlString parameters:[task otherParameters] success:success failure:failure];

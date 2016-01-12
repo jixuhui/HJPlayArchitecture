@@ -20,6 +20,8 @@
 		A765DB711BE30B32009380AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A765DB6F1BE30B32009380AD /* LaunchScreen.storyboard */; };
 		A765DB7C1BE30B32009380AD /* HJDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB7B1BE30B32009380AD /* HJDemoTests.m */; };
 		A765DB871BE30B33009380AD /* HJDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB861BE30B33009380AD /* HJDemoUITests.m */; };
+		A767380F1C44E25800FE055A /* HJChartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A767380E1C44E25800FE055A /* HJChartModel.m */; };
+		A76738191C44E5FC00FE055A /* ChartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A76738181C44E5FC00FE055A /* ChartViewController.m */; };
 		A78FD2B41BFC81E800529A40 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */; };
 		A7DAEC851C1A82D100C1C237 /* HJParallaxHeaderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC841C1A82D000C1C237 /* HJParallaxHeaderManager.m */; };
 		A7DAEC881C1AA04E00C1C237 /* HJNavigationBarGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC871C1AA04E00C1C237 /* HJNavigationBarGradientManager.m */; };
@@ -114,6 +116,10 @@
 		A765DB821BE30B32009380AD /* HJDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HJDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A765DB861BE30B33009380AD /* HJDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HJDemoUITests.m; sourceTree = "<group>"; };
 		A765DB881BE30B33009380AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A767380D1C44E25800FE055A /* HJChartModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJChartModel.h; sourceTree = "<group>"; };
+		A767380E1C44E25800FE055A /* HJChartModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJChartModel.m; sourceTree = "<group>"; };
+		A76738171C44E5FC00FE055A /* ChartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartViewController.h; sourceTree = "<group>"; };
+		A76738181C44E5FC00FE055A /* ChartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChartViewController.m; sourceTree = "<group>"; };
 		A78991F71BECA76F0093445D /* HJDemo-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-prefix.pch"; sourceTree = "<group>"; };
 		A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		A7DAEC831C1A82D000C1C237 /* HJParallaxHeaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJParallaxHeaderManager.h; sourceTree = "<group>"; };
@@ -255,6 +261,7 @@
 		A765DB601BE30B32009380AD /* HJDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A767380C1C44E23900FE055A /* Chart */,
 				049F0BDE1BF6B083001DEFDC /* Steed */,
 				A7F0F9871BF43DD200C0F427 /* View */,
 				A7F0F9821BF43D8100C0F427 /* Manager */,
@@ -308,6 +315,15 @@
 			path = Resource;
 			sourceTree = "<group>";
 		};
+		A767380C1C44E23900FE055A /* Chart */ = {
+			isa = PBXGroup;
+			children = (
+				A767380D1C44E25800FE055A /* HJChartModel.h */,
+				A767380E1C44E25800FE055A /* HJChartModel.m */,
+			);
+			path = Chart;
+			sourceTree = "<group>";
+		};
 		A7F0F9401BF332F500C0F427 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,6 +368,8 @@
 				A7535CD11BF47D9B00BB6900 /* BarControllerContentViewController.m */,
 				A7DAEC8F1C1AA45F00C1C237 /* HJMutipleDelegateViewController.h */,
 				A7DAEC901C1AA45F00C1C237 /* HJMutipleDelegateViewController.m */,
+				A76738171C44E5FC00FE055A /* ChartViewController.h */,
+				A76738181C44E5FC00FE055A /* ChartViewController.m */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -629,10 +647,12 @@
 				049F0BE01BF6B153001DEFDC /* Task.swift in Sources */,
 				A7F0F98A1BF43DD200C0F427 /* TestTableViewCell.m in Sources */,
 				A7F0F9811BF43D6400C0F427 /* ThirdViewController.m in Sources */,
+				A76738191C44E5FC00FE055A /* ChartViewController.m in Sources */,
 				A765DB661BE30B32009380AD /* AppDelegate.m in Sources */,
 				A7DAEC881C1AA04E00C1C237 /* HJNavigationBarGradientManager.m in Sources */,
 				A765DB631BE30B32009380AD /* main.m in Sources */,
 				A7535CD21BF47D9B00BB6900 /* BarControllerContentViewController.m in Sources */,
+				A767380F1C44E25800FE055A /* HJChartModel.m in Sources */,
 				04C601301BF786E100CF76B5 /* Category.swift in Sources */,
 				A7F0F97E1BF43D6400C0F427 /* MASViewController.m in Sources */,
 				A7F0F97D1BF43D6400C0F427 /* GlobeViewController.m in Sources */,
