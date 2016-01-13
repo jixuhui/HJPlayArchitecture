@@ -12,6 +12,26 @@
 		04C6012E1BF7864C00CF76B5 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6012D1BF7864C00CF76B5 /* DataSource.swift */; };
 		04C601301BF786E100CF76B5 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6012F1BF786E100CF76B5 /* Category.swift */; };
 		A7535CD21BF47D9B00BB6900 /* BarControllerContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7535CD11BF47D9B00BB6900 /* BarControllerContentViewController.m */; };
+		A75C231A1C4652D600065EAD /* build.sh in Resources */ = {isa = PBXBuildFile; fileRef = A75C22EB1C4652D600065EAD /* build.sh */; };
+		A75C231C1C4652D600065EAD /* HJActivityIndicatorCoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22EE1C4652D600065EAD /* HJActivityIndicatorCoverView.m */; };
+		A75C231D1C4652D600065EAD /* HJMultipleProxyBehavior.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22F11C4652D600065EAD /* HJMultipleProxyBehavior.m */; };
+		A75C231E1C4652D600065EAD /* HJTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22F31C4652D600065EAD /* HJTableViewCell.m */; };
+		A75C231F1C4652D600065EAD /* NSObject+HJDataParse.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22F61C4652D600065EAD /* NSObject+HJDataParse.m */; };
+		A75C23201C4652D600065EAD /* HJDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22F91C4652D600065EAD /* HJDataController.m */; };
+		A75C23211C4652D600065EAD /* HJTableDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22FB1C4652D600065EAD /* HJTableDataController.m */; };
+		A75C23221C4652D600065EAD /* HJDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C22FE1C4652D600065EAD /* HJDataSource.m */; };
+		A75C23231C4652D600065EAD /* HJURLConnectionPageDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23001C4652D600065EAD /* HJURLConnectionPageDataSource.m */; };
+		A75C23241C4652D600065EAD /* HJURLDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23021C4652D600065EAD /* HJURLDataSource.m */; };
+		A75C23251C4652D600065EAD /* HJURLPageDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23041C4652D600065EAD /* HJURLPageDataSource.m */; };
+		A75C23261C4652D600065EAD /* HJURLSessionPageDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23061C4652D600065EAD /* HJURLSessionPageDataSource.m */; };
+		A75C23271C4652D600065EAD /* HJArchitecture.podspec in Resources */ = {isa = PBXBuildFile; fileRef = A75C23091C4652D600065EAD /* HJArchitecture.podspec */; };
+		A75C23281C4652D600065EAD /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A75C230A1C4652D600065EAD /* LICENSE */; };
+		A75C23291C4652D600065EAD /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = A75C230B1C4652D600065EAD /* README.md */; };
+		A75C232A1C4652D600065EAD /* HJArchitecture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A75C230C1C4652D600065EAD /* HJArchitecture.bundle */; };
+		A75C232B1C4652D600065EAD /* HJURLService.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C230F1C4652D600065EAD /* HJURLService.m */; };
+		A75C232C1C4652D600065EAD /* HJURLPageTask.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23121C4652D600065EAD /* HJURLPageTask.m */; };
+		A75C232D1C4652D600065EAD /* HJURLTask.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23141C4652D600065EAD /* HJURLTask.m */; };
+		A75C232E1C4652D600065EAD /* UIView+MasornyEqualSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23171C4652D600065EAD /* UIView+MasornyEqualSpace.m */; };
 		A760C51F1C0712FD00591488 /* DemoBaseTableDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = A760C51E1C0712FD00591488 /* DemoBaseTableDataController.m */; };
 		A765DB631BE30B32009380AD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB621BE30B32009380AD /* main.m */; };
 		A765DB661BE30B32009380AD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB651BE30B32009380AD /* AppDelegate.m */; };
@@ -100,6 +120,44 @@
 		495D6D58F07E5099D5DCD6F6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A7535CD01BF47D9B00BB6900 /* BarControllerContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarControllerContentViewController.h; sourceTree = "<group>"; };
 		A7535CD11BF47D9B00BB6900 /* BarControllerContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarControllerContentViewController.m; sourceTree = "<group>"; };
+		A75C22EB1C4652D600065EAD /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		A75C22ED1C4652D600065EAD /* HJActivityIndicatorCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJActivityIndicatorCoverView.h; sourceTree = "<group>"; };
+		A75C22EE1C4652D600065EAD /* HJActivityIndicatorCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJActivityIndicatorCoverView.m; sourceTree = "<group>"; };
+		A75C22EF1C4652D600065EAD /* HJConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJConstant.h; sourceTree = "<group>"; };
+		A75C22F01C4652D600065EAD /* HJMultipleProxyBehavior.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJMultipleProxyBehavior.h; sourceTree = "<group>"; };
+		A75C22F11C4652D600065EAD /* HJMultipleProxyBehavior.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJMultipleProxyBehavior.m; sourceTree = "<group>"; };
+		A75C22F21C4652D600065EAD /* HJTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJTableViewCell.h; sourceTree = "<group>"; };
+		A75C22F31C4652D600065EAD /* HJTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJTableViewCell.m; sourceTree = "<group>"; };
+		A75C22F41C4652D600065EAD /* IHJViewBindDataProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IHJViewBindDataProtocol.h; sourceTree = "<group>"; };
+		A75C22F51C4652D600065EAD /* NSObject+HJDataParse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+HJDataParse.h"; sourceTree = "<group>"; };
+		A75C22F61C4652D600065EAD /* NSObject+HJDataParse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+HJDataParse.m"; sourceTree = "<group>"; };
+		A75C22F81C4652D600065EAD /* HJDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJDataController.h; sourceTree = "<group>"; };
+		A75C22F91C4652D600065EAD /* HJDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJDataController.m; sourceTree = "<group>"; };
+		A75C22FA1C4652D600065EAD /* HJTableDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJTableDataController.h; sourceTree = "<group>"; };
+		A75C22FB1C4652D600065EAD /* HJTableDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJTableDataController.m; sourceTree = "<group>"; };
+		A75C22FD1C4652D600065EAD /* HJDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJDataSource.h; sourceTree = "<group>"; };
+		A75C22FE1C4652D600065EAD /* HJDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJDataSource.m; sourceTree = "<group>"; };
+		A75C22FF1C4652D600065EAD /* HJURLConnectionPageDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLConnectionPageDataSource.h; sourceTree = "<group>"; };
+		A75C23001C4652D600065EAD /* HJURLConnectionPageDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLConnectionPageDataSource.m; sourceTree = "<group>"; };
+		A75C23011C4652D600065EAD /* HJURLDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLDataSource.h; sourceTree = "<group>"; };
+		A75C23021C4652D600065EAD /* HJURLDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLDataSource.m; sourceTree = "<group>"; };
+		A75C23031C4652D600065EAD /* HJURLPageDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLPageDataSource.h; sourceTree = "<group>"; };
+		A75C23041C4652D600065EAD /* HJURLPageDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLPageDataSource.m; sourceTree = "<group>"; };
+		A75C23051C4652D600065EAD /* HJURLSessionPageDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLSessionPageDataSource.h; sourceTree = "<group>"; };
+		A75C23061C4652D600065EAD /* HJURLSessionPageDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLSessionPageDataSource.m; sourceTree = "<group>"; };
+		A75C23081C4652D600065EAD /* HJArchitecture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJArchitecture.h; sourceTree = "<group>"; };
+		A75C23091C4652D600065EAD /* HJArchitecture.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HJArchitecture.podspec; sourceTree = "<group>"; };
+		A75C230A1C4652D600065EAD /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		A75C230B1C4652D600065EAD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A75C230C1C4652D600065EAD /* HJArchitecture.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HJArchitecture.bundle; sourceTree = "<group>"; };
+		A75C230E1C4652D600065EAD /* HJURLService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLService.h; sourceTree = "<group>"; };
+		A75C230F1C4652D600065EAD /* HJURLService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLService.m; sourceTree = "<group>"; };
+		A75C23111C4652D600065EAD /* HJURLPageTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLPageTask.h; sourceTree = "<group>"; };
+		A75C23121C4652D600065EAD /* HJURLPageTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLPageTask.m; sourceTree = "<group>"; };
+		A75C23131C4652D600065EAD /* HJURLTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJURLTask.h; sourceTree = "<group>"; };
+		A75C23141C4652D600065EAD /* HJURLTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLTask.m; sourceTree = "<group>"; };
+		A75C23161C4652D600065EAD /* UIView+MasornyEqualSpace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MasornyEqualSpace.h"; sourceTree = "<group>"; };
+		A75C23171C4652D600065EAD /* UIView+MasornyEqualSpace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MasornyEqualSpace.m"; sourceTree = "<group>"; };
 		A760C51D1C0712FD00591488 /* DemoBaseTableDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoBaseTableDataController.h; sourceTree = "<group>"; };
 		A760C51E1C0712FD00591488 /* DemoBaseTableDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoBaseTableDataController.m; sourceTree = "<group>"; };
 		A765DB5E1BE30B32009380AD /* HJDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HJDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -130,7 +188,6 @@
 		A7DAEC8D1C1AA10600C1C237 /* UINavigationBar+HJExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+HJExtention.m"; sourceTree = "<group>"; };
 		A7DAEC8F1C1AA45F00C1C237 /* HJMutipleDelegateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJMutipleDelegateViewController.h; sourceTree = "<group>"; };
 		A7DAEC901C1AA45F00C1C237 /* HJMutipleDelegateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJMutipleDelegateViewController.m; sourceTree = "<group>"; };
-		A7F0F93F1BF30FBB00C0F427 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		A7F0F9411BF332F500C0F427 /* first_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = first_normal.png; sourceTree = "<group>"; };
 		A7F0F9421BF332F500C0F427 /* first_normal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first_normal@2x.png"; sourceTree = "<group>"; };
 		A7F0F9431BF332F500C0F427 /* first_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = first_selected.png; sourceTree = "<group>"; };
@@ -235,10 +292,112 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A75C22F71C4652D600065EAD /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				A75C22ED1C4652D600065EAD /* HJActivityIndicatorCoverView.h */,
+				A75C22EE1C4652D600065EAD /* HJActivityIndicatorCoverView.m */,
+				A75C22EF1C4652D600065EAD /* HJConstant.h */,
+				A75C22F01C4652D600065EAD /* HJMultipleProxyBehavior.h */,
+				A75C22F11C4652D600065EAD /* HJMultipleProxyBehavior.m */,
+				A75C22F21C4652D600065EAD /* HJTableViewCell.h */,
+				A75C22F31C4652D600065EAD /* HJTableViewCell.m */,
+				A75C22F41C4652D600065EAD /* IHJViewBindDataProtocol.h */,
+				A75C22F51C4652D600065EAD /* NSObject+HJDataParse.h */,
+				A75C22F61C4652D600065EAD /* NSObject+HJDataParse.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		A75C22FC1C4652D600065EAD /* DataController */ = {
+			isa = PBXGroup;
+			children = (
+				A75C22F81C4652D600065EAD /* HJDataController.h */,
+				A75C22F91C4652D600065EAD /* HJDataController.m */,
+				A75C22FA1C4652D600065EAD /* HJTableDataController.h */,
+				A75C22FB1C4652D600065EAD /* HJTableDataController.m */,
+			);
+			path = DataController;
+			sourceTree = "<group>";
+		};
+		A75C23071C4652D600065EAD /* DataSource */ = {
+			isa = PBXGroup;
+			children = (
+				A75C22FD1C4652D600065EAD /* HJDataSource.h */,
+				A75C22FE1C4652D600065EAD /* HJDataSource.m */,
+				A75C22FF1C4652D600065EAD /* HJURLConnectionPageDataSource.h */,
+				A75C23001C4652D600065EAD /* HJURLConnectionPageDataSource.m */,
+				A75C23011C4652D600065EAD /* HJURLDataSource.h */,
+				A75C23021C4652D600065EAD /* HJURLDataSource.m */,
+				A75C23031C4652D600065EAD /* HJURLPageDataSource.h */,
+				A75C23041C4652D600065EAD /* HJURLPageDataSource.m */,
+				A75C23051C4652D600065EAD /* HJURLSessionPageDataSource.h */,
+				A75C23061C4652D600065EAD /* HJURLSessionPageDataSource.m */,
+			);
+			path = DataSource;
+			sourceTree = "<group>";
+		};
+		A75C230D1C4652D600065EAD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A75C230C1C4652D600065EAD /* HJArchitecture.bundle */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A75C23101C4652D600065EAD /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				A75C230E1C4652D600065EAD /* HJURLService.h */,
+				A75C230F1C4652D600065EAD /* HJURLService.m */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		A75C23151C4652D600065EAD /* Task */ = {
+			isa = PBXGroup;
+			children = (
+				A75C23111C4652D600065EAD /* HJURLPageTask.h */,
+				A75C23121C4652D600065EAD /* HJURLPageTask.m */,
+				A75C23131C4652D600065EAD /* HJURLTask.h */,
+				A75C23141C4652D600065EAD /* HJURLTask.m */,
+			);
+			path = Task;
+			sourceTree = "<group>";
+		};
+		A75C23181C4652D600065EAD /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				A75C23161C4652D600065EAD /* UIView+MasornyEqualSpace.h */,
+				A75C23171C4652D600065EAD /* UIView+MasornyEqualSpace.m */,
+			);
+			path = ThirdParty;
+			sourceTree = "<group>";
+		};
+		A75C23191C4652D600065EAD /* HJArchitecture */ = {
+			isa = PBXGroup;
+			children = (
+				A75C22EB1C4652D600065EAD /* build.sh */,
+				A75C22F71C4652D600065EAD /* Common */,
+				A75C22FC1C4652D600065EAD /* DataController */,
+				A75C23071C4652D600065EAD /* DataSource */,
+				A75C23081C4652D600065EAD /* HJArchitecture.h */,
+				A75C23091C4652D600065EAD /* HJArchitecture.podspec */,
+				A75C230A1C4652D600065EAD /* LICENSE */,
+				A75C230B1C4652D600065EAD /* README.md */,
+				A75C230D1C4652D600065EAD /* Resources */,
+				A75C23101C4652D600065EAD /* Service */,
+				A75C23151C4652D600065EAD /* Task */,
+				A75C23181C4652D600065EAD /* ThirdParty */,
+			);
+			name = HJArchitecture;
+			path = ../HJArchitecture;
+			sourceTree = "<group>";
+		};
 		A765DB551BE30B32009380AD = {
 			isa = PBXGroup;
 			children = (
-				A7F0F93F1BF30FBB00C0F427 /* build.sh */,
+				A75C23191C4652D600065EAD /* HJArchitecture */,
 				A765DB601BE30B32009380AD /* HJDemo */,
 				A765DB7A1BE30B32009380AD /* HJDemoTests */,
 				A765DB851BE30B33009380AD /* HJDemoUITests */,
@@ -540,6 +699,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A75C23281C4652D600065EAD /* LICENSE in Resources */,
 				A7F0F95F1BF332F500C0F427 /* second_selected.png in Resources */,
 				A765DB711BE30B32009380AD /* LaunchScreen.storyboard in Resources */,
 				A7F0F9611BF332F500C0F427 /* tabbar_normal_background.png in Resources */,
@@ -549,11 +709,13 @@
 				A7F0F9641BF332F500C0F427 /* tabbar_selected_background@2x.png in Resources */,
 				A7FC3D8E1BE99EE600BB57E6 /* tabbar_video_hl@3x.png in Resources */,
 				A7FC3D831BE99EE600BB57E6 /* tabbar_picture@2x.png in Resources */,
+				A75C231A1C4652D600065EAD /* build.sh in Resources */,
 				A7F0F9571BF332F500C0F427 /* first_selected.png in Resources */,
 				A7FC3D871BE99EE600BB57E6 /* tabbar_setting@2x.png in Resources */,
 				A765DB6E1BE30B32009380AD /* Assets.xcassets in Resources */,
 				A7F0F95E1BF332F500C0F427 /* second_normal@2x.png in Resources */,
 				A765DB6C1BE30B32009380AD /* Main.storyboard in Resources */,
+				A75C23271C4652D600065EAD /* HJArchitecture.podspec in Resources */,
 				A7F0F95B1BF332F500C0F427 /* navigationbar_background_tall.png in Resources */,
 				A7F0F95C1BF332F500C0F427 /* navigationbar_background_tall@2x.png in Resources */,
 				A7FC3D8C1BE99EE600BB57E6 /* tabbar_video@3x.png in Resources */,
@@ -578,6 +740,7 @@
 				A7F0F9681BF332F500C0F427 /* third_selected@2x.png in Resources */,
 				A7FC3D851BE99EE600BB57E6 /* tabbar_picture_hl@2x.png in Resources */,
 				A7F0F9651BF332F500C0F427 /* third_normal.png in Resources */,
+				A75C232A1C4652D600065EAD /* HJArchitecture.bundle in Resources */,
 				A7FC3D8A1BE99EE600BB57E6 /* tabbar_setting_hl@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -637,16 +800,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7DAEC911C1AA45F00C1C237 /* HJMutipleDelegateViewController.m in Sources */,
+				A75C232B1C4652D600065EAD /* HJURLService.m in Sources */,
+				A75C231F1C4652D600065EAD /* NSObject+HJDataParse.m in Sources */,
 				04C6012E1BF7864C00CF76B5 /* DataSource.swift in Sources */,
 				A7DAEC8E1C1AA10600C1C237 /* UINavigationBar+HJExtention.m in Sources */,
 				A7F0F97F1BF43D6400C0F427 /* SecondViewController.m in Sources */,
+				A75C231E1C4652D600065EAD /* HJTableViewCell.m in Sources */,
 				049F0BE21BF6B82C001DEFDC /* Service.swift in Sources */,
+				A75C231C1C4652D600065EAD /* HJActivityIndicatorCoverView.m in Sources */,
 				A7F0F97C1BF43D6400C0F427 /* FirstViewController.m in Sources */,
 				A7F0F9851BF43D8100C0F427 /* GlobeCollectionViewLayout.m in Sources */,
+				A75C232C1C4652D600065EAD /* HJURLPageTask.m in Sources */,
 				A7DAEC851C1A82D100C1C237 /* HJParallaxHeaderManager.m in Sources */,
+				A75C23231C4652D600065EAD /* HJURLConnectionPageDataSource.m in Sources */,
+				A75C23241C4652D600065EAD /* HJURLDataSource.m in Sources */,
 				049F0BE01BF6B153001DEFDC /* Task.swift in Sources */,
 				A7F0F98A1BF43DD200C0F427 /* TestTableViewCell.m in Sources */,
 				A7F0F9811BF43D6400C0F427 /* ThirdViewController.m in Sources */,
+				A75C23261C4652D600065EAD /* HJURLSessionPageDataSource.m in Sources */,
+				A75C231D1C4652D600065EAD /* HJMultipleProxyBehavior.m in Sources */,
+				A75C23201C4652D600065EAD /* HJDataController.m in Sources */,
 				A76738191C44E5FC00FE055A /* ChartViewController.m in Sources */,
 				A765DB661BE30B32009380AD /* AppDelegate.m in Sources */,
 				A7DAEC881C1AA04E00C1C237 /* HJNavigationBarGradientManager.m in Sources */,
@@ -656,7 +829,13 @@
 				04C601301BF786E100CF76B5 /* Category.swift in Sources */,
 				A7F0F97E1BF43D6400C0F427 /* MASViewController.m in Sources */,
 				A7F0F97D1BF43D6400C0F427 /* GlobeViewController.m in Sources */,
+				A75C232D1C4652D600065EAD /* HJURLTask.m in Sources */,
+				A75C23291C4652D600065EAD /* README.md in Sources */,
+				A75C23221C4652D600065EAD /* HJDataSource.m in Sources */,
 				A760C51F1C0712FD00591488 /* DemoBaseTableDataController.m in Sources */,
+				A75C23251C4652D600065EAD /* HJURLPageDataSource.m in Sources */,
+				A75C23211C4652D600065EAD /* HJTableDataController.m in Sources */,
+				A75C232E1C4652D600065EAD /* UIView+MasornyEqualSpace.m in Sources */,
 				A7F0F98D1BF43EDD00C0F427 /* DemoManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

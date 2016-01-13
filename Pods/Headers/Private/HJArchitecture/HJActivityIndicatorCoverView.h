@@ -1,1 +1,0 @@
-../../../HJArchitecture/Common/HJActivityIndicatorCoverView.h

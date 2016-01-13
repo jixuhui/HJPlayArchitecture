@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "E66093A7A40CC7F15D865E07E231D9F7BD78D286",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "15B3753D83006A4224A655F3600FBC0018668564" : 0,
+    "E66093A7A40CC7F15D865E07E231D9F7BD78D286" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "81EC9DE6-8D16-4828-B933-D11134C5CFF3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "15B3753D83006A4224A655F3600FBC0018668564" : "HJArchitecture\/",
+    "E66093A7A40CC7F15D865E07E231D9F7BD78D286" : "HJDemo"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "HJDemo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "HJDemo.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/jixuhui\/HJArchitecture.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "15B3753D83006A4224A655F3600FBC0018668564"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/jixuhui\/HJDemo.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E66093A7A40CC7F15D865E07E231D9F7BD78D286"
+    }
+  ]
+}

@@ -58,11 +58,9 @@ install_resource()
   esac
 }
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_resource "HJArchitecture/Resources/HJArchitecture.bundle"
   install_resource "MJRefresh/MJRefresh/MJRefresh.bundle"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_resource "HJArchitecture/Resources/HJArchitecture.bundle"
   install_resource "MJRefresh/MJRefresh/MJRefresh.bundle"
 fi
 

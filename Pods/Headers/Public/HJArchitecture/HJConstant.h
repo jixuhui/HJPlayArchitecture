@@ -1,1 +1,0 @@
-../../../HJArchitecture/Common/HJConstant.h
