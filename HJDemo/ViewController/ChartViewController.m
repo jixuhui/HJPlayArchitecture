@@ -8,6 +8,8 @@
 
 #import "ChartViewController.h"
 
+#import "HJCandleChartModel.h"
+
 @implementation ChartViewController
 
 -(void)viewDidLoad
@@ -25,7 +27,6 @@
     
     [[HJURLService shareService] handleSessionTask:task success:^(NSURLSessionDataTask *task, id responseObject) {
         NSString *result = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"%@",result);
         [self generateData:result];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSLog(@"%@,%@",task,error);
@@ -44,17 +45,24 @@
         if([line isEqualToString:@""]){
             continue;
         }
-        NSArray   *arr = [line componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@","]];
-        [category addObject:arr[0]];
         
-        NSMutableArray *item =[[NSMutableArray alloc] init];
-        [item addObject:arr[1]];
-        [item addObject:arr[4]];
-        [item addObject:arr[2]];
-        [item addObject:arr[3]];
-        [item addObject:arr[5]];
-        [data addObject:item];
+        @autoreleasepool {
+            NSArray   *arr = [line componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@","]];
+            [category addObject:arr[0]];
+            
+            HJCandleChartModel *model = [[HJCandleChartModel alloc]init];
+            model.date = arr[0];
+            model.openPrice = [arr[1] floatValue];
+            model.hightPrice = [arr[2] floatValue];
+            model.lowPrice = [arr[3] floatValue];
+            model.closePrice = [arr[4] floatValue];
+            model.volumn = [arr[5] intValue];
+            model.adjClosePrice = [arr[6] floatValue];
+            [data addObject:model];
+        }
     }
+    
+    NSLog(@"data...%@",data);
 }
 
 @end

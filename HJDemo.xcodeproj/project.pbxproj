@@ -32,6 +32,8 @@
 		A75C232C1C4652D600065EAD /* HJURLPageTask.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23121C4652D600065EAD /* HJURLPageTask.m */; };
 		A75C232D1C4652D600065EAD /* HJURLTask.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23141C4652D600065EAD /* HJURLTask.m */; };
 		A75C232E1C4652D600065EAD /* UIView+MasornyEqualSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23171C4652D600065EAD /* UIView+MasornyEqualSpace.m */; };
+		A75C23311C47721300065EAD /* HJCandleChartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23301C47721300065EAD /* HJCandleChartModel.m */; };
+		A75C23371C47791C00065EAD /* HJChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23361C47791C00065EAD /* HJChartView.m */; };
 		A760C51F1C0712FD00591488 /* DemoBaseTableDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = A760C51E1C0712FD00591488 /* DemoBaseTableDataController.m */; };
 		A765DB631BE30B32009380AD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB621BE30B32009380AD /* main.m */; };
 		A765DB661BE30B32009380AD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB651BE30B32009380AD /* AppDelegate.m */; };
@@ -158,6 +160,12 @@
 		A75C23141C4652D600065EAD /* HJURLTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJURLTask.m; sourceTree = "<group>"; };
 		A75C23161C4652D600065EAD /* UIView+MasornyEqualSpace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MasornyEqualSpace.h"; sourceTree = "<group>"; };
 		A75C23171C4652D600065EAD /* UIView+MasornyEqualSpace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MasornyEqualSpace.m"; sourceTree = "<group>"; };
+		A75C232F1C47721300065EAD /* HJCandleChartModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJCandleChartModel.h; sourceTree = "<group>"; };
+		A75C23301C47721300065EAD /* HJCandleChartModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJCandleChartModel.m; sourceTree = "<group>"; };
+		A75C23321C47724000065EAD /* HJCandleProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJCandleProtocol.h; sourceTree = "<group>"; };
+		A75C23331C4772CC00065EAD /* HJStockProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJStockProtocol.h; sourceTree = "<group>"; };
+		A75C23351C47791C00065EAD /* HJChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJChartView.h; sourceTree = "<group>"; };
+		A75C23361C47791C00065EAD /* HJChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJChartView.m; sourceTree = "<group>"; };
 		A760C51D1C0712FD00591488 /* DemoBaseTableDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoBaseTableDataController.h; sourceTree = "<group>"; };
 		A760C51E1C0712FD00591488 /* DemoBaseTableDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoBaseTableDataController.m; sourceTree = "<group>"; };
 		A765DB5E1BE30B32009380AD /* HJDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HJDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -394,6 +402,15 @@
 			path = ../HJArchitecture;
 			sourceTree = "<group>";
 		};
+		A75C23341C4776F600065EAD /* views */ = {
+			isa = PBXGroup;
+			children = (
+				A75C23351C47791C00065EAD /* HJChartView.h */,
+				A75C23361C47791C00065EAD /* HJChartView.m */,
+			);
+			name = views;
+			sourceTree = "<group>";
+		};
 		A765DB551BE30B32009380AD = {
 			isa = PBXGroup;
 			children = (
@@ -477,8 +494,13 @@
 		A767380C1C44E23900FE055A /* Chart */ = {
 			isa = PBXGroup;
 			children = (
+				A75C23341C4776F600065EAD /* views */,
 				A767380D1C44E25800FE055A /* HJChartModel.h */,
 				A767380E1C44E25800FE055A /* HJChartModel.m */,
+				A75C232F1C47721300065EAD /* HJCandleChartModel.h */,
+				A75C23301C47721300065EAD /* HJCandleChartModel.m */,
+				A75C23321C47724000065EAD /* HJCandleProtocol.h */,
+				A75C23331C4772CC00065EAD /* HJStockProtocol.h */,
 			);
 			path = Chart;
 			sourceTree = "<group>";
@@ -800,11 +822,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7DAEC911C1AA45F00C1C237 /* HJMutipleDelegateViewController.m in Sources */,
+				A75C23311C47721300065EAD /* HJCandleChartModel.m in Sources */,
 				A75C232B1C4652D600065EAD /* HJURLService.m in Sources */,
 				A75C231F1C4652D600065EAD /* NSObject+HJDataParse.m in Sources */,
 				04C6012E1BF7864C00CF76B5 /* DataSource.swift in Sources */,
 				A7DAEC8E1C1AA10600C1C237 /* UINavigationBar+HJExtention.m in Sources */,
 				A7F0F97F1BF43D6400C0F427 /* SecondViewController.m in Sources */,
+				A75C23371C47791C00065EAD /* HJChartView.m in Sources */,
 				A75C231E1C4652D600065EAD /* HJTableViewCell.m in Sources */,
 				049F0BE21BF6B82C001DEFDC /* Service.swift in Sources */,
 				A75C231C1C4652D600065EAD /* HJActivityIndicatorCoverView.m in Sources */,
