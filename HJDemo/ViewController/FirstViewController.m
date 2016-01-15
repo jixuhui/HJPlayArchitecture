@@ -52,12 +52,10 @@
     self.tableDataController.cellClassName = @"TestTableViewCell";
     
     HJURLSessionPageDataSource *dataSource = [[HJURLSessionPageDataSource alloc]init];
-    dataSource.urlString = SNEP_MiaoChe_URL_CarTypeList;
-    dataSource.dataKey = @"content";
+    dataSource.urlString = STOCK_SCHOOL_URL_DAYLIST;
+    dataSource.dataKey = @"data.listData";
     dataSource.otherParameters = [[NSMutableDictionary alloc]initWithCapacity:2];
-    [dataSource.otherParameters setValue:@"110100" forKey:@"city_code"];
-    [dataSource.otherParameters setValue:@"1080*920" forKey:@"resolution"];
-    [dataSource.otherParameters setValue:@"442" forKey:@"series_id"];
+    dataSource.pageIndexKey = @"from";
     
     self.tableDataController.dataSource = dataSource;
     dataSource.delegate = self.tableDataController;

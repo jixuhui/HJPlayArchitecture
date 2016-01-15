@@ -35,42 +35,48 @@
 {
     [super setDataItem:dataItem];
     
-    NSString *tempStr = (NSString *)[dataItem dataForKey:@"img_url"];
+    NSString *picStr = @"";
     
-    if (!CHECK_VALID_STRING(tempStr)) {
-        tempStr = @"";
+    NSDictionary *picPath  = (NSDictionary *)[dataItem dataForKey:@"indexPic"];
+    
+    if (CHECK_VALID_DICTIONARY(picPath)) {
+        picStr = [NSString stringWithFormat:@"%@%@%@%@",[picPath dataForKey:@"host"],[picPath dataForKey:@"dir"],[picPath dataForKey:@"filepath"],[picPath dataForKey:@"filename"]];
+        NSLog(@"picStr...%@",picStr);
     }
-    
-    [self layoutImageView:tempStr];
     
     [self layoutTitleLabel];
     
-    [self layoutBottomLine];
+    [self layoutImageView:picStr size:CGSizeMake(100, 100*[[picPath valueForKey:@"height"] floatValue]/[[picPath valueForKey:@"width"] floatValue])];
     
-    [self updateConstraintsIfNeeded];
+    [self layoutBottomLine];
 }
 
--(void)updateConstraints
+-(void)addLabelConstraints
 {
-    [super updateConstraints];
-    
-    //_imageView constraints
-    [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.contentView.left).with.offset(self.cellMarginLeft);
-        make.right.equalTo(_titleLabel.left).with.offset(-15);
-        make.centerY.equalTo(self.contentView.centerY);
-        
-        make.height.equalTo(_titleLabel.height);
-        make.width.mas_equalTo(100);
-    }];
-    
     //_titleLabel constraints
     [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-self.cellMarginLeft);
         make.top.equalTo(self.contentView.top).with.offset(5);
         make.bottom.equalTo(self.contentView.bottom).with.offset(-5);
     }];
-    
+}
+
+-(void)addImageViewConstraintsWithSize:(CGSize)size
+{
+    //_imageView constraints
+    [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.contentView.left).with.offset(self.cellMarginLeft);
+        make.right.equalTo(_titleLabel.left).with.offset(-15);
+        make.centerY.equalTo(self.contentView.centerY);
+        make.height.mas_equalTo(size.height);
+        make.width.mas_equalTo(size.width);
+        make.top.equalTo(self.contentView.top).with.offset(5);
+        make.bottom.equalTo(self.contentView.bottom).with.offset(-5);
+    }];
+}
+
+-(void)addBottomViewConstraints
+{
     //_bottomLine constraints
     _bottomLine.translatesAutoresizingMaskIntoConstraints = NO;
     NSLayoutConstraint *lineLeft = [NSLayoutConstraint constraintWithItem:_bottomLine attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:self.cellMarginLeft];
@@ -84,11 +90,13 @@
     [self.contentView addConstraints:@[lineLeft,lineRight,lineBottom,lineH]];
 }
 
--(void)layoutImageView:(NSString *)imageUrl
+-(void)layoutImageView:(NSString *)imageUrl size:(CGSize)size
 {
     if (!_imageView) {
         _imageView = [[UIImageView alloc]init];
         [self.contentView addSubview:_imageView];
+        
+        [self addImageViewConstraintsWithSize:size];
     }
     [_imageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
 }
@@ -101,9 +109,11 @@
         _titleLabel.numberOfLines = 0;
         _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         [self.contentView addSubview:_titleLabel];
+        
+        [self addLabelConstraints];
     }
     
-    [_titleLabel setText:(NSString *)[self.dataItem dataForKey:@"name"]];
+    [_titleLabel setText:(NSString *)[self.dataItem dataForKey:@"title"]];
 }
 
 -(void)layoutBottomLine
@@ -113,6 +123,8 @@
         _bottomLine = [[UIView alloc] init];
         _bottomLine.backgroundColor = [UIColor lightGrayColor];
         [self.contentView addSubview:_bottomLine];
+        
+        [self addBottomViewConstraints];
     }
 }
 @end

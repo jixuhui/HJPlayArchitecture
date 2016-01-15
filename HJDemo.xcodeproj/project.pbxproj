@@ -411,6 +411,13 @@
 			name = views;
 			sourceTree = "<group>";
 		};
+		A75C23381C4793CD00065EAD /* Network */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		A765DB551BE30B32009380AD = {
 			isa = PBXGroup;
 			children = (
@@ -437,6 +444,7 @@
 		A765DB601BE30B32009380AD /* HJDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A75C23381C4793CD00065EAD /* Network */,
 				A767380C1C44E23900FE055A /* Chart */,
 				049F0BDE1BF6B083001DEFDC /* Steed */,
 				A7F0F9871BF43DD200C0F427 /* View */,

@@ -22,8 +22,8 @@
 -(void)getData
 {
     HJURLTask *task = [[HJURLTask alloc]init];
-    task.requestType = @"get";
     task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@&g=%@",@"600999.SS",@"d"];
+    task.responseDataType = @"Serial";
     
     [[HJURLService shareService] handleSessionTask:task success:^(NSURLSessionDataTask *task, id responseObject) {
         NSString *result = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
