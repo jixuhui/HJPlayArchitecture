@@ -1,3 +1,5 @@
+xcodeproj 'HJDemo.xcodeproj'
+
 #source 'https://github.com/jixuhui/HJSpecs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
@@ -9,3 +11,4 @@ pod 'MJRefresh'
 pod 'RDVTabBarController', '1.1.9'
 pod 'SDWebImage', '3.7.3'
 pod 'MPMessagePack'
+pod 'UITableView+FDTemplateLayoutCell'
