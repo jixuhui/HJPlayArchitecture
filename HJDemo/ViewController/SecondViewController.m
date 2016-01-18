@@ -39,7 +39,7 @@
     
     [self.curCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         STRONGSELF
-        make.edges.equalTo(strongSelf.view).with.insets(self.padding);
+        make.edges.equalTo(strongSelf.view).with.insets(strongSelf.padding);
     }];
     
     [self doRequest];

@@ -221,7 +221,7 @@ typedef enum _STOCK_FLAG
 
 #pragma mark - help methods
 
-- (int)getHighPriceModelFromCurRange
+- (float)getHighPriceModelFromCurRange
 {
     NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
         
@@ -248,7 +248,7 @@ typedef enum _STOCK_FLAG
     return highModel.highPrice;
 }
 
-- (int)getLowPriceModelFromCurRange
+- (float)getLowPriceModelFromCurRange
 {
     NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
         
@@ -277,7 +277,7 @@ typedef enum _STOCK_FLAG
 
 - (float)transformPriceToYPoint:(float)priceValue
 {
-    return CGRectGetHeight(self.bounds) - ((priceValue - self.minPrice)*self.yAlixsScale + self.paddingDown);
+    return CGRectGetHeight(self.bounds) - (priceValue - self.minPrice)*self.yAlixsScale - self.paddingDown;
 }
 
 @end
