@@ -9,6 +9,11 @@
 #import "ChartViewController.h"
 
 #import "HJCandleChartModel.h"
+#import "HJChartView.h"
+
+@interface ChartViewController()
+
+@end
 
 @implementation ChartViewController
 
@@ -16,10 +21,27 @@
 {
     [super viewDidLoad];
     
-    [self getData];
+    if (![self getCacheData]) {
+        [self getURLData];
+    }
 }
 
--(void)getData
+- (BOOL)getCacheData
+{
+    NSArray *stockArr = [self readFromPlistByName:@"stock.plist"];
+    
+    if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
+        HJChartView *chartView = [[HJChartView alloc]initWithData:stockArr];
+        chartView.frame = CGRectMake(15, 20, kScreenWidth - 30, kScreenWidth - 30);
+        [self.view addSubview:chartView];
+        
+        return YES;
+    }else {
+        return NO;
+    }
+}
+
+-(void)getURLData
 {
     HJURLTask *task = [[HJURLTask alloc]init];
     task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@&g=%@",@"600999.SS",@"d"];
@@ -35,10 +57,46 @@
 
 -(void)generateData:(NSString *)responseString
 {
+    NSArray *lines = [responseString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    
+    [self writeToPlistWithData:lines Name:@"stock.plist"];
+    
+    HJChartView *chartView = [[HJChartView alloc]initWithData:[self transformToModel:lines]];
+    chartView.frame = CGRectMake(15, 20, kScreenWidth - 30, kScreenWidth - 30);
+    [self.view addSubview:chartView];
+}
+
+-(void)writeToPlistWithData:(NSArray *)stockArr Name:(NSString *)name
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *path = [paths objectAtIndex:0];
+    NSString *filePath = [path stringByAppendingPathComponent:name];
+    
+    NSLog(@"stock data cache path...%@",filePath);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath:filePath]) {
+        [fileManager createFileAtPath:filePath contents:nil attributes:nil];
+    }
+    
+    [stockArr writeToFile:filePath atomically:YES];
+}
+
+- (NSArray *)readFromPlistByName:(NSString *)name
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *path = [paths objectAtIndex:0];
+    NSString *filename = [path stringByAppendingPathComponent:name];
+    
+    NSArray *lines = [[NSMutableArray alloc]initWithContentsOfFile:filename];
+    return [self transformToModel:lines];
+}
+
+- (NSArray *)transformToModel:(NSArray *)lines
+{
     NSMutableArray *data =[[NSMutableArray alloc] init];
     NSMutableArray *category =[[NSMutableArray alloc] init];//保存日期值
-    
-    NSArray *lines = [responseString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     NSInteger idx;
     for (idx = lines.count-1; idx > 0; idx--) {
         NSString *line = lines[idx];
@@ -53,7 +111,7 @@
             HJCandleChartModel *model = [[HJCandleChartModel alloc]init];
             model.date = arr[0];
             model.openPrice = [arr[1] floatValue];
-            model.hightPrice = [arr[2] floatValue];
+            model.highPrice = [arr[2] floatValue];
             model.lowPrice = [arr[3] floatValue];
             model.closePrice = [arr[4] floatValue];
             model.volumn = [arr[5] intValue];
@@ -62,7 +120,7 @@
         }
     }
     
-    NSLog(@"data...%@",data);
+    return data;
 }
 
 @end
