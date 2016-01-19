@@ -1010,6 +1010,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: xuhui ji (2DE9SSH853)";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/HJDemo/HJDemo-Prefix.pch";
 				INFOPLIST_FILE = HJDemo/Info.plist;
@@ -1017,7 +1018,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sina.hubbert.demo.HJDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "dc95e930-d3cf-465a-b708-e43e8853294e";
+				PROVISIONING_PROFILE = "93176975-bbb0-4930-a1f3-b822f5796eaa";
 				SWIFT_OBJC_BRIDGING_HEADER = "HJDemo/HJDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1029,6 +1030,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/HJDemo/HJDemo-Prefix.pch";
 				INFOPLIST_FILE = HJDemo/Info.plist;
@@ -1036,7 +1038,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sina.hubbert.demo.HJDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "dc95e930-d3cf-465a-b708-e43e8853294e";
+				PROVISIONING_PROFILE = "93176975-bbb0-4930-a1f3-b822f5796eaa";
 				SWIFT_OBJC_BRIDGING_HEADER = "HJDemo/HJDemo-Bridging-Header.h";
 			};
 			name = Release;

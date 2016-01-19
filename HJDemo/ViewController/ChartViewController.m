@@ -12,7 +12,9 @@
 #import "HJChartView.h"
 
 @interface ChartViewController()
-
+{
+    NSString *stockCode;
+}
 @end
 
 @implementation ChartViewController
@@ -21,6 +23,8 @@
 {
     [super viewDidLoad];
     
+    stockCode = @"600123";
+    
     if (![self getCacheData]) {
         [self getURLData];
     }
@@ -28,7 +32,7 @@
 
 - (BOOL)getCacheData
 {
-    NSArray *stockArr = [self readFromPlistByName:@"stock.plist"];
+    NSArray *stockArr = [self readFromPlistByName:[NSString stringWithFormat:@"%@.plist",stockCode]];
     
     if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
         HJChartView *chartView = [[HJChartView alloc]initWithData:stockArr];
@@ -44,7 +48,7 @@
 -(void)getURLData
 {
     HJURLTask *task = [[HJURLTask alloc]init];
-    task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@&g=%@",@"600999.SS",@"d"];
+    task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@.SS&g=%@",stockCode,@"d"];
     task.responseDataType = @"Serial";
     
     [[HJURLService shareService] handleSessionTask:task success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -59,11 +63,9 @@
 {
     NSArray *lines = [responseString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     
-    [self writeToPlistWithData:lines Name:@"stock.plist"];
+    [self writeToPlistWithData:lines Name:[NSString stringWithFormat:@"%@.plist",stockCode]];
     
-    HJChartView *chartView = [[HJChartView alloc]initWithData:[self transformToModel:lines]];
-    chartView.frame = CGRectMake(15, 20, kScreenWidth - 30, kScreenWidth - 30);
-    [self.view addSubview:chartView];
+    [self getCacheData];
 }
 
 -(void)writeToPlistWithData:(NSArray *)stockArr Name:(NSString *)name
@@ -71,8 +73,6 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
     NSString *path = [paths objectAtIndex:0];
     NSString *filePath = [path stringByAppendingPathComponent:name];
-    
-    NSLog(@"stock data cache path...%@",filePath);
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -87,9 +87,11 @@
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
     NSString *path = [paths objectAtIndex:0];
-    NSString *filename = [path stringByAppendingPathComponent:name];
+    NSString *filePath = [path stringByAppendingPathComponent:name];
     
-    NSArray *lines = [[NSMutableArray alloc]initWithContentsOfFile:filename];
+    NSLog(@"stock data cache path...%@",filePath);
+    
+    NSArray *lines = [[NSMutableArray alloc]initWithContentsOfFile:filePath];
     return [self transformToModel:lines];
 }
 
