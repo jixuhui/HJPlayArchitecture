@@ -70,7 +70,7 @@
     [self customizeTabBarForController:tabBarController];
     
     
-    [self.tabBarController setSelectedIndex:2];
+//    [self.tabBarController setSelectedIndex:2];
 }
 
 - (void)customizeTabBarForController:(RDVTabBarController *)tabBarController {

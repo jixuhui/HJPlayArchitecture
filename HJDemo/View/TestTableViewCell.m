@@ -39,14 +39,16 @@
     
     NSDictionary *picPath  = (NSDictionary *)[dataItem dataForKey:@"indexPic"];
     
+    [self layoutTitleLabel];
+    
     if (CHECK_VALID_DICTIONARY(picPath)) {
         picStr = [NSString stringWithFormat:@"%@%@%@%@",[picPath dataForKey:@"host"],[picPath dataForKey:@"dir"],[picPath dataForKey:@"filepath"],[picPath dataForKey:@"filename"]];
         NSLog(@"picStr...%@",picStr);
+        
+        [self layoutImageView:picStr size:CGSizeMake(100, 100*[[picPath valueForKey:@"height"] floatValue]/[[picPath valueForKey:@"width"] floatValue])];
+    }else {
+        [self layoutImageView:@"" size:CGSizeMake(100, 100)];
     }
-    
-    [self layoutTitleLabel];
-    
-    [self layoutImageView:picStr size:CGSizeMake(100, 100*[[picPath valueForKey:@"height"] floatValue]/[[picPath valueForKey:@"width"] floatValue])];
     
     [self layoutBottomLine];
 }
@@ -67,11 +69,10 @@
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView.left).with.offset(self.cellMarginLeft);
         make.right.equalTo(_titleLabel.left).with.offset(-15);
-        make.centerY.equalTo(self.contentView.centerY);
-        make.height.mas_equalTo(size.height);
+//        make.centerY.equalTo(self.contentView.centerY);
+        make.height.mas_equalTo(size.height-10);
         make.width.mas_equalTo(size.width);
         make.top.equalTo(self.contentView.top).with.offset(5);
-        make.bottom.equalTo(self.contentView.bottom).with.offset(-5);
     }];
 }
 
