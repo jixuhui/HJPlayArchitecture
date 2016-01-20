@@ -116,7 +116,7 @@
             model.highPrice = [arr[2] floatValue];
             model.lowPrice = [arr[3] floatValue];
             model.closePrice = [arr[4] floatValue];
-            model.volumn = [arr[5] intValue];
+            model.volume = [arr[5] intValue];
             model.adjClosePrice = [arr[6] floatValue];
             [data addObject:model];
         }

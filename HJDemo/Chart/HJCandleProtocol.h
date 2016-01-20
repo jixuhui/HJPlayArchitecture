@@ -14,6 +14,6 @@
 @property (nonatomic) float adjClosePrice;
 @property (nonatomic) float highPrice;
 @property (nonatomic) float lowPrice;
-@property (nonatomic) long volumn;
+@property (nonatomic) long volume;
 @property (nonatomic,strong) NSString * date;
 @end

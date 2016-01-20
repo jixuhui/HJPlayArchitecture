@@ -14,6 +14,6 @@
 @synthesize adjClosePrice = _adjClosePrice;
 @synthesize highPrice = _highPrice;
 @synthesize lowPrice = _lowPrice;
-@synthesize volumn = _volumn;
+@synthesize volume = _volume;
 @synthesize date = _date;
 @end

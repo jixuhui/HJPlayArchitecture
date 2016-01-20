@@ -9,8 +9,7 @@
 #import "HJChartView.h"
 #import "HJCandleChartModel.h"
 
-typedef enum _STOCK_FLAG
-{
+typedef enum _STOCK_FLAG {
     STOCK_FLAG_UP = 0,
     STOCK_FLAG_DOWN,
     STOCK_FLAG_MA5,
@@ -28,6 +27,10 @@ typedef enum _STOCK_FLAG
 @property (nonatomic) float averagePrice;
 @property (nonatomic) float candleGap;
 @property (nonatomic) float candleW;
+@property (nonatomic) long maxVolume;
+@property (nonatomic) float volumeMaxViewHeight;
+@property (nonatomic) float volumeHScale;
+@property (nonatomic) int curIndex;
 
 @property (nonatomic,strong) NSDictionary *chartLineData;
 
@@ -43,10 +46,15 @@ typedef enum _STOCK_FLAG
     if (self) {
         self.modelsArray = array;
         
-        self.paddingLeft = 30;
-        self.paddingRight = 10;
-        self.paddingTop = 50;
-        self.paddingDown = 120;
+        self.pricePaddingLeft = 50;
+        self.pricePaddingRight = 10;
+        self.pricePaddingTop = 50;
+        self.pricePaddingDown = 120;
+        
+        self.volumePaddingTop = 20;
+        self.volumePaddingDown = 40;
+        
+        self.volumeMaxViewHeight = self.pricePaddingDown - self.volumePaddingDown - self.volumePaddingTop;
         
         self.rangeSize = 37;
         self.rangeFrom = [self.modelsArray count] - self.rangeSize;
@@ -54,6 +62,8 @@ typedef enum _STOCK_FLAG
         self.yAlixsScale = 0;
         
         self.candleGap = 2;
+        
+        self.curIndex = -1;
     }
     return self;
 }
@@ -65,15 +75,23 @@ typedef enum _STOCK_FLAG
     NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom, self.rangeSize)];
     self.curDrawModesArray = [self.modelsArray objectsAtIndexes:se];
     
-    self.maxPrice = [self getHighPriceModelFromCurRange];
-    self.minPrice = [self getLowPriceModelFromCurRange];
+    //price
+    self.maxPrice = [self getHighPriceFromCurRange];
+    self.minPrice = [self getLowPriceFromCurRange];
     self.averagePrice = (self.maxPrice + self.minPrice)/2;
-    self.yAlixsScale = (CGRectGetHeight(self.bounds) - self.paddingDown - self.paddingTop)/(self.maxPrice - self.minPrice);
-    self.candleW = (CGRectGetWidth(self.bounds) - self.paddingLeft - self.paddingRight - self.candleGap * self.rangeSize)/self.rangeSize;
+    self.yAlixsScale = (CGRectGetHeight(self.bounds) - self.pricePaddingDown - self.pricePaddingTop)/(self.maxPrice - self.minPrice);
+    self.candleW = (CGRectGetWidth(self.bounds) - self.pricePaddingLeft - self.pricePaddingRight - self.candleGap * self.rangeSize)/self.rangeSize;
+    
+    //volume
+    self.maxVolume = [self getMaxVolumeFromCurRange];
+    self.volumeHScale = self.volumeMaxViewHeight/self.maxVolume;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(context, 0, 0, 0, 1.0);
     CGContextFillRect (context, CGRectMake (0, 0, self.bounds.size.width,self.bounds.size.height));
+    
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
+    [self addGestureRecognizer:longPress];
 }
 
 #pragma mark - draw methods
@@ -81,19 +99,22 @@ typedef enum _STOCK_FLAG
 - (void)drawRect:(CGRect)rect
 {
     [self initChart];
+    [self drawBackgroundDashLines];
     [self drawTopInfoView];
     [self drawYAxis];
     [self drawXAxis];
-    [self drawCandleVeiws];
+    [self drawVolumeTips];
+    [self drawCandleVeiwsAndVolumeViews];
     [self drawMAWithFlag:STOCK_FLAG_MA5];
     [self drawMAWithFlag:STOCK_FLAG_MA10];
     [self drawMAWithFlag:STOCK_FLAG_MA30];
-//    [self drawMAWithFlag:STOCK_FLAG_MA60];
+    [self drawMAWithFlag:STOCK_FLAG_MA60];
+    [self drawIndexLineWithIndex:self.curIndex];
 }
 
 - (void)drawTopInfoView
 {
-    float labelTop = self.paddingTop - 20;
+    float labelTop = self.pricePaddingTop - 20;
     float labelW = 50;
     float labelH = 10;
     float labelGap = 5;
@@ -105,7 +126,7 @@ typedef enum _STOCK_FLAG
     NSArray *ma5Arr = (NSArray *)[self.chartLineData dataForKey:@"ma5"];
     NSArray *ma10Arr = (NSArray *)[self.chartLineData dataForKey:@"ma10"];
     NSArray *ma30Arr = (NSArray *)[self.chartLineData dataForKey:@"ma30"];
-//    NSArray *ma60Arr = (NSArray *)[self.chartLineData dataForKey:@"ma60"];
+    NSArray *ma60Arr = (NSArray *)[self.chartLineData dataForKey:@"ma60"];
     
     curLabelLeft += labelW+labelGap;
     
@@ -119,9 +140,82 @@ typedef enum _STOCK_FLAG
     
     [[NSString stringWithFormat:@"MA30:%.2f",[[ma30Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
     
-//    curLabelLeft += labelW + labelGap;
-//    
-//    [[NSString stringWithFormat:@"MA60:%.2f",[[ma60Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
+    curLabelLeft += labelW + labelGap;
+    
+    [[NSString stringWithFormat:@"MA60:%.2f",[[ma60Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
+}
+
+- (void)drawBackgroundDashLines
+{
+    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.maxPrice]];
+    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.averagePrice]];
+    
+    [self drawDashLinesWithYPoint:[self transformVolumeToYPoint:self.maxVolume]];
+    [self drawDashLinesWithYPoint:[self transformVolumeToYPoint:self.maxVolume/2]];
+    
+    [self drawMoreChartInfoYAxisAndXAxis];
+}
+
+- (void)drawDashLinesWithYPoint:(float)pointY
+{
+    CGFloat length[] = {10,5};
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 0.5);
+    CGContextSetLineDash(context, 0, length, 2);
+    CGContextSetRGBStrokeColor(context, 0.3, 0.3, 0.3, 1.0);
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, pointY);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, pointY);
+    CGContextStrokePath(context);
+    CGContextSetLineDash(context, 0, NULL, 0);//必须加，为了保证不影响其他样式的绘制
+}
+
+- (void)drawSolidLineWithYPoint:(float)pointY
+{
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 1);
+    CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0);
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, pointY);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, pointY);
+    CGContextStrokePath(context);
+}
+
+- (void)drawIndexLineWithIndex:(int)index
+{
+    if (index<0) {
+        return;
+    }
+    
+    float pointX = self.pricePaddingLeft + index*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 0.5);
+    CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0);
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, pointX, self.pricePaddingTop);
+    CGContextAddLineToPoint(context, pointX, CGRectGetHeight(self.bounds)-self.pricePaddingDown);
+    CGContextStrokePath(context);
+}
+
+- (void)drawMoreChartInfoYAxisAndXAxis
+{
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 1);
+    CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0);
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, [self transformVolumeToYPoint:self.maxVolume]);
+    CGContextAddLineToPoint(context, self.pricePaddingLeft, [self transformVolumeToYPoint:0]);
+    CGContextStrokePath(context);
+    
+//    CGContextBeginPath(context);
+//    CGContextMoveToPoint(context, self.pricePaddingLeft, [self transformVolumeToYPoint:0]+1);
+//    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, [self transformVolumeToYPoint:0]+1);
+//    CGContextStrokePath(context);
 }
 
 - (void)drawYAxis
@@ -132,8 +226,8 @@ typedef enum _STOCK_FLAG
     CGContextSetLineWidth(context, 1.0);
     CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, self.paddingLeft, self.paddingTop);
-    CGContextAddLineToPoint(context, self.paddingLeft, CGRectGetHeight(self.bounds) - self.paddingDown);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, self.pricePaddingTop);
+    CGContextAddLineToPoint(context, self.pricePaddingLeft, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
     CGContextStrokePath(context);
     
     //绘制纵坐标值
@@ -147,9 +241,9 @@ typedef enum _STOCK_FLAG
                                   NSForegroundColorAttributeName: color,
                                   NSParagraphStyleAttributeName: paragraphStyle };
     
-    [[NSString stringWithFormat:@"%.2f",self.maxPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.maxPrice] - labelH/2, self.paddingLeft-2, labelH) withAttributes:attributes];
-    [[NSString stringWithFormat:@"%.2f",self.averagePrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.averagePrice] - labelH/2, self.paddingLeft-2, labelH) withAttributes:attributes];
-    [[NSString stringWithFormat:@"%.2f",self.minPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.minPrice] - labelH/2, self.paddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.maxPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.maxPrice] - labelH/2, self.pricePaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.averagePrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.averagePrice] - labelH/2, self.pricePaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.minPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.minPrice] - labelH/2, self.pricePaddingLeft-2, labelH) withAttributes:attributes];
 }
 
 - (void)drawXAxis
@@ -159,17 +253,17 @@ typedef enum _STOCK_FLAG
     CGContextSetLineWidth(context, 1.0);
     CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, self.paddingLeft, CGRectGetHeight(self.bounds) - self.paddingDown);
-    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.paddingRight, CGRectGetHeight(self.bounds) - self.paddingDown);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
     CGContextStrokePath(context);
 }
 
-- (void)drawCandleVeiws
+- (void)drawCandleVeiwsAndVolumeViews
 {
     int i = 0;
     for (HJCandleChartModel *candle in self.curDrawModesArray) {
         
-        float pointX = self.paddingLeft + i*(self.candleGap + self.candleW) + self.candleGap;
+        float pointX = self.pricePaddingLeft + i*(self.candleGap + self.candleW) + self.candleGap;
         float linePX = pointX + self.candleW/2;
         
         float openPricePoint = [self transformPriceToYPoint:candle.openPrice];
@@ -177,30 +271,39 @@ typedef enum _STOCK_FLAG
         float highPricePoint = [self transformPriceToYPoint:candle.highPrice];
         float lowPricePoint = [self transformPriceToYPoint:candle.lowPrice];
         
+        STOCK_FLAG flag = STOCK_FLAG_DEFAULT;
+        
         if (openPricePoint < closePricePoint) {
+            flag = STOCK_FLAG_DOWN;
+            
             //跌了 先绘制蜡烛
-            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:STOCK_FLAG_DOWN];
+            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:flag];
             
             //绘制上影线
             if (highPricePoint != openPricePoint) {
-                [self drawHatchWithPointA:openPricePoint pointB:highPricePoint linePX:linePX flag:STOCK_FLAG_DOWN];
+                [self drawHatchWithPointA:openPricePoint pointB:highPricePoint linePX:linePX flag:flag];
             }
             
             //绘制下影线
             if (lowPricePoint != closePricePoint) {
-                [self drawHatchWithPointA:closePricePoint pointB:lowPricePoint linePX:linePX flag:STOCK_FLAG_DOWN];
+                [self drawHatchWithPointA:closePricePoint pointB:lowPricePoint linePX:linePX flag:flag];
             }
         }else {
-            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:STOCK_FLAG_UP];
+            flag = STOCK_FLAG_UP;
+            
+            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:flag];
             
             if (highPricePoint != closePricePoint) {
-                [self drawHatchWithPointA:closePricePoint pointB:highPricePoint linePX:linePX flag:STOCK_FLAG_UP];
+                [self drawHatchWithPointA:closePricePoint pointB:highPricePoint linePX:linePX flag:flag];
             }
             
             if (lowPricePoint != openPricePoint) {
-                [self drawHatchWithPointA:openPricePoint pointB:lowPricePoint linePX:linePX flag:STOCK_FLAG_UP];
+                [self drawHatchWithPointA:openPricePoint pointB:lowPricePoint linePX:linePX flag:flag];
             }
         }
+        
+        float volumePoint = [self transformVolumeToYPoint:candle.volume];
+        [self drawVolumeWithPoint:volumePoint pointX:pointX flag:flag];
         
         i ++;
     }
@@ -232,6 +335,37 @@ typedef enum _STOCK_FLAG
     CGContextStrokePath(context);
 }
 
+- (void)drawVolumeTips
+{
+    float labelH = 9;
+    UIFont *font = [UIFont systemFontOfSize:8];
+    UIColor *color = [UIColor colorWithRed:1 green:1 blue:1 alpha:1.0];
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentRight;
+    NSDictionary *attributes = @{ NSFontAttributeName: font,
+                                  NSForegroundColorAttributeName: color,
+                                  NSParagraphStyleAttributeName: paragraphStyle };
+    
+    [[self transformToUnitWithVolume:self.maxVolume] drawInRect:CGRectMake(0, [self transformVolumeToYPoint:self.maxVolume] - labelH/2, self.pricePaddingLeft-2, labelH) withAttributes:attributes];
+    
+    [@"0" drawInRect:CGRectMake(0, [self transformVolumeToYPoint:0] - labelH/2, self.pricePaddingLeft-2, labelH) withAttributes:attributes];
+}
+
+- (void)drawVolumeWithPoint:(float)volumeYPoint pointX:(float)pointX flag:(STOCK_FLAG)flag
+{
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGRect rectangle = CGRectMake(pointX, volumeYPoint, self.candleW, CGRectGetHeight(self.bounds) - volumeYPoint - self.volumePaddingDown);
+    CGPathAddRect(path, NULL, rectangle);
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    CGContextAddPath(currentContext, path);
+    [[self getColorByFlag:flag] setFill];
+    [[self getColorByFlag:flag] setStroke];
+    CGContextSetLineWidth(currentContext, 0.5f);
+    CGContextDrawPath(currentContext, kCGPathFillStroke);
+    CGPathRelease(path);
+}
+
 - (void)drawMAWithFlag:(STOCK_FLAG)flag
 {
     NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
@@ -246,12 +380,12 @@ typedef enum _STOCK_FLAG
     
     for (int i=0; i<[maArr count]; i++) {
         float maValue = [[maArr objectAtIndex:i] floatValue];
-        float pointX = self.paddingLeft;
+        float pointX = self.pricePaddingLeft;
         
         if (i==0) {
             CGContextMoveToPoint(context, pointX, [self transformPriceToYPoint:maValue]);
         }else {
-            pointX = self.paddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
+            pointX = self.pricePaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
             CGContextAddLineToPoint(context, pointX, [self transformPriceToYPoint:maValue]);
         }
     }
@@ -464,7 +598,7 @@ typedef enum _STOCK_FLAG
     return maArray;
 }
 
-- (float)getHighPriceModelFromCurRange
+- (float)getHighPriceFromCurRange
 {
     NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
         
@@ -484,7 +618,7 @@ typedef enum _STOCK_FLAG
     return highModel.highPrice;
 }
 
-- (float)getLowPriceModelFromCurRange
+- (float)getLowPriceFromCurRange
 {
     NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
         
@@ -504,14 +638,39 @@ typedef enum _STOCK_FLAG
     return lowModel.lowPrice;
 }
 
+- (long)getMaxVolumeFromCurRange
+{
+    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
+        
+        if ([obj1 volume] > [obj2 volume]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        
+        if ([obj1 volume] < [obj2 volume]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        
+        return (NSComparisonResult)NSOrderedSame;
+    };
+    
+    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
+    HJCandleChartModel *highModel = [array lastObject];
+    return highModel.volume;
+}
+
 - (float)transformPriceToYPoint:(float)priceValue
 {
-    return CGRectGetHeight(self.bounds) - (priceValue - self.minPrice)*self.yAlixsScale - self.paddingDown;
+    return CGRectGetHeight(self.bounds) - (priceValue - self.minPrice)*self.yAlixsScale - self.pricePaddingDown;
+}
+
+- (float)transformVolumeToYPoint:(long)volume
+{
+    return CGRectGetHeight(self.bounds) - volume*self.volumeHScale - self.volumePaddingDown;
 }
 
 - (NSDictionary *)getTopInfoAttributesByFlag:(STOCK_FLAG)flag
 {
-    UIFont *font = [UIFont systemFontOfSize:6];
+    UIFont *font = [UIFont systemFontOfSize:7];
     UIColor *color = [self getColorByFlag:flag];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -572,6 +731,66 @@ typedef enum _STOCK_FLAG
             return @"";
             break;
     }
+}
+
+- (NSString *)transformToUnitWithVolume:(long)volume
+{
+    return [self transformToUnitWithVolume:volume unitNum:100000000.0f];
+}
+
+- (NSString *)transformToUnitWithVolume:(long)volume unitNum:(float)unitNum
+{
+    int unitCount = volume/unitNum;
+    
+    if (unitNum == 1000.0f) {
+        return [NSString stringWithFormat:@"%ld%@",volume,[self getUnitNameByNumber:unitNum]];
+    }else {
+        if (unitCount > 0) {
+            return [NSString stringWithFormat:@"%.2f%@",volume/unitNum,[self getUnitNameByNumber:unitNum]];
+        }else {
+            return [self transformToUnitWithVolume:volume unitNum:unitNum/10];
+        }
+    }
+}
+
+- (NSString *)getUnitNameByNumber:(float)unitNum
+{
+    if (unitNum == 100000000.0f) {
+        return @"(亿)";
+    }else if (unitNum == 10000000.0f) {
+        return @"(千万)";
+    }else if (unitNum == 1000000.0f) {
+        return @"(百万)";
+    }else if (unitNum == 100000.0f) {
+        return @"(十万)";
+    }else if (unitNum == 10000.0f) {
+        return @"(万)";
+    }else{
+        return @"";
+    }
+}
+
+- (int)getIndexByPointX:(float)pointX
+{
+    return (pointX - self.pricePaddingLeft)/(self.candleW + self.candleGap);
+}
+
+#pragma mark - touch event
+
+-(void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    CGPoint point = [gestureRecognizer locationInView:self];
+    
+    self.curIndex = [self getIndexByPointX:point.x];
+    
+    if(gestureRecognizer.state == UIGestureRecognizerStateBegan){
+        NSLog(@"ssseeeeee");
+    }else if(gestureRecognizer.state == UIGestureRecognizerStateEnded){
+        self.curIndex = -1;
+    }else if(gestureRecognizer.state == UIGestureRecognizerStateChanged){
+        
+    }
+    [self setNeedsDisplay];
 }
 
 @end
