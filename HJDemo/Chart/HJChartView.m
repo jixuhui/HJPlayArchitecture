@@ -33,6 +33,10 @@ typedef enum _STOCK_FLAG {
 @property (nonatomic) int curIndex;
 
 @property (nonatomic,strong) NSDictionary *chartLineData;
+@property (nonatomic,strong) NSArray *curMA5Array;
+@property (nonatomic,strong) NSArray *curMA10Array;
+@property (nonatomic,strong) NSArray *curMA30Array;
+@property (nonatomic,strong) NSArray *curMA60Array;
 
 @end
 
@@ -100,15 +104,15 @@ typedef enum _STOCK_FLAG {
 {
     [self initChart];
     [self drawBackgroundDashLines];
-    [self drawTopInfoView];
     [self drawYAxis];
-    [self drawXAxis];
+//    [self drawXAxis];
     [self drawVolumeTips];
     [self drawCandleVeiwsAndVolumeViews];
     [self drawMAWithFlag:STOCK_FLAG_MA5];
     [self drawMAWithFlag:STOCK_FLAG_MA10];
     [self drawMAWithFlag:STOCK_FLAG_MA30];
     [self drawMAWithFlag:STOCK_FLAG_MA60];
+    [self drawTopInfoView];
     [self drawIndexLineWithIndex:self.curIndex];
 }
 
@@ -120,29 +124,26 @@ typedef enum _STOCK_FLAG {
     float labelGap = 5;
     float curLabelLeft = 0;
     
+    long index = self.curIndex>0?self.curIndex:self.rangeSize;
+    
     HJCandleChartModel *candleModel = (HJCandleChartModel *)[self.curDrawModesArray lastObject];
     [[candleModel date] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
     
-    NSArray *ma5Arr = (NSArray *)[self.chartLineData dataForKey:@"ma5"];
-    NSArray *ma10Arr = (NSArray *)[self.chartLineData dataForKey:@"ma10"];
-    NSArray *ma30Arr = (NSArray *)[self.chartLineData dataForKey:@"ma30"];
-    NSArray *ma60Arr = (NSArray *)[self.chartLineData dataForKey:@"ma60"];
-    
     curLabelLeft += labelW+labelGap;
     
-    [[NSString stringWithFormat:@"MA5:%.2f",[[ma5Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA5]];
+    [[NSString stringWithFormat:@"MA5:%.2f",[[self.curMA5Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA5]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA10:%.2f",[[ma10Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA10]];
+    [[NSString stringWithFormat:@"MA10:%.2f",[[self.curMA10Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA10]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA30:%.2f",[[ma30Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
+    [[NSString stringWithFormat:@"MA30:%.2f",[[self.curMA30Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA60:%.2f",[[ma60Arr lastObject] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
+    [[NSString stringWithFormat:@"MA60:%.2f",[[self.curMA60Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
 }
 
 - (void)drawBackgroundDashLines
@@ -197,7 +198,7 @@ typedef enum _STOCK_FLAG {
     CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0);
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, pointX, self.pricePaddingTop);
-    CGContextAddLineToPoint(context, pointX, CGRectGetHeight(self.bounds)-self.pricePaddingDown);
+    CGContextAddLineToPoint(context, pointX, CGRectGetHeight(self.bounds)-self.volumePaddingDown);
     CGContextStrokePath(context);
 }
 
@@ -368,9 +369,7 @@ typedef enum _STOCK_FLAG {
 
 - (void)drawMAWithFlag:(STOCK_FLAG)flag
 {
-    NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-    
-    NSArray *maArr = [(NSArray *)[self.chartLineData dataForKey:[self getStringByFlag:flag]] objectsAtIndexes:se];
+    NSArray *maArr = [self getMAArrayByFlag:flag];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
@@ -751,6 +750,54 @@ typedef enum _STOCK_FLAG {
             return [self transformToUnitWithVolume:volume unitNum:unitNum/10];
         }
     }
+}
+
+- (NSArray *)getMAArrayByFlag:(STOCK_FLAG)flag
+{
+    NSArray *maArr = nil;
+    
+    switch (flag) {
+        case STOCK_FLAG_MA5:
+        {
+            if (!self.curMA5Array) {
+                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
+                self.curMA5Array = [(NSArray *)[self.chartLineData dataForKey:@"ma5"] objectsAtIndexes:se];
+            }
+            maArr = self.curMA5Array;
+        }
+            break;
+        case STOCK_FLAG_MA10:
+        {
+            if (!self.curMA10Array) {
+                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
+                self.curMA10Array = [(NSArray *)[self.chartLineData dataForKey:@"ma10"] objectsAtIndexes:se];
+            }
+            maArr = self.curMA10Array;
+        }
+            break;
+        case STOCK_FLAG_MA30:
+        {
+            if (!self.curMA30Array) {
+                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
+                self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:se];
+            }
+            maArr = self.curMA30Array;
+        }
+            break;
+        case STOCK_FLAG_MA60:
+        {
+            if (!self.curMA60Array) {
+                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
+                self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:se];
+            }
+            maArr = self.curMA60Array;
+        }
+            break;
+        default:
+            break;
+    }
+    
+    return maArr;
 }
 
 - (NSString *)getUnitNameByNumber:(float)unitNum
