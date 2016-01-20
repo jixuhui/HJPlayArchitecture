@@ -817,9 +817,11 @@ typedef enum _STOCK_FLAG {
     }
 }
 
-- (int)getIndexByPointX:(float)pointX
+- (long)getIndexByPointX:(float)pointX
 {
-    return (pointX - self.pricePaddingLeft)/(self.candleW + self.candleGap);
+    long index = (pointX - self.pricePaddingLeft)/(self.candleW + self.candleGap);
+    
+    return index > [self.curDrawModesArray count]-1?[self.curDrawModesArray count]-1:index;
 }
 
 #pragma mark - touch event
@@ -831,7 +833,7 @@ typedef enum _STOCK_FLAG {
     self.curIndex = [self getIndexByPointX:point.x];
     
     if(gestureRecognizer.state == UIGestureRecognizerStateBegan){
-        NSLog(@"ssseeeeee");
+
     }else if(gestureRecognizer.state == UIGestureRecognizerStateEnded){
         self.curIndex = -1;
     }else if(gestureRecognizer.state == UIGestureRecognizerStateChanged){
