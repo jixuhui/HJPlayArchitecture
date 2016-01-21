@@ -11,4 +11,5 @@
 @interface BarControllerContentViewController : UIViewController
 @property(nonatomic,assign) UIEdgeInsets padding;
 - (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated;
+- (void)showSimpleAlertByMessgae:(NSString *)message;
 @end

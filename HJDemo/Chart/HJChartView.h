@@ -13,6 +13,9 @@ typedef enum _HJChartModelType {
 }HJChartModelType;
 
 @interface HJChartView : UIView
+
+@property(assign,nonatomic) BOOL transformed;
+
 @property (nonatomic,strong) NSArray *modelsArray;
 @property (nonatomic,strong) NSArray *curDrawModesArray;
 @property (nonatomic) HJChartModelType *modelType;
@@ -30,4 +33,6 @@ typedef enum _HJChartModelType {
 @property (nonatomic) float volumePaddingDown;
 
 - (instancetype)initWithData:(NSArray *)array;
+- (void)renderMe;
+
 @end

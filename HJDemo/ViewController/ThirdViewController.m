@@ -54,7 +54,7 @@
 
 - (void)initDataSource
 {
-    _cellTextArray = @[@"navig",@"auto_textfield",@"autowrite",@"chart"];
+    _cellTextArray = @[@"navig",@"auto_textfield",@"autowrite",@"chart",@"del_chart_cache"];
 }
 
 - (void)initTableView
@@ -198,6 +198,11 @@
         if ([cell.actionName isEqualToString:@"chart"]) {
             ChartViewController *chartVC = [[ChartViewController alloc]init];
             [self.navigationController pushViewController:chartVC animated:YES];
+        }else if ([cell.actionName isEqualToString:@"del_chart_cache"]) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            
+            NSString *mess = [self delChartCacheWithFileName:@"600123.plist"]?@"Delete Success!":@"Delete Failure!";
+            [self showSimpleAlertByMessgae:mess];
         }else {
             UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             //由storyboard根据myView的storyBoardID来获取我们要切换的视图
@@ -209,6 +214,23 @@
     
     
     [self setTabBarHidden:YES animated:YES];
+}
+
+- (BOOL)delChartCacheWithFileName:(NSString *)fileName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *path = [paths objectAtIndex:0];
+    NSString *filePath = [path stringByAppendingPathComponent:fileName];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSError *error = nil;
+    
+    if ([fileManager fileExistsAtPath:filePath]) {
+        return [fileManager removeItemAtPath:filePath error:&error];
+    }
+    
+    return NO;
 }
 
 @end

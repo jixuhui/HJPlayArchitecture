@@ -30,7 +30,7 @@ typedef enum _STOCK_FLAG {
 @property (nonatomic) long maxVolume;
 @property (nonatomic) float volumeMaxViewHeight;
 @property (nonatomic) float volumeHScale;
-@property (nonatomic) int curIndex;
+@property (nonatomic) long curIndex;
 
 @property (nonatomic,strong) NSDictionary *chartLineData;
 @property (nonatomic,strong) NSArray *curMA5Array;
@@ -44,15 +44,13 @@ typedef enum _STOCK_FLAG {
 
 #pragma mark - life cycle
 
-- (instancetype)initWithData:(NSArray *)array
+- (instancetype)init
 {
     self = [super init];
     if (self) {
-        self.modelsArray = array;
-        
         self.pricePaddingLeft = 50;
         self.pricePaddingRight = 10;
-        self.pricePaddingTop = 50;
+        self.pricePaddingTop = 90;
         self.pricePaddingDown = 120;
         
         self.volumePaddingTop = 20;
@@ -61,7 +59,6 @@ typedef enum _STOCK_FLAG {
         self.volumeMaxViewHeight = self.pricePaddingDown - self.volumePaddingDown - self.volumePaddingTop;
         
         self.rangeSize = 37;
-        self.rangeFrom = [self.modelsArray count] - self.rangeSize;
         
         self.yAlixsScale = 0;
         
@@ -72,8 +69,25 @@ typedef enum _STOCK_FLAG {
     return self;
 }
 
+- (instancetype)initWithData:(NSArray *)array
+{
+    self = [self init];
+    if (self) {
+        self.modelsArray = array;
+    }
+    return self;
+}
+
+- (void)renderMe
+{
+    [self initChart];
+    [self setNeedsDisplay];
+}
+
 - (void)initChart
 {
+    self.rangeFrom = [self.modelsArray count] - self.rangeSize;
+    
     self.chartLineData = [self transformChartLineData];
     
     NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom, self.rangeSize)];
@@ -90,10 +104,6 @@ typedef enum _STOCK_FLAG {
     self.maxVolume = [self getMaxVolumeFromCurRange];
     self.volumeHScale = self.volumeMaxViewHeight/self.maxVolume;
     
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetRGBFillColor(context, 0, 0, 0, 1.0);
-    CGContextFillRect (context, CGRectMake (0, 0, self.bounds.size.width,self.bounds.size.height));
-    
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
     [self addGestureRecognizer:longPress];
 }
@@ -102,18 +112,27 @@ typedef enum _STOCK_FLAG {
 
 - (void)drawRect:(CGRect)rect
 {
-    [self initChart];
-    [self drawBackgroundDashLines];
-    [self drawYAxis];
-//    [self drawXAxis];
-    [self drawVolumeTips];
-    [self drawCandleVeiwsAndVolumeViews];
-    [self drawMAWithFlag:STOCK_FLAG_MA5];
-    [self drawMAWithFlag:STOCK_FLAG_MA10];
-    [self drawMAWithFlag:STOCK_FLAG_MA30];
-    [self drawMAWithFlag:STOCK_FLAG_MA60];
-    [self drawTopInfoView];
-    [self drawIndexLineWithIndex:self.curIndex];
+    [self drawChartBackground];
+    if (CHECK_VALID_ARRAY(self.modelsArray)) {
+        [self drawBackgroundDashLines];
+        [self drawYAxis];
+        //    [self drawXAxis];
+        [self drawVolumeTips];
+        [self drawCandleVeiwsAndVolumeViews];
+        [self drawMAWithFlag:STOCK_FLAG_MA5];
+        [self drawMAWithFlag:STOCK_FLAG_MA10];
+        [self drawMAWithFlag:STOCK_FLAG_MA30];
+        [self drawMAWithFlag:STOCK_FLAG_MA60];
+        [self drawTopInfoView];
+        [self drawIndexLineWithIndex:self.curIndex];
+    }
+}
+
+- (void)drawChartBackground
+{
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetRGBFillColor(context, 0, 0, 0, 1.0);
+    CGContextFillRect (context, CGRectMake (0, 0, self.bounds.size.width,self.bounds.size.height));
 }
 
 - (void)drawTopInfoView
@@ -124,26 +143,26 @@ typedef enum _STOCK_FLAG {
     float labelGap = 5;
     float curLabelLeft = 0;
     
-    long index = self.curIndex>0?self.curIndex:self.rangeSize;
+    long index = self.curIndex==-1?[self.curDrawModesArray count]-1:self.curIndex;//如果是第一次
     
-    HJCandleChartModel *candleModel = (HJCandleChartModel *)[self.curDrawModesArray lastObject];
+    HJCandleChartModel *candleModel = (HJCandleChartModel *)[self.curDrawModesArray objectAtIndex:index];
     [[candleModel date] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
     
     curLabelLeft += labelW+labelGap;
     
-    [[NSString stringWithFormat:@"MA5:%.2f",[[self.curMA5Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA5]];
+    [[NSString stringWithFormat:@"MA5:%.2f",[[self.curMA5Array objectAtIndex:index+1] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA5]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA10:%.2f",[[self.curMA10Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA10]];
+    [[NSString stringWithFormat:@"MA10:%.2f",[[self.curMA10Array objectAtIndex:index+1] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA10]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA30:%.2f",[[self.curMA30Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
+    [[NSString stringWithFormat:@"MA30:%.2f",[[self.curMA30Array objectAtIndex:index+1] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA60:%.2f",[[self.curMA60Array objectAtIndex:index] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
+    [[NSString stringWithFormat:@"MA60:%.2f",[[self.curMA60Array objectAtIndex:index+1] floatValue]] drawInRect:CGRectMake(curLabelLeft, labelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
 }
 
 - (void)drawBackgroundDashLines
@@ -184,7 +203,7 @@ typedef enum _STOCK_FLAG {
     CGContextStrokePath(context);
 }
 
-- (void)drawIndexLineWithIndex:(int)index
+- (void)drawIndexLineWithIndex:(long)index
 {
     if (index<0) {
         return;
@@ -819,9 +838,13 @@ typedef enum _STOCK_FLAG {
 
 - (long)getIndexByPointX:(float)pointX
 {
-    long index = (pointX - self.pricePaddingLeft)/(self.candleW + self.candleGap);
-    
-    return index > [self.curDrawModesArray count]-1?[self.curDrawModesArray count]-1:index;
+    if (pointX>=CGRectGetWidth(self.bounds)-self.pricePaddingRight) {
+        return [self.curDrawModesArray count]-1;
+    }else if(pointX<=self.pricePaddingLeft) {
+        return 0;
+    }else {
+        return (pointX - self.pricePaddingLeft)/(self.candleW + self.candleGap);
+    }
 }
 
 #pragma mark - touch event

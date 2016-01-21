@@ -45,4 +45,12 @@
     }
 }
 
+#pragma mark - help methods
+
+- (void)showSimpleAlertByMessgae:(NSString *)message
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Note" message:message delegate:nil cancelButtonTitle:@"OK!" otherButtonTitles:nil, nil];
+    [alert show];
+}
+
 @end

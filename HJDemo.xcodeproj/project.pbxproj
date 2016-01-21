@@ -44,6 +44,7 @@
 		A765DB871BE30B33009380AD /* HJDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB861BE30B33009380AD /* HJDemoUITests.m */; };
 		A767380F1C44E25800FE055A /* HJChartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A767380E1C44E25800FE055A /* HJChartModel.m */; };
 		A76738191C44E5FC00FE055A /* ChartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A76738181C44E5FC00FE055A /* ChartViewController.m */; };
+		A76E2BE31C50E04D004E5173 /* fullback@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A76E2BE21C50E04D004E5173 /* fullback@3x.png */; };
 		A78FD2B41BFC81E800529A40 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */; };
 		A7DAEC851C1A82D100C1C237 /* HJParallaxHeaderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC841C1A82D000C1C237 /* HJParallaxHeaderManager.m */; };
 		A7DAEC881C1AA04E00C1C237 /* HJNavigationBarGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC871C1AA04E00C1C237 /* HJNavigationBarGradientManager.m */; };
@@ -186,6 +187,7 @@
 		A767380E1C44E25800FE055A /* HJChartModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJChartModel.m; sourceTree = "<group>"; };
 		A76738171C44E5FC00FE055A /* ChartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartViewController.h; sourceTree = "<group>"; };
 		A76738181C44E5FC00FE055A /* ChartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChartViewController.m; sourceTree = "<group>"; };
+		A76E2BE21C50E04D004E5173 /* fullback@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fullback@3x.png"; sourceTree = "<group>"; };
 		A78991F71BECA76F0093445D /* HJDemo-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-prefix.pch"; sourceTree = "<group>"; };
 		A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		A7DAEC831C1A82D000C1C237 /* HJParallaxHeaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJParallaxHeaderManager.h; sourceTree = "<group>"; };
@@ -516,6 +518,7 @@
 		A7F0F9401BF332F500C0F427 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A76E2BE21C50E04D004E5173 /* fullback@3x.png */,
 				A7F0F9411BF332F500C0F427 /* first_normal.png */,
 				A7F0F9421BF332F500C0F427 /* first_normal@2x.png */,
 				A7F0F9431BF332F500C0F427 /* first_selected.png */,
@@ -746,6 +749,7 @@
 				A7F0F95E1BF332F500C0F427 /* second_normal@2x.png in Resources */,
 				A765DB6C1BE30B32009380AD /* Main.storyboard in Resources */,
 				A75C23271C4652D600065EAD /* HJArchitecture.podspec in Resources */,
+				A76E2BE31C50E04D004E5173 /* fullback@3x.png in Resources */,
 				A7F0F95B1BF332F500C0F427 /* navigationbar_background_tall.png in Resources */,
 				A7F0F95C1BF332F500C0F427 /* navigationbar_background_tall@2x.png in Resources */,
 				A7FC3D8C1BE99EE600BB57E6 /* tabbar_video@3x.png in Resources */,
