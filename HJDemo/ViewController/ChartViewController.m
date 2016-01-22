@@ -94,8 +94,6 @@
         [self.chartView setFrame:CGRectMake(0, 0, size.width, size.height)];
         
         [self addBackButton];
-        
-        [self.chartView renderMe];
     }
 }
 

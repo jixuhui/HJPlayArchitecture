@@ -31,6 +31,7 @@ typedef enum _STOCK_FLAG {
 @property (nonatomic) float volumeMaxViewHeight;
 @property (nonatomic) float volumeHScale;
 @property (nonatomic) long curIndex;
+@property (nonatomic) float curBeginTouchPointX;
 
 @property (nonatomic,strong) NSDictionary *chartLineData;
 @property (nonatomic,strong) NSArray *curMA5Array;
@@ -48,23 +49,7 @@ typedef enum _STOCK_FLAG {
 {
     self = [super init];
     if (self) {
-        self.pricePaddingLeft = 50;
-        self.pricePaddingRight = 10;
-        self.pricePaddingTop = 90;
-        self.pricePaddingDown = 120;
-        
-        self.volumePaddingTop = 20;
-        self.volumePaddingDown = 40;
-        
-        self.volumeMaxViewHeight = self.pricePaddingDown - self.volumePaddingDown - self.volumePaddingTop;
-        
-        self.rangeSize = 37;
-        
-        self.yAlixsScale = 0;
-        
-        self.candleGap = 2;
-        
-        self.curIndex = -1;
+        [self initChart];
     }
     return self;
 }
@@ -78,41 +63,93 @@ typedef enum _STOCK_FLAG {
     return self;
 }
 
-- (void)renderMe
-{
-    [self initChart];
-    [self setNeedsDisplay];
-}
-
 - (void)initChart
 {
-    self.rangeFrom = [self.modelsArray count] - self.rangeSize;
+    self.pricePaddingLeft = 50;
+    self.pricePaddingRight = 10;
+    self.pricePaddingTop = 90;
+    self.pricePaddingDown = 120;
     
+    self.volumePaddingTop = 20;
+    self.volumePaddingDown = 40;
+    
+    self.volumeMaxViewHeight = self.pricePaddingDown - self.volumePaddingDown - self.volumePaddingTop;
+    
+    self.rangeSize = 37;
+    self.rangeFrom = -1;
+    
+    self.yAlixsScale = 0;
+    
+    self.candleGap = 2;
+    
+    self.curIndex = -1;
+    
+    self.curBeginTouchPointX = -1;
+
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
+    [self addGestureRecognizer:longPress];
+}
+
+- (void)setModelsArray:(NSArray *)modelsArray
+{
+    _modelsArray = modelsArray;
     self.chartLineData = [self transformChartLineData];
+    self.candleW = (CGRectGetWidth(self.bounds) - self.pricePaddingLeft - self.pricePaddingRight - self.candleGap * self.rangeSize)/self.rangeSize;
+}
+
+- (void)reCaculateChartData
+{
+    if (self.rangeFrom == -1) {
+        self.rangeFrom = [self.modelsArray count] - self.rangeSize;
+    }
     
+    //重新获取当前需要绘制的Candle数据
     NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom, self.rangeSize)];
     self.curDrawModesArray = [self.modelsArray objectsAtIndexes:se];
     
+    //重新获取当前需要绘制的MA数据
+    NSIndexSet *maSe = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
+    if (self.rangeFrom == 0) {
+        maSe = se;
+    }
+    self.curMA5Array = [(NSArray *)[self.chartLineData dataForKey:@"ma5"] objectsAtIndexes:maSe];
+    self.curMA10Array = [(NSArray *)[self.chartLineData dataForKey:@"ma10"] objectsAtIndexes:maSe];
+    self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:maSe];
+    self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:maSe];
+    
+    NSString *maxHighPrice = [NSString stringWithFormat:@"%f",[self getHighPriceFromCurRange]];
+    NSString *minLowPrice = [NSString stringWithFormat:@"%f",[self getLowPriceFromCurRange]];
+    NSDictionary *ma5Dic = [self getMaxAndMinFromArray:self.curMA5Array];
+    NSDictionary *ma10Dic = [self getMaxAndMinFromArray:self.curMA10Array];
+    NSDictionary *ma30Dic = [self getMaxAndMinFromArray:self.curMA30Array];
+    NSDictionary *ma60Dic = [self getMaxAndMinFromArray:self.curMA60Array];
+    
+    NSArray *maxArr = @[maxHighPrice,ma5Dic[@"max"],ma10Dic[@"max"],ma30Dic[@"max"],ma60Dic[@"max"]];
+    NSArray *minArr = @[minLowPrice,ma5Dic[@"min"],ma10Dic[@"min"],ma30Dic[@"min"],ma60Dic[@"min"]];
+    
     //price
-    self.maxPrice = [self getHighPriceFromCurRange];
-    self.minPrice = [self getLowPriceFromCurRange];
+    self.maxPrice = [self getMaxFromArray:maxArr];
+    self.minPrice = [self getMinFromArray:minArr];
     self.averagePrice = (self.maxPrice + self.minPrice)/2;
+    
     self.yAlixsScale = (CGRectGetHeight(self.bounds) - self.pricePaddingDown - self.pricePaddingTop)/(self.maxPrice - self.minPrice);
-    self.candleW = (CGRectGetWidth(self.bounds) - self.pricePaddingLeft - self.pricePaddingRight - self.candleGap * self.rangeSize)/self.rangeSize;
     
     //volume
     self.maxVolume = [self getMaxVolumeFromCurRange];
     self.volumeHScale = self.volumeMaxViewHeight/self.maxVolume;
-    
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
-    [self addGestureRecognizer:longPress];
+}
+
+- (void)renderMe
+{
+    [self reCaculateChartData];
+    [self setNeedsDisplay];
 }
 
 #pragma mark - draw methods
 
 - (void)drawRect:(CGRect)rect
 {
-    [self drawChartBackground];
+    [self drawClearChart];
     if (CHECK_VALID_ARRAY(self.modelsArray)) {
         [self drawBackgroundDashLines];
         [self drawYAxis];
@@ -128,11 +165,10 @@ typedef enum _STOCK_FLAG {
     }
 }
 
-- (void)drawChartBackground
+- (void)drawClearChart
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetRGBFillColor(context, 0, 0, 0, 1.0);
-    CGContextFillRect (context, CGRectMake (0, 0, self.bounds.size.width,self.bounds.size.height));
+    CGContextClearRect(context, self.bounds);
 }
 
 - (void)drawTopInfoView
@@ -676,6 +712,63 @@ typedef enum _STOCK_FLAG {
     return highModel.volume;
 }
 
+- (NSDictionary *)getMaxAndMinFromArray:(NSArray *)array
+{
+    NSComparator cmptr = ^(id obj1, id obj2){
+        
+        if ([obj1 floatValue] > [obj2 floatValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        
+        if ([obj1 floatValue] < [obj2 floatValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        
+        return (NSComparisonResult)NSOrderedSame;
+    };
+    
+    NSArray *sortedArray = [array sortedArrayUsingComparator:cmptr];
+    return @{@"max":[sortedArray lastObject],@"min":[sortedArray firstObject]};
+}
+
+- (float)getMaxFromArray:(NSArray *)array
+{
+    NSComparator cmptr = ^(id obj1, id obj2){
+        
+        if ([obj1 floatValue] > [obj2 floatValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        
+        if ([obj1 floatValue] < [obj2 floatValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        
+        return (NSComparisonResult)NSOrderedSame;
+    };
+    
+    NSArray *sortedArray = [array sortedArrayUsingComparator:cmptr];
+    return [[sortedArray lastObject] floatValue];
+}
+
+- (float)getMinFromArray:(NSArray *)array
+{
+    NSComparator cmptr = ^(id obj1, id obj2){
+        
+        if ([obj1 floatValue] < [obj2 floatValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        
+        if ([obj1 floatValue] > [obj2 floatValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        
+        return (NSComparisonResult)NSOrderedSame;
+    };
+    
+    NSArray *sortedArray = [array sortedArrayUsingComparator:cmptr];
+    return [[sortedArray lastObject] floatValue];
+}
+
 - (float)transformPriceToYPoint:(float)priceValue
 {
     return CGRectGetHeight(self.bounds) - (priceValue - self.minPrice)*self.yAlixsScale - self.pricePaddingDown;
@@ -778,37 +871,21 @@ typedef enum _STOCK_FLAG {
     switch (flag) {
         case STOCK_FLAG_MA5:
         {
-            if (!self.curMA5Array) {
-                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-                self.curMA5Array = [(NSArray *)[self.chartLineData dataForKey:@"ma5"] objectsAtIndexes:se];
-            }
             maArr = self.curMA5Array;
         }
             break;
         case STOCK_FLAG_MA10:
         {
-            if (!self.curMA10Array) {
-                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-                self.curMA10Array = [(NSArray *)[self.chartLineData dataForKey:@"ma10"] objectsAtIndexes:se];
-            }
             maArr = self.curMA10Array;
         }
             break;
         case STOCK_FLAG_MA30:
         {
-            if (!self.curMA30Array) {
-                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-                self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:se];
-            }
             maArr = self.curMA30Array;
         }
             break;
         case STOCK_FLAG_MA60:
         {
-            if (!self.curMA60Array) {
-                NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-                self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:se];
-            }
             maArr = self.curMA60Array;
         }
             break;
@@ -864,5 +941,82 @@ typedef enum _STOCK_FLAG {
     }
     [self setNeedsDisplay];
 }
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    NSArray *ts = [touches allObjects];
+    if([ts count]==1) {
+        UITouch* touch = ts[0];
+        float touchPointX = [touch locationInView:self].x;
+        float touchPointY = [touch locationInView:self].y;
+        
+        if(touchPointX > self.pricePaddingLeft && touchPointX < CGRectGetWidth(self.bounds) - self.pricePaddingRight && touchPointY < CGRectGetHeight(self.bounds) - self.pricePaddingDown && touchPointY > self.pricePaddingTop){
+            self.curBeginTouchPointX = touchPointX;
+        }
+    }else if ([ts count]==2) {
+//        self.touchFlag = [ts[0] locationInView:self].x;
+//        self.touchFlagTwo = [ts[1] locationInView:self].x;
+    }
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+    NSArray *ts = [touches allObjects];
+    if([ts count]==1) {
+        
+        if (self.curBeginTouchPointX != -1) {
+            
+            UITouch* touch = ts[0];
+            float touchPointX = [touch locationInView:self].x;
+            float touchChg = touchPointX - self.curBeginTouchPointX;
+            
+            int indexChg = fabs(touchChg)/(self.candleGap + self.candleW);
+            
+            if (indexChg > 0) {
+                if (touchChg>0) {
+                    if (self.rangeFrom == 0) {
+                        return;
+                    }else if (self.rangeFrom -indexChg < 0) {
+                        self.rangeFrom = 0;
+                    }else {
+                        self.rangeFrom -= indexChg;
+                    }
+                }else {
+                    if (self.rangeFrom + self.rangeSize == [self.modelsArray count]-1) {
+                        return;
+                    }else if (self.rangeFrom + self.rangeSize + indexChg > [self.modelsArray count] - 1) {
+                        self.rangeFrom = [self.modelsArray count] - self.rangeSize;
+                    }else {
+                        self.rangeFrom += indexChg;
+                    }
+                }
+                self.curBeginTouchPointX = touchPointX;
+                [self renderMe];
+            }
+        }
+    }else if ([ts count]==2) {
+//        float currFlag = [ts[0] locationInView:self].x;
+//        float currFlagTwo = [ts[1] locationInView:self].x;
+        
+    }
+}
+
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+//    NSArray *ts = [touches allObjects];
+//    UITouch* touch = [[event allTouches] anyObject];
+//    if([ts count]==1){
+//        int i = [self getIndexOfSection:[touch locationInView:self]];
+//        if(i!=-1){
+//            Section *sec = self.sections[i];
+//            if([touch locationInView:self].x > sec.paddingLeft){
+//                if(sec.paging){
+//                    [sec nextPage];
+//                    [self setNeedsDisplay];
+//                }else{
+//                    [self setSelectedIndexByPoint:[touch locationInView:self]];
+//                }
+//            }
+//        }
+//    }
+//    self.touchFlag = 0;
+//}
 
 @end
