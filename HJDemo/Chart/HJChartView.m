@@ -86,7 +86,7 @@ typedef enum _STOCK_FLAG {
     self.candleGap = 2;
     
     self.minCandleW = 5;
-    self.maxCandleW = 40;
+    self.maxCandleW = 35;
     
     self.curIndex = -1;
     
@@ -159,7 +159,7 @@ typedef enum _STOCK_FLAG {
 {
     [self drawClearChart];
     if (CHECK_VALID_ARRAY(self.modelsArray)) {
-//        [self drawBackground];
+        [self drawBackground];
         [self drawBackgroundDashLines];
         [self drawYAxis];
         //    [self drawXAxis];
