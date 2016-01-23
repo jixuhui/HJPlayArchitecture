@@ -27,11 +27,14 @@ typedef enum _STOCK_FLAG {
 @property (nonatomic) float averagePrice;
 @property (nonatomic) float candleGap;
 @property (nonatomic) float candleW;
+@property (nonatomic) float minCandleW;
+@property (nonatomic) float maxCandleW;
 @property (nonatomic) long maxVolume;
 @property (nonatomic) float volumeMaxViewHeight;
 @property (nonatomic) float volumeHScale;
 @property (nonatomic) long curIndex;
 @property (nonatomic) float curBeginTouchPointX;
+@property (nonatomic) float curBeginMutipleTouchPointXChange;
 
 @property (nonatomic,strong) NSDictionary *chartLineData;
 @property (nonatomic,strong) NSArray *curMA5Array;
@@ -75,16 +78,21 @@ typedef enum _STOCK_FLAG {
     
     self.volumeMaxViewHeight = self.pricePaddingDown - self.volumePaddingDown - self.volumePaddingTop;
     
-    self.rangeSize = 37;
+    self.rangeSize = 80;
     self.rangeFrom = -1;
     
     self.yAlixsScale = 0;
     
     self.candleGap = 2;
     
+    self.minCandleW = 5;
+    self.maxCandleW = 40;
+    
     self.curIndex = -1;
     
     self.curBeginTouchPointX = -1;
+    
+    self.curBeginMutipleTouchPointXChange = -1;
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
     [self addGestureRecognizer:longPress];
@@ -151,6 +159,7 @@ typedef enum _STOCK_FLAG {
 {
     [self drawClearChart];
     if (CHECK_VALID_ARRAY(self.modelsArray)) {
+//        [self drawBackground];
         [self drawBackgroundDashLines];
         [self drawYAxis];
         //    [self drawXAxis];
@@ -169,6 +178,13 @@ typedef enum _STOCK_FLAG {
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClearRect(context, self.bounds);
+}
+
+- (void)drawBackground
+{
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+    CGContextFillRect (context, CGRectMake (0, 0, self.bounds.size.width,self.bounds.size.height));
 }
 
 - (void)drawTopInfoView
@@ -943,8 +959,10 @@ typedef enum _STOCK_FLAG {
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    NSArray *ts = [touches allObjects];
+    NSArray *ts = [[event allTouches] allObjects];
     if([ts count]==1) {
+        self.curBeginMutipleTouchPointXChange = -1;
+        
         UITouch* touch = ts[0];
         float touchPointX = [touch locationInView:self].x;
         float touchPointY = [touch locationInView:self].y;
@@ -953,17 +971,18 @@ typedef enum _STOCK_FLAG {
             self.curBeginTouchPointX = touchPointX;
         }
     }else if ([ts count]==2) {
-//        self.touchFlag = [ts[0] locationInView:self].x;
-//        self.touchFlagTwo = [ts[1] locationInView:self].x;
+        self.curBeginTouchPointX = -1;
+        
+        self.curBeginMutipleTouchPointXChange = fabs([ts[0] locationInView:self].x - [ts[1] locationInView:self].x);
     }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSArray *ts = [touches allObjects];
+    NSArray *ts = [[event allTouches] allObjects];
     if([ts count]==1) {
+        self.curBeginMutipleTouchPointXChange = -1;
         
         if (self.curBeginTouchPointX != -1) {
-            
             UITouch* touch = ts[0];
             float touchPointX = [touch locationInView:self].x;
             float touchChg = touchPointX - self.curBeginTouchPointX;
@@ -980,9 +999,9 @@ typedef enum _STOCK_FLAG {
                         self.rangeFrom -= indexChg;
                     }
                 }else {
-                    if (self.rangeFrom + self.rangeSize == [self.modelsArray count]-1) {
+                    if (self.rangeFrom + self.rangeSize == [self.modelsArray count]) {
                         return;
-                    }else if (self.rangeFrom + self.rangeSize + indexChg > [self.modelsArray count] - 1) {
+                    }else if (self.rangeFrom + self.rangeSize + indexChg > [self.modelsArray count]) {
                         self.rangeFrom = [self.modelsArray count] - self.rangeSize;
                     }else {
                         self.rangeFrom += indexChg;
@@ -993,30 +1012,69 @@ typedef enum _STOCK_FLAG {
             }
         }
     }else if ([ts count]==2) {
-//        float currFlag = [ts[0] locationInView:self].x;
-//        float currFlagTwo = [ts[1] locationInView:self].x;
+        self.curBeginTouchPointX = -1;
         
+        float currFlag = [ts[0] locationInView:self].x;
+        float currFlagTwo = [ts[1] locationInView:self].x;
+        
+        if (self.curBeginMutipleTouchPointXChange == -1) {
+            self.curBeginMutipleTouchPointXChange = fabs(currFlag - currFlagTwo);
+        }else {
+            float curChg = fabs(currFlag - currFlagTwo);
+            float curScale = curChg/self.curBeginMutipleTouchPointXChange;
+            float curCandleW = self.candleW;
+            
+            if (curCandleW * curScale < self.minCandleW) {
+                curCandleW = self.minCandleW;
+            }else if (curCandleW * curScale > self.maxCandleW) {
+                curCandleW = self.maxCandleW;
+            }else {
+                curCandleW = self.candleW*curScale;
+            }
+            
+            long curRangeSize = (CGRectGetWidth(self.bounds) - self.pricePaddingLeft - self.pricePaddingRight)/(curCandleW + self.candleGap);
+            long curRangeFrom = self.rangeFrom;
+            
+            if (curRangeSize > self.rangeSize) {
+                if (curRangeFrom==0) {
+                    curRangeFrom = 0;
+                }else if (curRangeFrom + curRangeSize >= [self.modelsArray count]){
+                    curRangeFrom = [self.modelsArray count] - curRangeSize;
+                }else {
+                    curRangeFrom = self.rangeFrom - ceil((curRangeSize - self.rangeSize)/2);
+                }
+            }else if (curRangeSize < self.rangeSize){
+                curRangeFrom = self.rangeFrom + floor((self.rangeSize - curRangeSize)/2);
+            }else {
+                self.curBeginMutipleTouchPointXChange = curChg;
+                return;
+            }
+            
+            self.rangeSize = curRangeSize;
+            self.candleW = (CGRectGetWidth(self.bounds) - self.pricePaddingRight - self.pricePaddingLeft)/self.rangeSize - self.candleGap;//需要重新计算准确的candle宽度值
+            self.rangeFrom = curRangeFrom;
+            
+            /**
+             *  做最后的容错处理
+             */
+            if (self.rangeFrom < 0) {
+                self.rangeFrom = 0;
+            }
+            
+            if (self.rangeFrom + self.rangeSize > [self.modelsArray count]) {
+                self.rangeSize = [self.modelsArray count] - self.rangeFrom;
+            }
+            
+            self.curBeginMutipleTouchPointXChange = curChg;
+            
+            [self renderMe];
+        }
     }
 }
 
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-//    NSArray *ts = [touches allObjects];
-//    UITouch* touch = [[event allTouches] anyObject];
-//    if([ts count]==1){
-//        int i = [self getIndexOfSection:[touch locationInView:self]];
-//        if(i!=-1){
-//            Section *sec = self.sections[i];
-//            if([touch locationInView:self].x > sec.paddingLeft){
-//                if(sec.paging){
-//                    [sec nextPage];
-//                    [self setNeedsDisplay];
-//                }else{
-//                    [self setSelectedIndexByPoint:[touch locationInView:self]];
-//                }
-//            }
-//        }
-//    }
-//    self.touchFlag = 0;
-//}
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    self.curBeginTouchPointX = -1;
+    self.curBeginMutipleTouchPointXChange = -1;
+}
 
 @end
