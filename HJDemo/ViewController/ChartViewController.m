@@ -94,6 +94,8 @@
         [self.chartView setFrame:CGRectMake(0, 0, size.width, size.height)];
         
         [self addBackButton];
+        
+        [self startLoading];
     }
 }
 
@@ -102,6 +104,7 @@
     NSArray *stockArr = [self readFromPlistByName:[NSString stringWithFormat:@"%@.plist",stockCode]];
     
     if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
+        [self stopLoading];
         [self.chartView setModelsArray:stockArr];
         [self.chartView renderMe];
         return YES;
@@ -210,6 +213,30 @@
 - (void)doBack:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)startLoading
+{
+    UIView *backgroundView = [[UIView alloc]initWithFrame:self.view.bounds];
+    backgroundView.backgroundColor = [UIColor clearColor];
+    backgroundView.tag = 101;
+    [self.view addSubview:backgroundView];
+    
+    UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    indicatorView.tag = 102;
+    indicatorView.center = self.view.center;
+    [indicatorView startAnimating];
+    [self.view addSubview:indicatorView];
+}
+
+- (void)stopLoading
+{
+    UIView *bgView = [self.view viewWithTag:101];
+    [bgView removeFromSuperview];
+    
+    UIActivityIndicatorView *indicatorView = [self.view viewWithTag:102];
+    [indicatorView stopAnimating];
+    [indicatorView removeFromSuperview];
 }
 
 @end
