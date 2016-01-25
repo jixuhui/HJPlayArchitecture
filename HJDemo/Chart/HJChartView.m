@@ -71,7 +71,7 @@ typedef enum _STOCK_FLAG {
 
 - (void)initChart
 {
-    self.yAlixsToEdge = 10;
+    self.yAlixsToEdge = 20;
     self.pricePaddingLeft = 50;
     self.pricePaddingRight = 10;
     self.pricePaddingTop = 90;
@@ -197,7 +197,7 @@ typedef enum _STOCK_FLAG {
     float curLabelTop = 20;
     float labelW = 80;
     float labelH = 20;
-    float labelGap = 5;
+    float labelGap = 10;
     float curLabelLeft = 60;
     
     HJCandleChartModel *candleModel = nil;
@@ -224,6 +224,16 @@ typedef enum _STOCK_FLAG {
         ;
     }
     
+    NSArray *volumeArray = [[self transformToUnitWithVolume:candleModel.volume] componentsSeparatedByString:@","];
+    NSString *volumeStr = @"";
+    if (CHECK_VALID_ARRAY(volumeArray)) {
+        if ([volumeArray count]==2) {
+            volumeStr = [NSString stringWithFormat:@"%@%@",[volumeArray firstObject],[volumeArray lastObject]];
+        }else{
+            volumeStr = [volumeArray firstObject];
+        }
+    }
+    
     STOCK_FLAG flag = [self getStockFlagByCanleData:candleModel];
     
     [[NSString stringWithFormat:@"Open:%.2f",[candleModel openPrice]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
@@ -234,7 +244,7 @@ typedef enum _STOCK_FLAG {
     
     [[NSString stringWithFormat:@"Low:%.2f",[candleModel lowPrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*3, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
     
-    [[NSString stringWithFormat:@"Volume:%ld",[candleModel volume]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*4, curLabelTop, labelW*2, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
+    [[NSString stringWithFormat:@"Volume:%@",volumeStr] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*4, curLabelTop, labelW*2, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
     
     curLabelTop += labelH+labelGap;
     
@@ -262,7 +272,7 @@ typedef enum _STOCK_FLAG {
     //绘制纵轴
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
-    CGContextSetLineWidth(context, 1.0);
+    CGContextSetLineWidth(context, 0.5);
     [[self getColorByFlag:STOCK_FLAG_DEFAULT] setStroke];
     
     CGContextBeginPath(context);
@@ -309,6 +319,21 @@ typedef enum _STOCK_FLAG {
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, self.pricePaddingLeft, pointY);
     CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, pointY);
+    CGContextStrokePath(context);
+    CGContextSetLineDash(context, 0, NULL, 0);//必须加，为了保证不影响其他样式的绘制
+}
+
+- (void)drawDashLinesWithXPoint:(float)pointX
+{
+    CGFloat length[] = {10,5};
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 0.5);
+    CGContextSetLineDash(context, 0, length, 2);
+    [[self getColorByFlag:STOCK_FLAG_DASH] setStroke];
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, pointX, self.pricePaddingTop);
+    CGContextAddLineToPoint(context, pointX, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
     CGContextStrokePath(context);
     CGContextSetLineDash(context, 0, NULL, 0);//必须加，为了保证不影响其他样式的绘制
 }
@@ -366,7 +391,7 @@ typedef enum _STOCK_FLAG {
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
-    CGContextSetLineWidth(context, 1);
+    CGContextSetLineWidth(context, 0.5);
     [[self getColorByFlag:STOCK_FLAG_DEFAULT] setStroke];
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, self.pricePaddingLeft, [self transformVolumeToYPoint:self.maxVolume]);
@@ -401,6 +426,9 @@ typedef enum _STOCK_FLAG {
 {
     float labelH = 9;
     float labelW = 50;
+    float pointY = CGRectGetHeight(self.bounds) - self.pricePaddingDown + 3;
+    float globalChg = self.pricePaddingLeft - self.candleW/2 - labelW/2;
+    
     UIFont *font = [UIFont systemFontOfSize:8];
     UIColor *color = [self getColorByFlag:STOCK_FLAG_DEFAULT];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -410,36 +438,16 @@ typedef enum _STOCK_FLAG {
                                   NSForegroundColorAttributeName: color,
                                   NSParagraphStyleAttributeName: paragraphStyle };
     
-    if (self.rangeSize >= 6) {
-        int indexScale = floor([self.curDrawModesArray count]/6);
-        HJCandleChartModel *candle0 = [self.curDrawModesArray objectAtIndex:indexScale];
-        HJCandleChartModel *candle1 = [self.curDrawModesArray objectAtIndex:indexScale*2];
-        HJCandleChartModel *candle2 = [self.curDrawModesArray objectAtIndex:indexScale*3];
-        HJCandleChartModel *candle3 = [self.curDrawModesArray objectAtIndex:indexScale*4];
-        HJCandleChartModel *candle4 = [self.curDrawModesArray objectAtIndex:indexScale*5];
+    NSArray *dateIndexArr = [self getDateIndexFromCandleModels:self.curDrawModesArray];
+    
+    for (NSNumber *num in dateIndexArr) {
+        int curIndex = [num intValue];
+        HJCandleChartModel *candle = [self.curDrawModesArray objectAtIndex:curIndex];
         
-        float pointY = CGRectGetHeight(self.bounds) - self.pricePaddingDown + 3;
-        float globalChg = self.pricePaddingLeft - self.candleW/2 - labelW/2;
+        float pointX = curIndex*(self.candleGap + self.candleW) + globalChg;
         
-        int indexNum = indexScale + 1;
-        
-        [candle0.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
-        
-        indexNum += indexScale;
-        
-        [candle1.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
-        
-        indexNum += indexScale;
-        
-        [candle2.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
-        
-        indexNum += indexScale;
-        
-        [candle3.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW)+ globalChg, pointY, labelW, labelH) withAttributes:attributes];
-        
-        indexNum += indexScale;
-        
-        [candle4.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
+        [candle.date drawInRect:CGRectMake(pointX, pointY, labelW, labelH) withAttributes:attributes];
+        [self drawDashLinesWithXPoint:pointX+labelW/2];
     }
 }
 
@@ -911,6 +919,27 @@ typedef enum _STOCK_FLAG {
     return [[sortedArray lastObject] floatValue];
 }
 
+- (NSArray *)getDateIndexFromCandleModels:(NSArray *)modelsArray
+{
+    NSMutableArray *array = [[NSMutableArray alloc]initWithCapacity:5];
+    
+    for (int i=0; i<[modelsArray count]-1; i++) {
+        HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
+        HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
+        
+        NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
+        NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
+        
+        if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
+            if (![[leftDateArr objectAtIndex:1] isEqualToString:[rightDateArr objectAtIndex:1]]) {
+                [array addObject:[NSNumber numberWithInt:i+1]];
+            }
+        }
+    }
+    
+    return array;
+}
+
 - (float)transformPriceToYPoint:(float)priceValue
 {
     return CGRectGetHeight(self.bounds) - (priceValue - self.minPrice)*self.yAlixsScale - self.pricePaddingDown - self.yAlixsToEdge;
@@ -945,7 +974,7 @@ typedef enum _STOCK_FLAG {
             return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
             break;
         case STOCK_FLAG_DOWN:
-            return [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
+            return [UIColor colorWithRed:0.15 green:0.6 blue:0.1 alpha:1];
             break;
         case STOCK_FLAG_MA5:
             return [UIColor colorWithRed:0 green:1 blue:1 alpha:1];
@@ -957,7 +986,7 @@ typedef enum _STOCK_FLAG {
             return [UIColor colorWithRed:1 green:0 blue:1 alpha:1];
             break;
         case STOCK_FLAG_MA60:
-            return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+            return [UIColor colorWithRed:0.8 green:0.04 blue:0.05 alpha:1];
             break;
         case STOCK_FLAG_INDEX:
             return [UIColor colorWithRed:44.0f/255.0f green:189.0f/255.0f blue:289.0f/255.0f alpha:1];
@@ -1111,7 +1140,7 @@ typedef enum _STOCK_FLAG {
     }
     [self setNeedsDisplay];
 }
-
+/*&& touchPointY < CGRectGetHeight(self.bounds) - self.pricePaddingDown && touchPointY > self.pricePaddingTop */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     NSArray *ts = [[event allTouches] allObjects];
     if([ts count]==1) {
@@ -1121,7 +1150,7 @@ typedef enum _STOCK_FLAG {
         float touchPointX = [touch locationInView:self].x;
         float touchPointY = [touch locationInView:self].y;
         
-        if(touchPointX > self.pricePaddingLeft && touchPointX < CGRectGetWidth(self.bounds) - self.pricePaddingRight && touchPointY < CGRectGetHeight(self.bounds) - self.pricePaddingDown && touchPointY > self.pricePaddingTop){
+        if(touchPointX > self.pricePaddingLeft && touchPointX < CGRectGetWidth(self.bounds) - self.pricePaddingRight && touchPointY > self.pricePaddingTop){
             self.curBeginTouchPointX = touchPointX;
         }
     }else if ([ts count]==2) {
