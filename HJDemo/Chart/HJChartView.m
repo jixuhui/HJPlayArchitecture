@@ -17,6 +17,7 @@ typedef enum _STOCK_FLAG {
     STOCK_FLAG_MA30,
     STOCK_FLAG_MA60,
     STOCK_FLAG_INDEX,
+    STOCK_FLAG_DASH,
     STOCK_FLAG_DEFAULT
 }STOCK_FLAG;
 
@@ -70,7 +71,7 @@ typedef enum _STOCK_FLAG {
 
 - (void)initChart
 {
-    self.yAlixsToEdge = 5;
+    self.yAlixsToEdge = 10;
     self.pricePaddingLeft = 50;
     self.pricePaddingRight = 10;
     self.pricePaddingTop = 90;
@@ -162,10 +163,11 @@ typedef enum _STOCK_FLAG {
 {
     [self drawClearChart];
     if (CHECK_VALID_ARRAY(self.modelsArray)) {
-//        [self drawBackground];
+        //        [self drawBackground];
+        [self drawBorder];
         [self drawBackgroundDashLines];
         [self drawYAxis];
-        //    [self drawXAxis];
+        [self drawXAxis];
         [self drawVolumeTips];
         [self drawCandleVeiwsAndVolumeViews];
         [self drawMAWithFlag:STOCK_FLAG_MA5];
@@ -255,6 +257,35 @@ typedef enum _STOCK_FLAG {
     [[NSString stringWithFormat:@"Date:%@",[candleModel date]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW*2, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
 }
 
+- (void)drawBorder
+{
+    //绘制纵轴
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 1.0);
+    [[self getColorByFlag:STOCK_FLAG_DEFAULT] setStroke];
+    
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, self.pricePaddingTop);
+    CGContextAddLineToPoint(context, self.pricePaddingLeft, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
+    CGContextStrokePath(context);
+    
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, CGRectGetWidth(self.bounds)-self.pricePaddingRight, self.pricePaddingTop);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds)-self.pricePaddingRight, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
+    CGContextStrokePath(context);
+    
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
+    CGContextStrokePath(context);
+    
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, self.pricePaddingLeft, self.pricePaddingTop);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, self.pricePaddingTop);
+    CGContextStrokePath(context);
+}
+
 - (void)drawBackgroundDashLines
 {
     [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.maxPrice]];
@@ -274,7 +305,7 @@ typedef enum _STOCK_FLAG {
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 0.5);
     CGContextSetLineDash(context, 0, length, 2);
-    [[self getColorByFlag:STOCK_FLAG_DEFAULT] setStroke];
+    [[self getColorByFlag:STOCK_FLAG_DASH] setStroke];
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, self.pricePaddingLeft, pointY);
     CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, pointY);
@@ -346,34 +377,14 @@ typedef enum _STOCK_FLAG {
     CGContextMoveToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, [self transformVolumeToYPoint:self.maxVolume]);
     CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, [self transformVolumeToYPoint:0]);
     CGContextStrokePath(context);
-    
-//    CGContextBeginPath(context);
-//    CGContextMoveToPoint(context, self.pricePaddingLeft, [self transformVolumeToYPoint:0]+1);
-//    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, [self transformVolumeToYPoint:0]+1);
-//    CGContextStrokePath(context);
 }
 
 - (void)drawYAxis
 {
-    //绘制纵轴
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetLineCap(context, kCGLineCapSquare);
-    CGContextSetLineWidth(context, 1.0);
-    [[self getColorByFlag:STOCK_FLAG_DEFAULT] setStroke];
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, self.pricePaddingLeft, self.pricePaddingTop);
-    CGContextAddLineToPoint(context, self.pricePaddingLeft, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
-    CGContextStrokePath(context);
-    
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, CGRectGetWidth(self.bounds)-self.pricePaddingRight, self.pricePaddingTop);
-    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds)-self.pricePaddingRight, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
-    CGContextStrokePath(context);
-    
     //绘制纵坐标值
     float labelH = 9;
     UIFont *font = [UIFont systemFontOfSize:8];
-    UIColor *color = [UIColor colorWithRed:1 green:1 blue:1 alpha:1.0];
+    UIColor *color = [self getColorByFlag:STOCK_FLAG_DEFAULT];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentRight;
@@ -388,14 +399,48 @@ typedef enum _STOCK_FLAG {
 
 - (void)drawXAxis
 {
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetLineCap(context, kCGLineCapSquare);
-    CGContextSetLineWidth(context, 1.0);
-    [[self getColorByFlag:STOCK_FLAG_DEFAULT] setStroke];
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, self.pricePaddingLeft, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
-    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.pricePaddingRight, CGRectGetHeight(self.bounds) - self.pricePaddingDown);
-    CGContextStrokePath(context);
+    float labelH = 9;
+    float labelW = 50;
+    UIFont *font = [UIFont systemFontOfSize:8];
+    UIColor *color = [self getColorByFlag:STOCK_FLAG_DEFAULT];
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *attributes = @{ NSFontAttributeName: font,
+                                  NSForegroundColorAttributeName: color,
+                                  NSParagraphStyleAttributeName: paragraphStyle };
+    
+    if (self.rangeSize >= 6) {
+        int indexScale = floor([self.curDrawModesArray count]/6);
+        HJCandleChartModel *candle0 = [self.curDrawModesArray objectAtIndex:indexScale];
+        HJCandleChartModel *candle1 = [self.curDrawModesArray objectAtIndex:indexScale*2];
+        HJCandleChartModel *candle2 = [self.curDrawModesArray objectAtIndex:indexScale*3];
+        HJCandleChartModel *candle3 = [self.curDrawModesArray objectAtIndex:indexScale*4];
+        HJCandleChartModel *candle4 = [self.curDrawModesArray objectAtIndex:indexScale*5];
+        
+        float pointY = CGRectGetHeight(self.bounds) - self.pricePaddingDown + 3;
+        float globalChg = self.pricePaddingLeft - self.candleW/2 - labelW/2;
+        
+        int indexNum = indexScale + 1;
+        
+        [candle0.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
+        
+        indexNum += indexScale;
+        
+        [candle1.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
+        
+        indexNum += indexScale;
+        
+        [candle2.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
+        
+        indexNum += indexScale;
+        
+        [candle3.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW)+ globalChg, pointY, labelW, labelH) withAttributes:attributes];
+        
+        indexNum += indexScale;
+        
+        [candle4.date drawInRect:CGRectMake(indexNum*(self.candleGap + self.candleW) + globalChg, pointY, labelW, labelH) withAttributes:attributes];
+    }
 }
 
 - (void)drawCandleVeiwsAndVolumeViews
@@ -894,7 +939,7 @@ typedef enum _STOCK_FLAG {
 {
     switch (flag) {
         case STOCK_FLAG_DEFAULT:
-            return [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
+            return [UIColor colorWithRed:0.8f green:0.8f blue:0.8f alpha:0.8f];
             break;
         case STOCK_FLAG_UP:
             return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
@@ -916,6 +961,9 @@ typedef enum _STOCK_FLAG {
             break;
         case STOCK_FLAG_INDEX:
             return [UIColor colorWithRed:44.0f/255.0f green:189.0f/255.0f blue:289.0f/255.0f alpha:1];
+            break;
+        case STOCK_FLAG_DASH:
+            return [UIColor colorWithRed:0.5f green:0.5f blue:0.5f alpha:0.5];
             break;
         default:
             return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
