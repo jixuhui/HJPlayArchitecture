@@ -23,15 +23,6 @@ typedef enum _HJChartModelType {
 @property (nonatomic) long rangeFrom;
 @property (nonatomic) long rangeSize;
 
-//price pricePadding
-@property (nonatomic) float pricePaddingLeft;
-@property (nonatomic) float pricePaddingRight;
-@property (nonatomic) float pricePaddingTop;
-@property (nonatomic) float pricePaddingDown;
-
-@property (nonatomic) float volumePaddingTop;
-@property (nonatomic) float volumePaddingDown;
-
 - (instancetype)initWithData:(NSArray *)array;
 - (void)renderMe;
 
