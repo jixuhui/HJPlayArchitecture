@@ -13,19 +13,28 @@
 
 @interface ChartViewController()
 {
-    NSString *stockCode;
+    NSString *_stockCode;
+    NSString *_candleType;
     CGFloat _statusBarTop;
+    float _candleDateBtnWidth;
+    float _candleDateBtnHeight;
+    float _candleDateBtnGap;
 }
 @property (nonatomic,strong)HJChartView *chartView;
 @end
 
 @implementation ChartViewController
-
+ 
 -(void)viewDidLoad
 {
     [super viewDidLoad];
     
-    stockCode = @"600123";
+    _candleDateBtnHeight = 25;
+    _candleDateBtnWidth = 100;
+    _candleDateBtnGap = 150;
+    
+    _stockCode = @"600123";
+    _candleType = @"d";
     
     self.chartView = [[HJChartView alloc]init];
     [self.view addSubview:self.chartView];
@@ -41,9 +50,7 @@
     
     [self resetContentView];
     
-    if (![self getCacheData]) {
-        [self getURLData];
-    }
+    [self dayAction];
 }
 
 -(void) viewDidAppear:(BOOL)animated
@@ -57,7 +64,6 @@
     if(_statusBarTop != 0.0f){
         self.view.superview.frame = self.view.window.bounds;
     }
-    
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -95,13 +101,16 @@
         
         [self addBackButton];
         
-        [self startLoading];
+        [self addCandleDateChangeButtons];
     }
 }
 
 - (BOOL)getCacheData
 {
-    NSArray *stockArr = [self readFromPlistByName:[NSString stringWithFormat:@"%@.plist",stockCode]];
+    NSDateFormatter * formatter = [[NSDateFormatter alloc ] init]; [formatter setDateFormat:@"YYYY-MM-dd"];
+    NSString *date = [formatter stringFromDate:[NSDate date]];
+    
+    NSArray *stockArr = [self readFromPlistByName:[NSString stringWithFormat:@"%@_%@_%@.plist",_stockCode,_candleType,date]];
     
     if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
         [self stopLoading];
@@ -116,7 +125,7 @@
 -(void)getURLData
 {
     HJURLTask *task = [[HJURLTask alloc]init];
-    task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@.SS&g=%@",stockCode,@"d"];
+    task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@.SS&g=%@",_stockCode,_candleType];
     task.responseDataType = @"Serial";
     
     [[HJURLService shareService] handleSessionTask:task success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -129,9 +138,12 @@
 
 -(void)generateData:(NSString *)responseString
 {
+    NSDateFormatter * formatter = [[NSDateFormatter alloc ] init]; [formatter setDateFormat:@"YYYY-MM-dd"];
+    NSString *date = [formatter stringFromDate:[NSDate date]];
+    
     NSArray *lines = [responseString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     
-    [self writeToPlistWithData:lines Name:[NSString stringWithFormat:@"%@.plist",stockCode]];
+    [self writeToPlistWithData:lines Name:[NSString stringWithFormat:@"%@_%@_%@.plist",_stockCode,_candleType,date]];
     
     [self getCacheData];
 }
@@ -161,6 +173,34 @@
     
     NSArray *lines = [[NSMutableArray alloc]initWithContentsOfFile:filePath];
     return [self transformToModel:lines];
+}
+
+- (void)deleteOldStockFileByNewFileNamePrefix:(NSString *)prefix
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *path = [paths objectAtIndex:0];
+    
+    NSFileManager* fm = [NSFileManager defaultManager];
+    
+    if(![fm fileExistsAtPath:path]){
+        //取得一个目录下得所有文件名
+        NSArray *files = [fm subpathsAtPath:path];
+        
+        for (NSString *fileName in files) {
+            
+            NSDateFormatter * formatter = [[NSDateFormatter alloc ] init]; [formatter setDateFormat:@"YYYY-MM-dd"];
+            NSString *date = [formatter stringFromDate:[NSDate date]];
+            
+            if ([fileName hasPrefix:prefix] && ![fileName isEqualToString:[NSString stringWithFormat:@"%@_%@",prefix,date]]) {
+                
+                NSString *filePath = [path stringByAppendingPathComponent:fileName];
+                NSError *error = nil;
+                [fm removeItemAtPath:filePath error:&error];
+                break;
+                
+            }
+        }
+    }
 }
 
 - (NSArray *)transformToModel:(NSArray *)lines
@@ -193,14 +233,6 @@
     return data;
 }
 
-- (BOOL)shouldAutorotate{
-    return NO;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    return NO;
-}
-
 - (void)addBackButton
 {
     UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -208,6 +240,71 @@
     [backBtn addTarget:self action:@selector(doBack:) forControlEvents:UIControlEventTouchUpInside];
     [backBtn setFrame:CGRectMake(10, 10, 90/2, 85/2)];
     [self.chartView addSubview:backBtn];
+}
+
+- (void)addCandleDateChangeButtons
+{
+    float leftPoint = 50.0f;
+    
+    UIButton *dayBtn = [self createDateChangeButtonWithTitle:@"day" pointX:leftPoint];
+    
+    leftPoint += _candleDateBtnWidth + _candleDateBtnGap;
+    
+    UIButton *weekBtn = [self createDateChangeButtonWithTitle:@"week" pointX:leftPoint];
+    
+    leftPoint += _candleDateBtnWidth + _candleDateBtnGap;
+    
+    UIButton *monthBtn = [self createDateChangeButtonWithTitle:@"month" pointX:leftPoint];
+    
+    [self.chartView addSubview:dayBtn];
+    [self.chartView addSubview:weekBtn];
+    [self.chartView addSubview:monthBtn];
+}
+
+- (UIButton *)createDateChangeButtonWithTitle:(NSString *)title pointX:(float)left
+{
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btn setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
+    [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [btn setTitle:title forState:UIControlStateNormal];
+    [btn setFrame:CGRectMake(left, CGRectGetHeight(self.chartView.bounds)-30, _candleDateBtnWidth, 25)];
+    [btn addTarget:self action:NSSelectorFromString([NSString stringWithFormat:@"%@Action",title]) forControlEvents:UIControlEventTouchUpInside];
+    
+    return btn;
+}
+
+- (void)dayAction
+{
+    _candleType = @"d";
+    self.chartView.modelType = CHART_MODEL_TYPE_DAY;
+    [self doPublicAction];
+}
+
+- (void)weekAction
+{
+    _candleType = @"w";
+    self.chartView.modelType = CHART_MODEL_TYPE_WEEK;
+    [self doPublicAction];
+}
+
+- (void)monthAction
+{
+    _candleType = @"m";
+    self.chartView.modelType = CHART_MODEL_TYPE_MONTH;
+    [self doPublicAction];
+}
+
+- (void)doPublicAction
+{
+    [self.chartView resetMe];
+    
+    [self startLoading];
+    
+    [self deleteOldStockFileByNewFileNamePrefix:[NSString stringWithFormat:@"%@_%@",_stockCode,_candleType]];
+    
+    if (![self getCacheData]) {
+        [self getURLData];
+    }
 }
 
 - (void)doBack:(id)sender

@@ -28,6 +28,9 @@ typedef enum _LONG_PRESS_FLAG {
 
 @interface HJChartView()
 
+@property (nonatomic) long rangeFrom;
+@property (nonatomic) long rangeSize;
+
 //candleAreaPadding
 @property (nonatomic) float candleAreaPaddingLeft;
 @property (nonatomic) float candleAreaPaddingRight;
@@ -58,6 +61,8 @@ typedef enum _LONG_PRESS_FLAG {
 @property (nonatomic) float curBeginLongPressPointY;
 @property (nonatomic) float curBeginTouchPointX;
 @property (nonatomic) float curBeginMutipleTouchPointXChange;
+
+@property (nonatomic,strong) NSArray *curDrawModesArray;
 
 @property (nonatomic,strong) NSDictionary *chartLineData;
 @property (nonatomic,strong) NSArray *curMA5Array;
@@ -181,6 +186,20 @@ typedef enum _LONG_PRESS_FLAG {
     [self setNeedsDisplay];
 }
 
+- (void)resetMe
+{
+    self.rangeFrom = -1;
+    self.modelsArray = nil;
+    self.curDrawModesArray = nil;
+    self.chartLineData = nil;
+    self.curMA5Array = nil;
+    self.curMA10Array = nil;
+    self.curMA30Array = nil;
+    self.curMA60Array = nil;
+    
+    [self setNeedsDisplay];
+}
+
 #pragma mark - draw methods
 
 - (void)drawRect:(CGRect)rect
@@ -230,7 +249,7 @@ typedef enum _LONG_PRESS_FLAG {
     float ma30Value = 0.0f;
     float ma60Value = 0.0f;
     
-    if (self.longPressFlag==LONG_PRESS_FLAG_INDEX) {
+    if (self.longPressFlag!=LONG_PRESS_FLAG_INDEX) {
         candleModel = (HJCandleChartModel *)[self.modelsArray lastObject];
         ma5Value = [[((NSArray *)[self.chartLineData dataForKey:@"ma5"]) lastObject] floatValue];
         ma10Value = [[((NSArray *)[self.chartLineData dataForKey:@"ma10"]) lastObject] floatValue];
@@ -962,18 +981,64 @@ typedef enum _LONG_PRESS_FLAG {
 {
     NSMutableArray *array = [[NSMutableArray alloc]initWithCapacity:5];
     
-    for (int i=0; i<[modelsArray count]-1; i++) {
-        HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
-        HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
-        
-        NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
-        NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
-        
-        if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
-            if (![[leftDateArr objectAtIndex:1] isEqualToString:[rightDateArr objectAtIndex:1]]) {
-                [array addObject:[NSNumber numberWithInt:i+1]];
+    switch (self.modelType) {
+        case CHART_MODEL_TYPE_DAY:
+        {
+            for (int i=0; i<[modelsArray count]-1; i++) {
+                HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
+                HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
+                
+                NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
+                NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
+                
+                if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
+                    if (![[leftDateArr objectAtIndex:1] isEqualToString:[rightDateArr objectAtIndex:1]]) {
+                        [array addObject:[NSNumber numberWithInt:i+1]];
+                    }
+                }
             }
         }
+            break;
+        case CHART_MODEL_TYPE_WEEK:
+        {
+            for (int i=0; i<[modelsArray count]-1; i++) {
+                HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
+                HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
+                
+                NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
+                NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
+                
+                if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
+                    if (![[leftDateArr objectAtIndex:1] isEqualToString:[rightDateArr objectAtIndex:1]]) {
+                        int monthValue = [[rightDateArr objectAtIndex:1] intValue];
+                        if (monthValue % 2 == 1) {
+                            [array addObject:[NSNumber numberWithInt:i+1]];
+                        }
+                    }
+                }
+            }
+        }
+            break;
+        case CHART_MODEL_TYPE_MONTH:
+        {
+            for (int i=0; i<[modelsArray count]-1; i++) {
+                HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
+                HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
+                
+                NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
+                NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
+                
+                if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
+                    if (![[leftDateArr objectAtIndex:0] isEqualToString:[rightDateArr objectAtIndex:0]]) {
+                        [array addObject:[NSNumber numberWithInt:i+1]];
+                    }
+                }
+            }
+        }
+            break;
+            
+        default:
+            break;
     }
     
     return array;

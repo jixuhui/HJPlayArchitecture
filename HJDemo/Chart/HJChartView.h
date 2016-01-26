@@ -8,22 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
-typedef enum _HJChartModelType {
-    HJChartModelTypeCandle = 0
-}HJChartModelType;
+typedef enum _CHART_MODEL_TYPE {
+    CHART_MODEL_TYPE_DAY = 0,
+    CHART_MODEL_TYPE_WEEK,
+    CHART_MODEL_TYPE_MONTH
+}CHART_MODEL_TYPE;
 
 @interface HJChartView : UIView
 
 @property(assign,nonatomic) BOOL transformed;
-
 @property (nonatomic,strong) NSArray *modelsArray;
-@property (nonatomic,strong) NSArray *curDrawModesArray;
-@property (nonatomic) HJChartModelType *modelType;
-@property (nonatomic) NSDictionary *layoutDic;
-@property (nonatomic) long rangeFrom;
-@property (nonatomic) long rangeSize;
+@property (nonatomic) CHART_MODEL_TYPE modelType;
 
 - (instancetype)initWithData:(NSArray *)array;
 - (void)renderMe;
+- (void)resetMe;
 
 @end
