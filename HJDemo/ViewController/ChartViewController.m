@@ -16,24 +16,29 @@
     NSString *_stockCode;
     NSString *_candleType;
     CGFloat _statusBarTop;
-    float _candleDateBtnWidth;
     float _candleDateBtnHeight;
-    float _candleDateBtnGap;
 }
 @property (nonatomic,strong)HJChartView *chartView;
 @end
 
 @implementation ChartViewController
+
+- (instancetype)initWithStockInfo:(NSArray *)arr
+{
+    self = [self init];
+    if (self) {
+        _stockCode = [arr firstObject];
+    }
+    return self;
+}
  
 -(void)viewDidLoad
 {
     [super viewDidLoad];
     
     _candleDateBtnHeight = 25;
-    _candleDateBtnWidth = 100;
-    _candleDateBtnGap = 150;
     
-    _stockCode = @"600123";
+//    _stockCode = @"600123";
     _candleType = @"d";
     
     self.chartView = [[HJChartView alloc]init];
@@ -99,9 +104,9 @@
         
         [self.chartView setFrame:CGRectMake(0, 0, size.width, size.height)];
         
-        [self addBackButton];
-        
         [self addCandleDateChangeButtons];
+        
+        [self addBackButton];
     }
 }
 
@@ -125,7 +130,7 @@
 -(void)getURLData
 {
     HJURLTask *task = [[HJURLTask alloc]init];
-    task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@.SS&g=%@",_stockCode,_candleType];
+    task.urlString = [NSString stringWithFormat:@"http://ichart.yahoo.com/table.csv?s=%@&g=%@",_stockCode,_candleType];
     task.responseDataType = @"Serial";
     
     [[HJURLService shareService] handleSessionTask:task success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -133,6 +138,7 @@
         [self generateData:result];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSLog(@"%@,%@",task,error);
+        [self stopLoading];
     }];
 }
 
@@ -245,29 +251,30 @@
 - (void)addCandleDateChangeButtons
 {
     float leftPoint = 50.0f;
+    float width = (CGRectGetWidth(self.chartView.bounds) - leftPoint*2)/3;
     
-    UIButton *dayBtn = [self createDateChangeButtonWithTitle:@"day" pointX:leftPoint];
+    UIButton *dayBtn = [self createDateChangeButtonWithTitle:@"day" pointX:leftPoint width:width];
     
-    leftPoint += _candleDateBtnWidth + _candleDateBtnGap;
+    leftPoint += width;
     
-    UIButton *weekBtn = [self createDateChangeButtonWithTitle:@"week" pointX:leftPoint];
+    UIButton *weekBtn = [self createDateChangeButtonWithTitle:@"week" pointX:leftPoint width:width];
     
-    leftPoint += _candleDateBtnWidth + _candleDateBtnGap;
+    leftPoint += width;
     
-    UIButton *monthBtn = [self createDateChangeButtonWithTitle:@"month" pointX:leftPoint];
+    UIButton *monthBtn = [self createDateChangeButtonWithTitle:@"month" pointX:leftPoint width:width];
     
     [self.chartView addSubview:dayBtn];
     [self.chartView addSubview:weekBtn];
     [self.chartView addSubview:monthBtn];
 }
 
-- (UIButton *)createDateChangeButtonWithTitle:(NSString *)title pointX:(float)left
+- (UIButton *)createDateChangeButtonWithTitle:(NSString *)title pointX:(float)left width:(float)width
 {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     [btn setTitleColor:[UIColor redColor] forState:UIControlStateSelected];
     [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [btn setTitle:title forState:UIControlStateNormal];
-    [btn setFrame:CGRectMake(left, CGRectGetHeight(self.chartView.bounds)-30, _candleDateBtnWidth, 25)];
+    [btn setFrame:CGRectMake(left, CGRectGetHeight(self.chartView.bounds)-30, width, _candleDateBtnHeight)];
     [btn addTarget:self action:NSSelectorFromString([NSString stringWithFormat:@"%@Action",title]) forControlEvents:UIControlEventTouchUpInside];
     
     return btn;

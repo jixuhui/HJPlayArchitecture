@@ -10,6 +10,7 @@
 #import "Masonry.h"
 #import "HJMutipleDelegateViewController.h"
 #import "ChartViewController.h"
+#import "HJStockListViewController.h"
 
 @interface ThirdViewController ()<UITextViewDelegate,UITableViewDataSource,UITableViewDelegate>
 {
@@ -196,8 +197,10 @@
     HJTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if ([cell isKindOfClass:[HJTableViewCell class]]) {
         if ([cell.actionName isEqualToString:@"chart"]) {
-            ChartViewController *chartVC = [[ChartViewController alloc]init];
-            [self.navigationController pushViewController:chartVC animated:YES];
+//            ChartViewController *chartVC = [[ChartViewController alloc]init];
+//            [self.navigationController pushViewController:chartVC animated:YES];
+            HJStockListViewController *stockVC = [[HJStockListViewController alloc]init];
+            [self.navigationController pushViewController:stockVC animated:YES];
         }else if ([cell.actionName isEqualToString:@"del_chart_cache"]) {
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
