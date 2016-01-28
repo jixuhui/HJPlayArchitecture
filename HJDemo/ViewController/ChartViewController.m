@@ -42,7 +42,6 @@
     
     _candleDateBtnHeight = 25;
     
-//    _stockCode = @"600123";
     _candleType = @"d";
     
     self.chartView = [[HJChartView alloc]init];
