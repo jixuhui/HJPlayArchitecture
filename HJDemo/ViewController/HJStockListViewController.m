@@ -25,6 +25,15 @@
     [self initSubviews];
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.navigationController.navigationBar.topItem.title = @"股票列表";
+    
+    [self.contentTableView deselectRowAtIndexPath:[self.contentTableView indexPathForSelectedRow] animated:YES];
+}
+
 - (void)initSubviews
 {
     [self initTableView];

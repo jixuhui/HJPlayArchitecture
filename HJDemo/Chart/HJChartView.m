@@ -279,6 +279,14 @@ typedef enum _LONG_PRESS_FLAG {
     
     STOCK_FLAG flag = [self getStockFlagByCanleData:candleModel];
     
+    if ([self.stockInfo count]==2) {
+        [[NSString stringWithFormat:@"%@",[self.stockInfo lastObject]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
+        
+        [[NSString stringWithFormat:@"%@",[self.stockInfo firstObject]] drawInRect:CGRectMake(curLabelLeft, curLabelTop+labelH+labelGap, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
+        
+        curLabelLeft += labelW + labelGap;
+    }
+    
     [[NSString stringWithFormat:@"Open:%.2f",[candleModel openPrice]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
     
     [[NSString stringWithFormat:@"Close:%.2f",[candleModel closePrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap), curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];

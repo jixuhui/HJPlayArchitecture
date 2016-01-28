@@ -17,8 +17,11 @@
     NSString *_candleType;
     CGFloat _statusBarTop;
     float _candleDateBtnHeight;
+    
+    NSArray *_stockInfo;
 }
 @property (nonatomic,strong)HJChartView *chartView;
+@property (nonatomic,strong)NSArray *stockInfo;
 @end
 
 @implementation ChartViewController
@@ -28,6 +31,7 @@
     self = [self init];
     if (self) {
         _stockCode = [arr firstObject];
+        self.stockInfo = arr;
     }
     return self;
 }
@@ -120,6 +124,7 @@
     if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
         [self stopLoading];
         [self.chartView setModelsArray:stockArr];
+        [self.chartView setStockInfo:self.stockInfo];
         [self.chartView renderMe];
         return YES;
     }else {
@@ -137,8 +142,9 @@
         NSString *result = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
         [self generateData:result];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        NSLog(@"%@,%@",task,error);
+        NSLog(@"%@,%@",task,error.description);
         [self stopLoading];
+        [self showErrorWithStr:error.localizedDescription];
     }];
 }
 
@@ -244,7 +250,7 @@
     UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [backBtn setBackgroundImage:[UIImage imageNamed:@"fullback.png"] forState:UIControlStateNormal];
     [backBtn addTarget:self action:@selector(doBack:) forControlEvents:UIControlEventTouchUpInside];
-    [backBtn setFrame:CGRectMake(10, 10, 90/2, 85/2)];
+    [backBtn setFrame:CGRectMake(0, 10, 90/2, 85/2)];
     [self.chartView addSubview:backBtn];
 }
 
@@ -321,7 +327,12 @@
 
 - (void)startLoading
 {
-    UIView *backgroundView = [[UIView alloc]initWithFrame:self.view.bounds];
+    //因为是view旋转了，所以添加背景视图是在原来的坐标系
+    CGRect rect = self.view.bounds;
+    rect.origin.y = 50;
+    rect.size.height -= 50;
+    
+    UIView *backgroundView = [[UIView alloc]initWithFrame:rect];
     backgroundView.backgroundColor = [UIColor clearColor];
     backgroundView.tag = 101;
     [self.view addSubview:backgroundView];
@@ -341,6 +352,12 @@
     UIActivityIndicatorView *indicatorView = [self.view viewWithTag:102];
     [indicatorView stopAnimating];
     [indicatorView removeFromSuperview];
+}
+
+- (void)showErrorWithStr:(NSString *)str
+{
+    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:str delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+    [alert show];
 }
 
 @end

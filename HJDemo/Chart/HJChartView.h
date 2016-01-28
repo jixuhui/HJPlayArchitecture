@@ -18,6 +18,7 @@ typedef enum _CHART_MODEL_TYPE {
 
 @property(assign,nonatomic) BOOL transformed;
 @property (nonatomic,strong) NSArray *modelsArray;
+@property (nonatomic,strong) NSArray *stockInfo;
 @property (nonatomic) CHART_MODEL_TYPE modelType;
 
 - (instancetype)initWithData:(NSArray *)array;

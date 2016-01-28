@@ -60,6 +60,7 @@
         make.right.mas_equalTo(-self.cellMarginLeft);
         make.top.equalTo(self.contentView.top).with.offset(5);
         make.bottom.equalTo(self.contentView.bottom).with.offset(-5);
+        make.height.mas_greaterThanOrEqualTo(70);
     }];
 }
 
@@ -69,10 +70,10 @@
     [_imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView.left).with.offset(self.cellMarginLeft);
         make.right.equalTo(_titleLabel.left).with.offset(-15);
-//        make.centerY.equalTo(self.contentView.centerY);
-        make.height.mas_equalTo(size.height-10);
-        make.width.mas_equalTo(size.width);
-        make.top.equalTo(self.contentView.top).with.offset(5);
+        make.centerY.equalTo(self.contentView.centerY);
+        make.height.mas_equalTo(50);
+        make.width.mas_equalTo(80);
+//        make.top.equalTo(self.contentView.top).with.offset(5);
     }];
 }
 
