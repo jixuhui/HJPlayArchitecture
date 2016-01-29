@@ -26,6 +26,12 @@ typedef enum _LONG_PRESS_FLAG {
     LONG_PRESS_FLAG_CHANGE_AREA
 }LONG_PRESS_FLAG;
 
+typedef enum _KDJ_FLAG {
+    KDJ_FLAG_K = 0,
+    KDJ_FLAG_D,
+    KDJ_FLAG_J
+}KDJ_FLAG;
+
 @interface HJChartView()
 
 @property (nonatomic) long rangeFrom;
@@ -54,8 +60,9 @@ typedef enum _LONG_PRESS_FLAG {
 @property (nonatomic) float minCandleW;
 @property (nonatomic) float maxCandleW;
 @property (nonatomic) long maxVolume;
-@property (nonatomic) float volumeMaxViewHeight;
+@property (nonatomic) float infoAreaMaxViewHeight;
 @property (nonatomic) float volumeHScale;
+@property (nonatomic) float kdjHScale;
 @property (nonatomic) long curIndex;
 @property (nonatomic) LONG_PRESS_FLAG longPressFlag;
 @property (nonatomic) float curBeginLongPressPointY;
@@ -69,6 +76,10 @@ typedef enum _LONG_PRESS_FLAG {
 @property (nonatomic,strong) NSArray *curMA10Array;
 @property (nonatomic,strong) NSArray *curMA30Array;
 @property (nonatomic,strong) NSArray *curMA60Array;
+
+@property (nonatomic,strong) NSArray *curKArray;
+@property (nonatomic,strong) NSArray *curDArray;
+@property (nonatomic,strong) NSArray *curJArray;
 
 @end
 
@@ -99,11 +110,11 @@ typedef enum _LONG_PRESS_FLAG {
     self.candleYAlixsToEdge = 20;
     
     self.candleAreaPaddingLeft = 50;
-    self.candleAreaPaddingRight = 10;
+    self.candleAreaPaddingRight = 10+50+10;
     self.candleAreaPaddingTop = 90;
     self.candleAreaPaddingDown = 120;
     self.candleAreaMaxPaddingDown = 200;
-    self.candleAreaMinPaddingDown = 80;
+    self.candleAreaMinPaddingDown = 60;
     
     self.candleWithInfoAreaGap = 20;
     self.infoAreaPaddingDown = 40;
@@ -142,7 +153,7 @@ typedef enum _LONG_PRESS_FLAG {
         self.rangeFrom = [self.modelsArray count] - self.rangeSize;
     }
     
-    self.volumeMaxViewHeight = self.candleAreaPaddingDown - self.infoAreaPaddingDown - self.candleWithInfoAreaGap;
+    self.infoAreaMaxViewHeight = self.candleAreaPaddingDown - self.infoAreaPaddingDown - self.candleWithInfoAreaGap;
     
     //重新获取当前需要绘制的Candle数据
     NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom, self.rangeSize)];
@@ -158,8 +169,8 @@ typedef enum _LONG_PRESS_FLAG {
     self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:maSe];
     self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:maSe];
     
-    NSString *maxHighPrice = [NSString stringWithFormat:@"%f",[self getHighPriceFromCurRange]];
-    NSString *minLowPrice = [NSString stringWithFormat:@"%f",[self getLowPriceFromCurRange]];
+    NSString *maxHighPrice = [NSString stringWithFormat:@"%f",[self getHighPriceFromCandleArray:self.curDrawModesArray]];
+    NSString *minLowPrice = [NSString stringWithFormat:@"%f",[self getLowPriceFromCandleArray:self.curDrawModesArray]];
     NSDictionary *ma5Dic = [self getMaxAndMinFromArray:self.curMA5Array];
     NSDictionary *ma10Dic = [self getMaxAndMinFromArray:self.curMA10Array];
     NSDictionary *ma30Dic = [self getMaxAndMinFromArray:self.curMA30Array];
@@ -177,7 +188,15 @@ typedef enum _LONG_PRESS_FLAG {
     
     //volume
     self.maxVolume = [self getMaxVolumeFromCurRange];
-    self.volumeHScale = self.volumeMaxViewHeight/self.maxVolume;
+    self.volumeHScale = self.infoAreaMaxViewHeight/self.maxVolume;
+    
+    //kdj
+    self.kdjHScale = self.infoAreaMaxViewHeight/100.0f;
+    
+    
+    self.curKArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_k"] objectsAtIndexes:maSe];
+    self.curDArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_d"] objectsAtIndexes:maSe];
+    self.curJArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_j"] objectsAtIndexes:maSe];
 }
 
 - (void)renderMe
@@ -191,11 +210,17 @@ typedef enum _LONG_PRESS_FLAG {
     self.rangeFrom = -1;
     self.modelsArray = nil;
     self.curDrawModesArray = nil;
+    
     self.chartLineData = nil;
+    
     self.curMA5Array = nil;
     self.curMA10Array = nil;
     self.curMA30Array = nil;
     self.curMA60Array = nil;
+    
+    self.curKArray = nil;
+    self.curDArray = nil;
+    self.curJArray = nil;
     
     [self setNeedsDisplay];
 }
@@ -211,8 +236,8 @@ typedef enum _LONG_PRESS_FLAG {
         [self drawBackgroundDashLines];
         [self drawYAxis];
         [self drawXAxis];
-        [self drawVolumeTips];
-        [self drawCandleVeiwsAndVolumeViews];
+        [self drawInfoTips];
+        [self drawCandleVeiwsAndInfoViews];
         [self drawMAWithFlag:STOCK_FLAG_MA5];
         [self drawMAWithFlag:STOCK_FLAG_MA10];
         [self drawMAWithFlag:STOCK_FLAG_MA30];
@@ -572,6 +597,69 @@ typedef enum _LONG_PRESS_FLAG {
     }
 }
 
+- (void)drawCandleVeiwsAndInfoViews
+{
+    int i = 0;
+    for (HJCandleChartModel *candle in self.curDrawModesArray) {
+        
+        float pointX = self.candleAreaPaddingLeft + i*(self.candleGap + self.candleW) + self.candleGap;
+        float linePX = pointX + self.candleW/2;
+        
+        float openPricePoint = [self transformPriceToYPoint:candle.openPrice];
+        float closePricePoint = [self transformPriceToYPoint:candle.closePrice];
+        float highPricePoint = [self transformPriceToYPoint:candle.highPrice];
+        float lowPricePoint = [self transformPriceToYPoint:candle.lowPrice];
+        
+        STOCK_FLAG flag = STOCK_FLAG_DEFAULT;
+        
+        if (openPricePoint < closePricePoint) {
+            flag = STOCK_FLAG_DOWN;
+            
+            //跌了 先绘制蜡烛
+            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:flag];
+            
+            //绘制上影线
+            if (highPricePoint != openPricePoint) {
+                [self drawHatchWithPointA:openPricePoint pointB:highPricePoint linePX:linePX flag:flag];
+            }
+            
+            //绘制下影线
+            if (lowPricePoint != closePricePoint) {
+                [self drawHatchWithPointA:closePricePoint pointB:lowPricePoint linePX:linePX flag:flag];
+            }
+        }else {
+            if (openPricePoint > closePricePoint) {
+                flag = STOCK_FLAG_UP;
+            }else {
+                flag = STOCK_FLAG_DEFAULT;
+            }
+            
+            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:flag];
+            
+            if (highPricePoint != closePricePoint) {
+                [self drawHatchWithPointA:closePricePoint pointB:highPricePoint linePX:linePX flag:flag];
+            }
+            
+            if (lowPricePoint != openPricePoint) {
+                [self drawHatchWithPointA:openPricePoint pointB:lowPricePoint linePX:linePX flag:flag];
+            }
+        }
+        
+        if (self.infoType == CHART_INFO_TYPE_VOLUME) {
+            float volumePoint = [self transformVolumeToYPoint:candle.volume];
+            [self drawVolumeWithPoint:volumePoint pointX:pointX flag:flag];
+        }
+        
+        i ++;
+    }
+    
+    if (self.infoType != CHART_INFO_TYPE_VOLUME) {
+        [self drawKDJWithFlag:KDJ_FLAG_K];
+        [self drawKDJWithFlag:KDJ_FLAG_D];
+        [self drawKDJWithFlag:KDJ_FLAG_J];
+    }
+}
+
 - (void)drawCandleWithPointA:(float)pointA pointB:(float)pointB pointX:(float)pointX flag:(STOCK_FLAG)flag
 {
     CGMutablePathRef path = CGPathCreateMutable();
@@ -598,9 +686,8 @@ typedef enum _LONG_PRESS_FLAG {
     CGContextStrokePath(context);
 }
 
-- (void)drawVolumeTips
+- (void)drawInfoTips
 {
-    float labelH = 9;
     UIFont *font = [UIFont systemFontOfSize:8];
     UIColor *color = [self getColorByStockFlag:STOCK_FLAG_DEFAULT];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -610,8 +697,23 @@ typedef enum _LONG_PRESS_FLAG {
                                   NSForegroundColorAttributeName: color,
                                   NSParagraphStyleAttributeName: paragraphStyle };
     
+    switch (self.infoType) {
+        case CHART_INFO_TYPE_VOLUME:
+            [self drawVolumeTipsWithAttributes:attributes];
+            break;
+        case CHART_INFO_TYPE_KDJ:
+            [self drawKDJTipsWithAttributes:attributes];
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)drawVolumeTipsWithAttributes:(NSDictionary *)attributes
+{
+    float labelH = 9;
     NSString *maxVolumeStr = [self transformToUnitWithVolume:self.maxVolume];
-    
     NSArray *maxVolumeArray = [maxVolumeStr componentsSeparatedByString:@","];
     
     if (CHECK_VALID_ARRAY(maxVolumeArray)) {
@@ -622,6 +724,14 @@ typedef enum _LONG_PRESS_FLAG {
             [@"0" drawInRect:CGRectMake(0, [self transformVolumeToYPoint:0] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
         }
     }
+}
+
+- (void)drawKDJTipsWithAttributes:(NSDictionary *)attributes
+{
+    float labelH = 9;
+    [@"100" drawInRect:CGRectMake(0, [self transformKDJToYPoint:100] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [@"50" drawInRect:CGRectMake(0, [self transformKDJToYPoint:50] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [@"0" drawInRect:CGRectMake(0, [self transformKDJToYPoint:0] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
 }
 
 - (void)drawVolumeWithPoint:(float)volumeYPoint pointX:(float)pointX flag:(STOCK_FLAG)flag
@@ -657,6 +767,31 @@ typedef enum _LONG_PRESS_FLAG {
         }else {
             pointX = self.candleAreaPaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
             CGContextAddLineToPoint(context, pointX, [self transformPriceToYPoint:maValue]);
+        }
+    }
+    
+    CGContextStrokePath(context);
+}
+
+- (void)drawKDJWithFlag:(KDJ_FLAG)flag
+{
+    NSArray *kdjArr = [self getKDJArrayByFlag:flag];
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 0.5);
+    [[self getColorByKDJFlag:flag] setStroke];
+    CGContextBeginPath(context);
+    
+    for (int i=0; i<[kdjArr count]; i++) {
+        float maValue = [[kdjArr objectAtIndex:i] floatValue];
+        float pointX = self.candleAreaPaddingLeft;
+        
+        if (i==0) {
+            CGContextMoveToPoint(context, pointX, [self transformKDJToYPoint:maValue]);
+        }else {
+            pointX = self.candleAreaPaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
+            CGContextAddLineToPoint(context, pointX, [self transformKDJToYPoint:maValue]);
         }
     }
     
@@ -773,50 +908,46 @@ typedef enum _LONG_PRESS_FLAG {
 //    }
 //    dic[@"wr"] = wr;
 //    
-//    //KDJ
-//    NSMutableArray *kdj_k = [[NSMutableArray alloc] init];
-//    NSMutableArray *kdj_d = [[NSMutableArray alloc] init];
-//    NSMutableArray *kdj_j = [[NSMutableArray alloc] init];
-//    float prev_k = 50;
-//    float prev_d = 50;
-//    float rsv = 0;
-//    for(int i = 60;i < data.count;i++){
-//        float h  = [[data[i] objectAtIndex:2] floatValue];
-//        float l = [[data[i] objectAtIndex:3] floatValue];
-//        float c = [[data[i] objectAtIndex:1] floatValue];
-//        for(int j=i;j>i-10;j--){
-//            if([[data[j] objectAtIndex:2] floatValue] > h){
-//                h = [[data[j] objectAtIndex:2] floatValue];
-//            }
-//            
-//            if([[data[j] objectAtIndex:3] floatValue] < l){
-//                l = [[data[j] objectAtIndex:3] floatValue];
-//            }
-//        }
-//        
-//        if(h!=l)
-//            rsv = (c-l)/(h-l)*100;
-//        float k = 2*prev_k/3+1*rsv/3;
-//        float d = 2*prev_d/3+1*k/3;
-//        float j = d+2*(d-k);
-//        
-//        prev_k = k;
-//        prev_d = d;
-//        
-//        NSMutableArray *itemK = [[NSMutableArray alloc] init];
-//        [itemK addObject:[@"" stringByAppendingFormat:@"%f",k]];
-//        [kdj_k addObject:itemK];
-//        NSMutableArray *itemD = [[NSMutableArray alloc] init];
-//        [itemD addObject:[@"" stringByAppendingFormat:@"%f",d]];
-//        [kdj_d addObject:itemD];
-//        NSMutableArray *itemJ = [[NSMutableArray alloc] init];
-//        [itemJ addObject:[@"" stringByAppendingFormat:@"%f",j]];
-//        [kdj_j addObject:itemJ];
-//    }
-//    dic[@"kdj_k"] = kdj_k;
-//    dic[@"kdj_d"] = kdj_d;
-//    dic[@"kdj_j"] = kdj_j;
-//    
+    //KDJ
+    NSMutableArray *kdj_k = [[NSMutableArray alloc] init];
+    NSMutableArray *kdj_d = [[NSMutableArray alloc] init];
+    NSMutableArray *kdj_j = [[NSMutableArray alloc] init];
+    float prev_k = 50;
+    float prev_d = 50;
+    float rsv = 0;
+    for(int i = 0;i < self.modelsArray.count;i++){
+        
+        float k = 50.0f;
+        float d = 50.0f;
+        float j = 50.0f;
+        
+        if (i>=8) {
+            
+            NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(i-8, 9)];
+            NSArray *curArray = [self.modelsArray objectsAtIndexes:se];
+            
+            float h = [self getHighPriceFromCandleArray:curArray];
+            float l = [self getLowPriceFromCandleArray:curArray];
+            float c = [[self.modelsArray objectAtIndex:i] closePrice];
+            
+            if(h!=l)
+                rsv = (c-l)/(h-l)*100;
+            k = 2*prev_k/3+1*rsv/3;
+            d = 2*prev_d/3+1*k/3;
+            j = d+2*(d-k);
+        }
+        
+        prev_k = k;
+        prev_d = d;
+        
+        [kdj_k addObject:[@"" stringByAppendingFormat:@"%f",k]];
+        [kdj_d addObject:[@"" stringByAppendingFormat:@"%f",d]];
+        [kdj_j addObject:[@"" stringByAppendingFormat:@"%f",j]];
+    }
+    dic[@"kdj_k"] = kdj_k;
+    dic[@"kdj_d"] = kdj_d;
+    dic[@"kdj_j"] = kdj_j;
+
 //    //VR
 //    NSMutableArray *vr = [[NSMutableArray alloc] init];
 //    for(int i = 60;i < data.count;i++){
@@ -868,7 +999,47 @@ typedef enum _LONG_PRESS_FLAG {
     return maArray;
 }
 
-- (float)getHighPriceFromCurRange
+//- (float)getHighPriceFromCurRange
+//{
+//    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
+//        
+//        if ([obj1 highPrice] > [obj2 highPrice]) {
+//            return (NSComparisonResult)NSOrderedDescending;
+//        }
+//        
+//        if ([obj1 highPrice] < [obj2 highPrice]) {
+//            return (NSComparisonResult)NSOrderedAscending;
+//        }
+//        
+//        return (NSComparisonResult)NSOrderedSame;
+//    };
+//    
+//    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
+//    HJCandleChartModel *highModel = [array lastObject];
+//    return highModel.highPrice;
+//}
+//
+//- (float)getLowPriceFromCurRange
+//{
+//    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
+//        
+//        if ([obj1 lowPrice] < [obj2 lowPrice]) {
+//            return (NSComparisonResult)NSOrderedDescending;
+//        }
+//        
+//        if ([obj1 lowPrice] > [obj2 lowPrice]) {
+//            return (NSComparisonResult)NSOrderedAscending;
+//        }
+//        
+//        return (NSComparisonResult)NSOrderedSame;
+//    };
+//    
+//    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
+//    HJCandleChartModel *lowModel = [array lastObject];
+//    return lowModel.lowPrice;
+//}
+
+- (float)getHighPriceFromCandleArray:(NSArray *)candleArray
 {
     NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
         
@@ -883,12 +1054,12 @@ typedef enum _LONG_PRESS_FLAG {
         return (NSComparisonResult)NSOrderedSame;
     };
     
-    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
+    NSArray *array = [candleArray sortedArrayUsingComparator:cmptr];
     HJCandleChartModel *highModel = [array lastObject];
     return highModel.highPrice;
 }
 
-- (float)getLowPriceFromCurRange
+- (float)getLowPriceFromCandleArray:(NSArray *)candleArray
 {
     NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
         
@@ -903,7 +1074,7 @@ typedef enum _LONG_PRESS_FLAG {
         return (NSComparisonResult)NSOrderedSame;
     };
     
-    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
+    NSArray *array = [candleArray sortedArrayUsingComparator:cmptr];
     HJCandleChartModel *lowModel = [array lastObject];
     return lowModel.lowPrice;
 }
@@ -1062,6 +1233,11 @@ typedef enum _LONG_PRESS_FLAG {
     return CGRectGetHeight(self.bounds) - volume*self.volumeHScale - self.infoAreaPaddingDown;
 }
 
+- (float)transformKDJToYPoint:(float)kdjValue
+{
+    return CGRectGetHeight(self.bounds) - kdjValue*self.kdjHScale - self.infoAreaPaddingDown;
+}
+
 - (NSDictionary *)getTopInfoAttributesByFlag:(STOCK_FLAG)flag
 {
     UIFont *font = [UIFont systemFontOfSize:12];
@@ -1109,14 +1285,31 @@ typedef enum _LONG_PRESS_FLAG {
     }
 }
 
+
+- (UIColor *)getColorByKDJFlag:(KDJ_FLAG)flag
+{
+    switch (flag) {
+        case KDJ_FLAG_K:
+            return [UIColor colorWithRed:0.18f green:0.69f blue:0.19f alpha:0.8f];
+            break;
+        case KDJ_FLAG_D:
+            return [UIColor colorWithRed:0.94f green:0.27f blue:0.20f alpha:0.8f];
+            break;
+        case KDJ_FLAG_J:
+            return [UIColor colorWithRed:0.8f green:0.68f blue:0.36f alpha:0.8f];
+            break;
+        default:
+            return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+            break;
+    }
+}
+
 - (UIColor *)getColorByLongPressFlag:(LONG_PRESS_FLAG)flag
 {
     switch (flag) {
         case LONG_PRESS_FLAG_INDEX:
             return [UIColor colorWithRed:44.0f/255.0f green:189.0f/255.0f blue:289.0f/255.0f alpha:1];
             break;
-        case LONG_PRESS_FLAG_CHANGE_AREA:
-            return [UIColor colorWithRed:0.99f green:0.69f blue:0.19f alpha:1];
             break;
             
         default:
@@ -1218,6 +1411,33 @@ typedef enum _LONG_PRESS_FLAG {
     }
     
     return maArr;
+}
+
+- (NSArray *)getKDJArrayByFlag:(KDJ_FLAG)flag
+{
+    NSArray *kdjArr = nil;
+    
+    switch (flag) {
+        case KDJ_FLAG_K:
+        {
+            kdjArr = self.curKArray;
+        }
+            break;
+        case KDJ_FLAG_D:
+        {
+            kdjArr = self.curDArray;
+        }
+            break;
+        case KDJ_FLAG_J:
+        {
+            kdjArr = self.curJArray;
+        }
+            break;
+        default:
+            break;
+    }
+    
+    return kdjArr;
 }
 
 - (NSString *)getUnitNameByNumber:(float)unitNum

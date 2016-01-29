@@ -11,17 +11,22 @@
 #import "HJCandleChartModel.h"
 #import "HJChartView.h"
 
+#import "HJArchitecture.h"
+
 @interface ChartViewController()
 {
     NSString *_stockCode;
     NSString *_candleType;
+    NSString *_candleInfoType;
     CGFloat _statusBarTop;
     float _candleDateBtnHeight;
     
-    NSArray *_stockInfo;
+    NSMutableArray *_stockInfo;
+    
+    NSMutableArray *_candleDateBtnArr;
+    NSMutableArray *_candleInfoBtnArr;
 }
 @property (nonatomic,strong)HJChartView *chartView;
-@property (nonatomic,strong)NSArray *stockInfo;
 @end
 
 @implementation ChartViewController
@@ -31,7 +36,10 @@
     self = [self init];
     if (self) {
         _stockCode = [arr firstObject];
-        self.stockInfo = arr;
+        _stockInfo = [NSMutableArray arrayWithArray:arr];
+        
+        _candleDateBtnArr = [[NSMutableArray alloc] initWithCapacity:3];
+        _candleInfoBtnArr = [[NSMutableArray alloc] initWithCapacity:5];
     }
     return self;
 }
@@ -109,6 +117,8 @@
         
         [self addCandleDateChangeButtons];
         
+        [self addCandleLineScrollView];
+        
         [self addBackButton];
     }
 }
@@ -123,7 +133,7 @@
     if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
         [self stopLoading];
         [self.chartView setModelsArray:stockArr];
-        [self.chartView setStockInfo:self.stockInfo];
+        [self.chartView setStockInfo:_stockInfo];
         [self.chartView renderMe];
         return YES;
     }else {
@@ -271,6 +281,40 @@
     [self.chartView addSubview:dayBtn];
     [self.chartView addSubview:weekBtn];
     [self.chartView addSubview:monthBtn];
+    
+    [_candleDateBtnArr addObject:dayBtn];
+    [_candleDateBtnArr addObject:weekBtn];
+    [_candleDateBtnArr addObject:monthBtn];
+}
+
+- (void)addCandleLineScrollView
+{
+    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.chartView.bounds)-60, 90, 50, CGRectGetHeight(self.chartView.bounds)-130)];
+    scrollView.backgroundColor = [UIColor clearColor];
+    [self.chartView addSubview:scrollView];
+    
+    HJButton *volumeBtn = [self createCandleLineBaseButtonWithActionName:@"volume"];
+    [volumeBtn setFrame:CGRectMake(0, 0, 50, 30)];
+    [scrollView addSubview:volumeBtn];
+    [_candleInfoBtnArr addObject:volumeBtn];
+    
+    HJButton *kdjBtn = [self createCandleLineBaseButtonWithActionName:@"kdj"];
+    [kdjBtn setFrame:CGRectMake(0, 50, 50, 30)];
+    [scrollView addSubview:kdjBtn];
+    [_candleInfoBtnArr addObject:kdjBtn];
+}
+
+- (HJButton *)createCandleLineBaseButtonWithActionName:(NSString *)actionName
+{
+    HJButton *btn = [HJButton buttonWithType:UIButtonTypeCustom];
+    btn.actionName = actionName;
+    [btn setTitleColor:[UIColor grayColor] forState:UIControlStateSelected];
+    [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [btn setTitle:actionName forState:UIControlStateNormal];
+    btn.titleLabel.font = [UIFont systemFontOfSize:10];
+    [btn addTarget:self action:@selector(doAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    return btn;
 }
 
 - (UIButton *)createDateChangeButtonWithTitle:(NSString *)title pointX:(float)left width:(float)width
@@ -285,24 +329,60 @@
     return btn;
 }
 
+#pragma mark - actions
+
+- (void)doAction:(HJButton *)sender
+{
+    _candleInfoType = sender.actionName;
+    
+    if ([sender.actionName isEqualToString:@"volume"]) {
+        self.chartView.infoType = CHART_INFO_TYPE_VOLUME;
+    }else if ([sender.actionName isEqualToString:@"kdj"]) {
+        self.chartView.infoType = CHART_INFO_TYPE_KDJ;
+    }
+    
+    for (HJButton *btn in _candleInfoBtnArr) {
+        if ([btn.actionName isEqualToString:_candleInfoType]) {
+            btn.selected = YES;
+        }else {
+            btn.selected = NO;
+        }
+    }
+    
+    [self.chartView setNeedsDisplay];
+}
+
 - (void)dayAction
 {
     _candleType = @"d";
     self.chartView.modelType = CHART_MODEL_TYPE_DAY;
-    [self doPublicAction];
+    [self doDatePublicAction];
 }
 
 - (void)weekAction
 {
     _candleType = @"w";
     self.chartView.modelType = CHART_MODEL_TYPE_WEEK;
-    [self doPublicAction];
+    [self doDatePublicAction];
 }
 
 - (void)monthAction
 {
     _candleType = @"m";
     self.chartView.modelType = CHART_MODEL_TYPE_MONTH;
+    [self doDatePublicAction];
+}
+
+- (void)doDatePublicAction
+{
+    for (UIButton *btn in _candleDateBtnArr) {
+        if ([btn.titleLabel.text hasPrefix:_candleType]) {
+            btn.selected = YES;
+        }else {
+            btn.selected = NO;
+        }
+    }
+    
     [self doPublicAction];
 }
 

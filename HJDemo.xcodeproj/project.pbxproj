@@ -54,6 +54,7 @@
 		A767380F1C44E25800FE055A /* HJChartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A767380E1C44E25800FE055A /* HJChartModel.m */; };
 		A76E2BE31C50E04D004E5173 /* fullback@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A76E2BE21C50E04D004E5173 /* fullback@3x.png */; };
 		A78FD2B41BFC81E800529A40 /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */; };
+		A7976CB21C5B601100F055D0 /* HJButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A7976CB11C5B601100F055D0 /* HJButton.m */; };
 		A7DAEC851C1A82D100C1C237 /* HJParallaxHeaderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC841C1A82D000C1C237 /* HJParallaxHeaderManager.m */; };
 		A7DAEC881C1AA04E00C1C237 /* HJNavigationBarGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC871C1AA04E00C1C237 /* HJNavigationBarGradientManager.m */; };
 		A7DAEC8E1C1AA10600C1C237 /* UINavigationBar+HJExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DAEC8D1C1AA10600C1C237 /* UINavigationBar+HJExtention.m */; };
@@ -207,6 +208,8 @@
 		A76E2BE21C50E04D004E5173 /* fullback@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fullback@3x.png"; sourceTree = "<group>"; };
 		A78991F71BECA76F0093445D /* HJDemo-prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HJDemo-prefix.pch"; sourceTree = "<group>"; };
 		A78FD2B31BFC81E800529A40 /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
+		A7976CB01C5B601100F055D0 /* HJButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJButton.h; sourceTree = "<group>"; };
+		A7976CB11C5B601100F055D0 /* HJButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJButton.m; sourceTree = "<group>"; };
 		A7DAEC831C1A82D000C1C237 /* HJParallaxHeaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJParallaxHeaderManager.h; sourceTree = "<group>"; };
 		A7DAEC841C1A82D000C1C237 /* HJParallaxHeaderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJParallaxHeaderManager.m; sourceTree = "<group>"; };
 		A7DAEC861C1AA04E00C1C237 /* HJNavigationBarGradientManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJNavigationBarGradientManager.h; sourceTree = "<group>"; };
@@ -353,6 +356,8 @@
 				A75C22F41C4652D600065EAD /* IHJViewBindDataProtocol.h */,
 				A75C22F51C4652D600065EAD /* NSObject+HJDataParse.h */,
 				A75C22F61C4652D600065EAD /* NSObject+HJDataParse.m */,
+				A7976CB01C5B601100F055D0 /* HJButton.h */,
+				A7976CB11C5B601100F055D0 /* HJButton.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -851,6 +856,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A75C23311C47721300065EAD /* HJCandleChartModel.m in Sources */,
+				A7976CB21C5B601100F055D0 /* HJButton.m in Sources */,
 				A75C232B1C4652D600065EAD /* HJURLService.m in Sources */,
 				A75C231F1C4652D600065EAD /* NSObject+HJDataParse.m in Sources */,
 				04C6012E1BF7864C00CF76B5 /* DataSource.swift in Sources */,
