@@ -554,61 +554,6 @@ typedef enum _KDJ_FLAG {
     }
 }
 
-- (void)drawCandleVeiwsAndVolumeViews
-{
-    int i = 0;
-    for (HJCandleChartModel *candle in self.curDrawModesArray) {
-        
-        float pointX = self.candleAreaPaddingLeft + i*(self.candleGap + self.candleW) + self.candleGap;
-        float linePX = pointX + self.candleW/2;
-        
-        float openPricePoint = [self transformPriceToYPoint:candle.openPrice];
-        float closePricePoint = [self transformPriceToYPoint:candle.closePrice];
-        float highPricePoint = [self transformPriceToYPoint:candle.highPrice];
-        float lowPricePoint = [self transformPriceToYPoint:candle.lowPrice];
-        
-        STOCK_FLAG flag = STOCK_FLAG_DEFAULT;
-        
-        if (openPricePoint < closePricePoint) {
-            flag = STOCK_FLAG_DOWN;
-            
-            //跌了 先绘制蜡烛
-            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:flag];
-            
-            //绘制上影线
-            if (highPricePoint != openPricePoint) {
-                [self drawHatchWithPointA:openPricePoint pointB:highPricePoint linePX:linePX flag:flag];
-            }
-            
-            //绘制下影线
-            if (lowPricePoint != closePricePoint) {
-                [self drawHatchWithPointA:closePricePoint pointB:lowPricePoint linePX:linePX flag:flag];
-            }
-        }else {
-            if (openPricePoint > closePricePoint) {
-                flag = STOCK_FLAG_UP;
-            }else {
-                flag = STOCK_FLAG_DEFAULT;
-            }
-            
-            [self drawCandleWithPointA:openPricePoint pointB:closePricePoint pointX:pointX flag:flag];
-            
-            if (highPricePoint != closePricePoint) {
-                [self drawHatchWithPointA:closePricePoint pointB:highPricePoint linePX:linePX flag:flag];
-            }
-            
-            if (lowPricePoint != openPricePoint) {
-                [self drawHatchWithPointA:openPricePoint pointB:lowPricePoint linePX:linePX flag:flag];
-            }
-        }
-        
-        float volumePoint = [self transformVolumeToYPoint:candle.volume];
-        [self drawVolumeWithPoint:volumePoint pointX:pointX flag:flag];
-        
-        i ++;
-    }
-}
-
 - (void)drawCandleVeiwsAndInfoViews
 {
     int i = 0;
@@ -705,9 +650,9 @@ typedef enum _KDJ_FLAG {
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentRight;
-    NSDictionary *attributes = @{ NSFontAttributeName: font,
-                                  NSForegroundColorAttributeName: color,
-                                  NSParagraphStyleAttributeName: paragraphStyle };
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithDictionary:@{NSFontAttributeName: font,
+NSForegroundColorAttributeName: color,
+NSParagraphStyleAttributeName: paragraphStyle}];
     
     switch (self.infoType) {
         case CHART_INFO_TYPE_VOLUME:
@@ -736,44 +681,9 @@ typedef enum _KDJ_FLAG {
             [@"0" drawInRect:CGRectMake(0, [self transformVolumeToYPoint:0] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
         }
     }
-    
-    float left = self.candleAreaPaddingLeft + 2;
-    float top = CGRectGetHeight(self.bounds)-self.infoAreaMaxViewHeight-self.infoAreaPaddingDown + 2;
-    float gap = 10;
-    
-    if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
-        
-        NSString *kStr = [NSString stringWithFormat:@"k:%@",[self.curKArray lastObject]];
-        float kLen = [kStr sizeWithAttributes:attributes].width;
-        
-        NSString *dStr = [NSString stringWithFormat:@"d:%@",[self.curDArray lastObject]];
-        float dLen = [dStr sizeWithAttributes:attributes].width;
-        
-        NSString *jStr = [NSString stringWithFormat:@"j:%@",[self.curJArray lastObject]];
-        float jLen = [jStr sizeWithAttributes:attributes].width;
-        
-        if (self.curIndex < floor([self.curDrawModesArray count]/2)) {
-            left = CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - kLen - dLen - jLen - gap*2;
-        }
-        
-        [kStr drawInRect:CGRectMake(left, top, kLen, labelH) withAttributes:attributes];
-        
-        left += kLen + gap;
-        
-        [kStr drawInRect:CGRectMake(left, top, dLen, labelH) withAttributes:attributes];
-        
-        left += dLen + gap;
-        
-        [kStr drawInRect:CGRectMake(left, top, jLen, labelH) withAttributes:attributes];
-    }else {
-        NSString *kdjStr = [NSString stringWithFormat:@"KDJ[9,3,3]"];
-        float kdjLen = [kdjStr sizeWithAttributes:attributes].width;
-        
-        [kdjStr drawInRect:CGRectMake(left, top, kdjLen, labelH) withAttributes:attributes];
-    }
 }
 
-- (void)drawKDJTipsWithAttributes:(NSDictionary *)attributes
+- (void)drawKDJTipsWithAttributes:(NSMutableDictionary *)attributes
 {
     float labelH = 9;
     float averageValue = (self.maxKDJValue - self.minKDJValue)/2;
@@ -781,6 +691,44 @@ typedef enum _KDJ_FLAG {
     [[NSString stringWithFormat:@"%.2f",self.maxKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.maxKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
     [[NSString stringWithFormat:@"%.2f",averageValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:averageValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
     [[NSString stringWithFormat:@"%.2f",self.minKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.minKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    
+    float left = self.candleAreaPaddingLeft + 2;
+    float top = CGRectGetHeight(self.bounds)-self.infoAreaMaxViewHeight-self.infoAreaPaddingDown + 2;
+    float gap = 10;
+    
+    if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
+        
+        NSString *kStr = [NSString stringWithFormat:@"k:%@",[self.curKArray objectAtIndex:self.curIndex]];
+        float kLen = [kStr sizeWithAttributes:attributes].width;
+        
+        NSString *dStr = [NSString stringWithFormat:@"d:%@",[self.curDArray objectAtIndex:self.curIndex]];
+        float dLen = [dStr sizeWithAttributes:attributes].width;
+        
+        NSString *jStr = [NSString stringWithFormat:@"j:%@",[self.curJArray objectAtIndex:self.curIndex]];
+        float jLen = [jStr sizeWithAttributes:attributes].width;
+        
+        if (self.curIndex < floor([self.curDrawModesArray count]/2)) {
+            left = CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - kLen - dLen - jLen - gap*2;
+        }
+        
+        [attributes setValue:[self getColorByKDJFlag:KDJ_FLAG_K] forKey:NSForegroundColorAttributeName];
+        [kStr drawInRect:CGRectMake(left, top, kLen, labelH) withAttributes:attributes];
+        
+        left += kLen + gap;
+        
+        [attributes setValue:[self getColorByKDJFlag:KDJ_FLAG_D] forKey:NSForegroundColorAttributeName];
+        [dStr drawInRect:CGRectMake(left, top, dLen, labelH) withAttributes:attributes];
+        
+        left += dLen + gap;
+        
+        [attributes setValue:[self getColorByKDJFlag:KDJ_FLAG_J] forKey:NSForegroundColorAttributeName];
+        [jStr drawInRect:CGRectMake(left, top, jLen, labelH) withAttributes:attributes];
+    }else {
+        NSString *kdjStr = [NSString stringWithFormat:@"KDJ[9,3,3]"];
+        float kdjLen = [kdjStr sizeWithAttributes:attributes].width;
+        
+        [kdjStr drawInRect:CGRectMake(left, top, kdjLen, labelH) withAttributes:attributes];
+    }
 }
 
 - (void)drawVolumeWithPoint:(float)volumeYPoint pointX:(float)pointX flag:(STOCK_FLAG)flag

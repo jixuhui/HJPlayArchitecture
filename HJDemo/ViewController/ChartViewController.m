@@ -297,6 +297,7 @@
     [volumeBtn setFrame:CGRectMake(0, 0, 50, 30)];
     [scrollView addSubview:volumeBtn];
     [_candleInfoBtnArr addObject:volumeBtn];
+    [self doAction:volumeBtn];
     
     HJButton *kdjBtn = [self createCandleLineBaseButtonWithActionName:@"kdj"];
     [kdjBtn setFrame:CGRectMake(0, 50, 50, 30)];
