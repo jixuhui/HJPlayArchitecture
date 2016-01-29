@@ -80,6 +80,8 @@ typedef enum _KDJ_FLAG {
 @property (nonatomic,strong) NSArray *curKArray;
 @property (nonatomic,strong) NSArray *curDArray;
 @property (nonatomic,strong) NSArray *curJArray;
+@property (nonatomic) float maxKDJValue;
+@property (nonatomic) float minKDJValue;
 
 @end
 
@@ -190,13 +192,23 @@ typedef enum _KDJ_FLAG {
     self.maxVolume = [self getMaxVolumeFromCurRange];
     self.volumeHScale = self.infoAreaMaxViewHeight/self.maxVolume;
     
-    //kdj
-    self.kdjHScale = self.infoAreaMaxViewHeight/100.0f;
-    
-    
     self.curKArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_k"] objectsAtIndexes:maSe];
     self.curDArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_d"] objectsAtIndexes:maSe];
     self.curJArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_j"] objectsAtIndexes:maSe];
+    
+    
+    NSDictionary *kDic = [self getMaxAndMinFromArray:self.curKArray];
+    NSDictionary *dDic = [self getMaxAndMinFromArray:self.curDArray];
+    NSDictionary *jDic = [self getMaxAndMinFromArray:self.curJArray];
+    
+    NSArray *maxKDJArr = @[kDic[@"max"],dDic[@"max"],jDic[@"max"]];
+    NSArray *minKDJArr = @[kDic[@"min"],dDic[@"min"],jDic[@"min"]];
+    
+    //kdj
+    self.maxKDJValue = [self getMaxFromArray:maxKDJArr];
+    self.minKDJValue = [self getMinFromArray:minKDJArr];
+    
+    self.kdjHScale = self.infoAreaMaxViewHeight/(self.maxKDJValue - self.minKDJValue);
 }
 
 - (void)renderMe
@@ -724,14 +736,51 @@ typedef enum _KDJ_FLAG {
             [@"0" drawInRect:CGRectMake(0, [self transformVolumeToYPoint:0] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
         }
     }
+    
+    float left = self.candleAreaPaddingLeft + 2;
+    float top = CGRectGetHeight(self.bounds)-self.infoAreaMaxViewHeight-self.infoAreaPaddingDown + 2;
+    float gap = 10;
+    
+    if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
+        
+        NSString *kStr = [NSString stringWithFormat:@"k:%@",[self.curKArray lastObject]];
+        float kLen = [kStr sizeWithAttributes:attributes].width;
+        
+        NSString *dStr = [NSString stringWithFormat:@"d:%@",[self.curDArray lastObject]];
+        float dLen = [dStr sizeWithAttributes:attributes].width;
+        
+        NSString *jStr = [NSString stringWithFormat:@"j:%@",[self.curJArray lastObject]];
+        float jLen = [jStr sizeWithAttributes:attributes].width;
+        
+        if (self.curIndex < floor([self.curDrawModesArray count]/2)) {
+            left = CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - kLen - dLen - jLen - gap*2;
+        }
+        
+        [kStr drawInRect:CGRectMake(left, top, kLen, labelH) withAttributes:attributes];
+        
+        left += kLen + gap;
+        
+        [kStr drawInRect:CGRectMake(left, top, dLen, labelH) withAttributes:attributes];
+        
+        left += dLen + gap;
+        
+        [kStr drawInRect:CGRectMake(left, top, jLen, labelH) withAttributes:attributes];
+    }else {
+        NSString *kdjStr = [NSString stringWithFormat:@"KDJ[9,3,3]"];
+        float kdjLen = [kdjStr sizeWithAttributes:attributes].width;
+        
+        [kdjStr drawInRect:CGRectMake(left, top, kdjLen, labelH) withAttributes:attributes];
+    }
 }
 
 - (void)drawKDJTipsWithAttributes:(NSDictionary *)attributes
 {
     float labelH = 9;
-    [@"100" drawInRect:CGRectMake(0, [self transformKDJToYPoint:100] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
-    [@"50" drawInRect:CGRectMake(0, [self transformKDJToYPoint:50] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
-    [@"0" drawInRect:CGRectMake(0, [self transformKDJToYPoint:0] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    float averageValue = (self.maxKDJValue - self.minKDJValue)/2;
+    
+    [[NSString stringWithFormat:@"%.2f",self.maxKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.maxKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",averageValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:averageValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.minKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.minKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
 }
 
 - (void)drawVolumeWithPoint:(float)volumeYPoint pointX:(float)pointX flag:(STOCK_FLAG)flag
@@ -1235,7 +1284,7 @@ typedef enum _KDJ_FLAG {
 
 - (float)transformKDJToYPoint:(float)kdjValue
 {
-    return CGRectGetHeight(self.bounds) - kdjValue*self.kdjHScale - self.infoAreaPaddingDown;
+    return CGRectGetHeight(self.bounds) - (kdjValue - self.minKDJValue)*self.kdjHScale - self.infoAreaPaddingDown;
 }
 
 - (NSDictionary *)getTopInfoAttributesByFlag:(STOCK_FLAG)flag
