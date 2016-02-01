@@ -136,83 +136,16 @@
     //    dic[@"vol"] = vol;
     
     //MA
-    dic[@"ma5"] = [self calculateMAWithDays:@"5"];
-    dic[@"ma10"] = [self calculateMAWithDays:@"10"];
-    dic[@"ma30"] = [self calculateMAWithDays:@"30"];
-    dic[@"ma60"] = [self calculateMAWithDays:@"60"];
+    dic[@"ma5"] = [self calculateMAWithDays:5];
+    dic[@"ma10"] = [self calculateMAWithDays:10];
+    dic[@"ma30"] = [self calculateMAWithDays:30];
+    dic[@"ma60"] = [self calculateMAWithDays:60];
     
-    //    //RSI6
-    //    NSMutableArray *rsi6 = [[NSMutableArray alloc] init];
-    //    for(int i = 60;i < data.count;i++){
-    //        float incVal  = 0;
-    //        float decVal = 0;
-    //        float rs = 0;
-    //        for(int j=i;j>i-6;j--){
-    //            float interval = [[data[j] objectAtIndex:1] floatValue]-[[data[j] objectAtIndex:0] floatValue];
-    //            if(interval >= 0){
-    //                incVal += interval;
-    //            }else{
-    //                decVal -= interval;
-    //            }
-    //        }
-    //
-    //        rs = incVal/decVal;
-    //        float rsi =100-100/(1+rs);
-    //
-    //        NSMutableArray *item = [[NSMutableArray alloc] init];
-    //        [item addObject:[@"" stringByAppendingFormat:@"%f",rsi]];
-    //        [rsi6 addObject:item];
-    //
-    //    }
-    //    dic[@"rsi6"] = rsi6;
-    //
-    //    //RSI12
-    //    NSMutableArray *rsi12 = [[NSMutableArray alloc] init];
-    //    for(int i = 60;i < data.count;i++){
-    //        float incVal  = 0;
-    //        float decVal = 0;
-    //        float rs = 0;
-    //        for(int j=i;j>i-12;j--){
-    //            float interval = [[data[j] objectAtIndex:1] floatValue]-[[data[j] objectAtIndex:0] floatValue];
-    //            if(interval >= 0){
-    //                incVal += interval;
-    //            }else{
-    //                decVal -= interval;
-    //            }
-    //        }
-    //
-    //        rs = incVal/decVal;
-    //        float rsi =100-100/(1+rs);
-    //
-    //        NSMutableArray *item = [[NSMutableArray alloc] init];
-    //        [item addObject:[@"" stringByAppendingFormat:@"%f",rsi]];
-    //        [rsi12 addObject:item];
-    //    }
-    //    dic[@"rsi12"] = rsi12;
-    //
-    //    //WR
-    //    NSMutableArray *wr = [[NSMutableArray alloc] init];
-    //    for(int i = 60;i < data.count;i++){
-    //        float h  = [[data[i] objectAtIndex:2] floatValue];
-    //        float l = [[data[i] objectAtIndex:3] floatValue];
-    //        float c = [[data[i] objectAtIndex:1] floatValue];
-    //        for(int j=i;j>i-10;j--){
-    //            if([[data[j] objectAtIndex:2] floatValue] > h){
-    //                h = [[data[j] objectAtIndex:2] floatValue];
-    //            }
-    //
-    //            if([[data[j] objectAtIndex:3] floatValue] < l){
-    //                l = [[data[j] objectAtIndex:3] floatValue];
-    //            }
-    //        }
-    //
-    //        float val = (h-c)/(h-l)*100;
-    //        NSMutableArray *item = [[NSMutableArray alloc] init];
-    //        [item addObject:[@"" stringByAppendingFormat:@"%f",val]];
-    //        [wr addObject:item];
-    //    }
-    //    dic[@"wr"] = wr;
-    //
+    //RSI
+    dic[@"rsi6"] = [self calculateRSIWithDays:6];
+    dic[@"rsi12"] = [self calculateRSIWithDays:12];
+    dic[@"rsi24"] = [self calculateRSIWithDays:24];
+    
     //KDJ
     NSMutableArray *kdj_k = [[NSMutableArray alloc] init];
     NSMutableArray *kdj_d = [[NSMutableArray alloc] init];
@@ -282,26 +215,56 @@
     return dic;
 }
 
-- (NSArray *)calculateMAWithDays:(NSString *)dayStr
+- (NSArray *)calculateMAWithDays:(int)dayNum
 {
-    int daysCount = [dayStr intValue];
-    
     NSMutableArray *maArray = [[NSMutableArray alloc] init];
     for(int i = 0;i < self.modelsArray.count;i++){
         float val = 0;
         
-        int minValue = i>=daysCount-1?i-(daysCount-1):0;
+        int minValue = i>=dayNum-1?i-(dayNum-1):0;
         
         for(int j=i;j>=minValue;j--){
             HJCandleChartModel *chartModel = self.modelsArray[j];
             val += chartModel.closePrice;
         }
         
-        val = val/daysCount;
+        val = val/dayNum;
         [maArray addObject:[@"" stringByAppendingFormat:@"%f",val]];
     }
     
     return maArray;
+}
+
+- (NSArray *)calculateRSIWithDays:(int)dayNum
+{
+    NSMutableArray *rsiArray = [[NSMutableArray alloc] init];
+    
+    for(int i = 0;i < self.modelsArray.count;i++){
+        
+        float incVal  = 0;
+        
+        float decVal = 0;
+        
+        float rs = 0;
+        
+        int min = i-dayNum+1>=0?i-dayNum+1:0;
+        
+        for(int j=i;j>=min;j--){
+            HJCandleChartModel *model = (HJCandleChartModel *)[self.modelsArray objectAtIndex:j];
+            float interval = model.closePrice-model.openPrice;
+            if(interval >= 0){
+                incVal += interval;
+            }else{
+                decVal -= interval;
+            }
+        }
+        rs = incVal/decVal;
+        float rsi =100-100/(1+rs);
+        [rsiArray addObject:[@""stringByAppendingFormat:@"%f",rsi]];
+        
+    }
+    
+    return rsiArray;
 }
 
 - (float)getHighPriceFromCandleArray:(NSArray *)candleArray

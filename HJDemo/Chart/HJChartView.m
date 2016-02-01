@@ -589,13 +589,13 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     
     if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
         
-        NSString *kStr = [NSString stringWithFormat:@"k:%@",[self.viewModel.curKArray objectAtIndex:self.curIndex]];
+        NSString *kStr = [NSString stringWithFormat:@"K:%@",[self.viewModel.curKArray objectAtIndex:self.curIndex]];
         float kLen = [kStr sizeWithAttributes:attributes].width;
         
-        NSString *dStr = [NSString stringWithFormat:@"d:%@",[self.viewModel.curDArray objectAtIndex:self.curIndex]];
+        NSString *dStr = [NSString stringWithFormat:@"D:%@",[self.viewModel.curDArray objectAtIndex:self.curIndex]];
         float dLen = [dStr sizeWithAttributes:attributes].width;
         
-        NSString *jStr = [NSString stringWithFormat:@"j:%@",[self.viewModel.curJArray objectAtIndex:self.curIndex]];
+        NSString *jStr = [NSString stringWithFormat:@"J:%@",[self.viewModel.curJArray objectAtIndex:self.curIndex]];
         float jLen = [jStr sizeWithAttributes:attributes].width;
         
         if (self.curIndex < floor([self.viewModel.curDrawModesArray count]/2)) {

@@ -73,7 +73,6 @@ typedef enum _KDJ_FLAG {
 - (void)reCaculateChartData;
 - (void)resetMe;
 
-- (NSArray *)calculateMAWithDays:(NSString *)dayStr;
 - (float)getHighPriceFromCandleArray:(NSArray *)candleArray;
 - (float)getLowPriceFromCandleArray:(NSArray *)candleArray;
 - (long)getMaxVolumeFromCurRange;
