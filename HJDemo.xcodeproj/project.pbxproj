@@ -44,6 +44,7 @@
 		A75C23311C47721300065EAD /* HJCandleChartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23301C47721300065EAD /* HJCandleChartModel.m */; };
 		A75C23371C47791C00065EAD /* HJChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C23361C47791C00065EAD /* HJChartView.m */; };
 		A760C51F1C0712FD00591488 /* DemoBaseTableDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = A760C51E1C0712FD00591488 /* DemoBaseTableDataController.m */; };
+		A763EECE1C5EF81D000F3085 /* HJChartViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A763EECD1C5EF81D000F3085 /* HJChartViewModel.m */; };
 		A765DB631BE30B32009380AD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB621BE30B32009380AD /* main.m */; };
 		A765DB661BE30B32009380AD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A765DB651BE30B32009380AD /* AppDelegate.m */; };
 		A765DB6C1BE30B32009380AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A765DB6A1BE30B32009380AD /* Main.storyboard */; };
@@ -189,6 +190,8 @@
 		A75C23361C47791C00065EAD /* HJChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJChartView.m; sourceTree = "<group>"; };
 		A760C51D1C0712FD00591488 /* DemoBaseTableDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoBaseTableDataController.h; sourceTree = "<group>"; };
 		A760C51E1C0712FD00591488 /* DemoBaseTableDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoBaseTableDataController.m; sourceTree = "<group>"; };
+		A763EECC1C5EF81D000F3085 /* HJChartViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJChartViewModel.h; sourceTree = "<group>"; };
+		A763EECD1C5EF81D000F3085 /* HJChartViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJChartViewModel.m; sourceTree = "<group>"; };
 		A765DB5E1BE30B32009380AD /* HJDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HJDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A765DB621BE30B32009380AD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A765DB641BE30B32009380AD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -447,15 +450,6 @@
 			path = ../HJArchitecture;
 			sourceTree = "<group>";
 		};
-		A75C23341C4776F600065EAD /* views */ = {
-			isa = PBXGroup;
-			children = (
-				A75C23351C47791C00065EAD /* HJChartView.h */,
-				A75C23361C47791C00065EAD /* HJChartView.m */,
-			);
-			name = views;
-			sourceTree = "<group>";
-		};
 		A75C23381C4793CD00065EAD /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -548,9 +542,12 @@
 		A767380C1C44E23900FE055A /* Chart */ = {
 			isa = PBXGroup;
 			children = (
-				A75C23341C4776F600065EAD /* views */,
 				A767380D1C44E25800FE055A /* HJChartModel.h */,
 				A767380E1C44E25800FE055A /* HJChartModel.m */,
+				A75C23351C47791C00065EAD /* HJChartView.h */,
+				A75C23361C47791C00065EAD /* HJChartView.m */,
+				A763EECC1C5EF81D000F3085 /* HJChartViewModel.h */,
+				A763EECD1C5EF81D000F3085 /* HJChartViewModel.m */,
 				A75C232F1C47721300065EAD /* HJCandleChartModel.h */,
 				A75C23301C47721300065EAD /* HJCandleChartModel.m */,
 				A75C23321C47724000065EAD /* HJCandleProtocol.h */,
@@ -873,6 +870,7 @@
 				A74D0FCF1C59968500E0E236 /* ThirdViewController.m in Sources */,
 				A74D0FD01C59968500E0E236 /* ChartViewController.m in Sources */,
 				A74D0FD11C59968500E0E236 /* GlobeViewController.m in Sources */,
+				A763EECE1C5EF81D000F3085 /* HJChartViewModel.m in Sources */,
 				A75C23241C4652D600065EAD /* HJURLDataSource.m in Sources */,
 				049F0BE01BF6B153001DEFDC /* Task.swift in Sources */,
 				A7F0F98A1BF43DD200C0F427 /* TestTableViewCell.m in Sources */,

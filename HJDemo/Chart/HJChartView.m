@@ -9,33 +9,13 @@
 #import "HJChartView.h"
 #import "HJCandleChartModel.h"
 
-typedef enum _STOCK_FLAG {
-    STOCK_FLAG_UP = 0,
-    STOCK_FLAG_DOWN,
-    STOCK_FLAG_MA5,
-    STOCK_FLAG_MA10,
-    STOCK_FLAG_MA30,
-    STOCK_FLAG_MA60,
-    STOCK_FLAG_DASH,
-    STOCK_FLAG_DEFAULT
-}STOCK_FLAG;
-
 typedef enum _LONG_PRESS_FLAG {
     LONG_PRESS_FLAG_NONE = 0,
     LONG_PRESS_FLAG_INDEX,
     LONG_PRESS_FLAG_CHANGE_AREA
 }LONG_PRESS_FLAG;
 
-typedef enum _KDJ_FLAG {
-    KDJ_FLAG_K = 0,
-    KDJ_FLAG_D,
-    KDJ_FLAG_J
-}KDJ_FLAG;
-
 @interface HJChartView()
-
-@property (nonatomic) long rangeFrom;
-@property (nonatomic) long rangeSize;
 
 //candleAreaPadding
 @property (nonatomic) float candleAreaPaddingLeft;
@@ -44,22 +24,16 @@ typedef enum _KDJ_FLAG {
 @property (nonatomic) float candleAreaPaddingDown;
 @property (nonatomic) float candleAreaMaxPaddingDown;
 @property (nonatomic) float candleAreaMinPaddingDown;
-//infoAreaPadding
-//@property (nonatomic) float infoAreaPaddingTop;
 @property (nonatomic) float infoAreaPaddingDown;
 //infoArea vs candleArea Gap
 @property (nonatomic) float candleWithInfoAreaGap;
 
 @property (nonatomic) float yAlixsScale;
 @property (nonatomic) float candleYAlixsToEdge;
-@property (nonatomic) float maxPrice;
-@property (nonatomic) float minPrice;
-@property (nonatomic) float averagePrice;
 @property (nonatomic) float candleGap;
 @property (nonatomic) float candleW;
 @property (nonatomic) float minCandleW;
 @property (nonatomic) float maxCandleW;
-@property (nonatomic) long maxVolume;
 @property (nonatomic) float infoAreaMaxViewHeight;
 @property (nonatomic) float volumeHScale;
 @property (nonatomic) float kdjHScale;
@@ -68,20 +42,6 @@ typedef enum _KDJ_FLAG {
 @property (nonatomic) float curBeginLongPressPointY;
 @property (nonatomic) float curBeginTouchPointX;
 @property (nonatomic) float curBeginMutipleTouchPointXChange;
-
-@property (nonatomic,strong) NSArray *curDrawModesArray;
-
-@property (nonatomic,strong) NSDictionary *chartLineData;
-@property (nonatomic,strong) NSArray *curMA5Array;
-@property (nonatomic,strong) NSArray *curMA10Array;
-@property (nonatomic,strong) NSArray *curMA30Array;
-@property (nonatomic,strong) NSArray *curMA60Array;
-
-@property (nonatomic,strong) NSArray *curKArray;
-@property (nonatomic,strong) NSArray *curDArray;
-@property (nonatomic,strong) NSArray *curJArray;
-@property (nonatomic) float maxKDJValue;
-@property (nonatomic) float minKDJValue;
 
 @end
 
@@ -98,11 +58,11 @@ typedef enum _KDJ_FLAG {
     return self;
 }
 
-- (instancetype)initWithData:(NSArray *)array
+- (instancetype)initWithViewModel:(HJChartViewModel *)viewModel
 {
     self = [self init];
     if (self) {
-        self.modelsArray = array;
+        self.viewModel = viewModel;
     }
     return self;
 }
@@ -115,14 +75,11 @@ typedef enum _KDJ_FLAG {
     self.candleAreaPaddingRight = 10+50+10;
     self.candleAreaPaddingTop = 90;
     self.candleAreaPaddingDown = 120;
-    self.candleAreaMaxPaddingDown = 200;
-    self.candleAreaMinPaddingDown = 60;
+    self.candleAreaMaxPaddingDown = 230;
+    self.candleAreaMinPaddingDown = 80;
     
     self.candleWithInfoAreaGap = 20;
     self.infoAreaPaddingDown = 40;
-    
-    self.rangeSize = 80;
-    self.rangeFrom = -1;
     
     self.yAlixsScale = 0;
     
@@ -142,73 +99,19 @@ typedef enum _KDJ_FLAG {
     [self addGestureRecognizer:longPress];
 }
 
-- (void)setModelsArray:(NSArray *)modelsArray
-{
-    _modelsArray = modelsArray;
-    self.chartLineData = [self transformChartLineData];
-    self.candleW = (CGRectGetWidth(self.bounds) - self.candleAreaPaddingLeft - self.candleAreaPaddingRight - self.candleGap * self.rangeSize)/self.rangeSize;
-}
-
 - (void)reCaculateChartData
 {
-    if (self.rangeFrom == -1) {
-        self.rangeFrom = [self.modelsArray count] - self.rangeSize;
-    }
+    [self.viewModel reCaculateChartData];
+    
+    self.candleW = (CGRectGetWidth(self.bounds) - self.candleAreaPaddingLeft - self.candleAreaPaddingRight - self.candleGap * self.viewModel.rangeSize)/self.viewModel.rangeSize;
     
     self.infoAreaMaxViewHeight = self.candleAreaPaddingDown - self.infoAreaPaddingDown - self.candleWithInfoAreaGap;
     
-    //重新获取当前需要绘制的Candle数据
-    NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom, self.rangeSize)];
-    self.curDrawModesArray = [self.modelsArray objectsAtIndexes:se];
+    self.volumeHScale = self.infoAreaMaxViewHeight/self.viewModel.maxVolume;
     
-    //重新获取当前需要绘制的MA数据
-    NSIndexSet *maSe = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-    if (self.rangeFrom == 0) {
-        maSe = se;
-    }
-    self.curMA5Array = [(NSArray *)[self.chartLineData dataForKey:@"ma5"] objectsAtIndexes:maSe];
-    self.curMA10Array = [(NSArray *)[self.chartLineData dataForKey:@"ma10"] objectsAtIndexes:maSe];
-    self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:maSe];
-    self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:maSe];
-    
-    NSString *maxHighPrice = [NSString stringWithFormat:@"%f",[self getHighPriceFromCandleArray:self.curDrawModesArray]];
-    NSString *minLowPrice = [NSString stringWithFormat:@"%f",[self getLowPriceFromCandleArray:self.curDrawModesArray]];
-    NSDictionary *ma5Dic = [self getMaxAndMinFromArray:self.curMA5Array];
-    NSDictionary *ma10Dic = [self getMaxAndMinFromArray:self.curMA10Array];
-    NSDictionary *ma30Dic = [self getMaxAndMinFromArray:self.curMA30Array];
-    NSDictionary *ma60Dic = [self getMaxAndMinFromArray:self.curMA60Array];
-    
-    NSArray *maxArr = @[maxHighPrice,ma5Dic[@"max"],ma10Dic[@"max"],ma30Dic[@"max"],ma60Dic[@"max"]];
-    NSArray *minArr = @[minLowPrice,ma5Dic[@"min"],ma10Dic[@"min"],ma30Dic[@"min"],ma60Dic[@"min"]];
-    
-    //price
-    self.maxPrice = [self getMaxFromArray:maxArr];
-    self.minPrice = [self getMinFromArray:minArr];
-    self.averagePrice = (self.maxPrice + self.minPrice)/2;
-    
-    self.yAlixsScale = (CGRectGetHeight(self.bounds) - self.candleAreaPaddingDown - self.candleAreaPaddingTop - self.candleYAlixsToEdge*2)/(self.maxPrice - self.minPrice);
-    
-    //volume
-    self.maxVolume = [self getMaxVolumeFromCurRange];
-    self.volumeHScale = self.infoAreaMaxViewHeight/self.maxVolume;
-    
-    self.curKArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_k"] objectsAtIndexes:maSe];
-    self.curDArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_d"] objectsAtIndexes:maSe];
-    self.curJArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_j"] objectsAtIndexes:maSe];
-    
-    
-    NSDictionary *kDic = [self getMaxAndMinFromArray:self.curKArray];
-    NSDictionary *dDic = [self getMaxAndMinFromArray:self.curDArray];
-    NSDictionary *jDic = [self getMaxAndMinFromArray:self.curJArray];
-    
-    NSArray *maxKDJArr = @[kDic[@"max"],dDic[@"max"],jDic[@"max"]];
-    NSArray *minKDJArr = @[kDic[@"min"],dDic[@"min"],jDic[@"min"]];
-    
-    //kdj
-    self.maxKDJValue = [self getMaxFromArray:maxKDJArr];
-    self.minKDJValue = [self getMinFromArray:minKDJArr];
-    
-    self.kdjHScale = self.infoAreaMaxViewHeight/(self.maxKDJValue - self.minKDJValue);
+    self.yAlixsScale = (CGRectGetHeight(self.bounds) - self.candleAreaPaddingDown - self.candleAreaPaddingTop - self.candleYAlixsToEdge*2)/(self.viewModel.maxPrice - self.viewModel.minPrice);
+   
+    self.kdjHScale = self.infoAreaMaxViewHeight/(self.viewModel.maxKDJValue - self.viewModel.minKDJValue);
 }
 
 - (void)renderMe
@@ -219,20 +122,7 @@ typedef enum _KDJ_FLAG {
 
 - (void)resetMe
 {
-    self.rangeFrom = -1;
-    self.modelsArray = nil;
-    self.curDrawModesArray = nil;
-    
-    self.chartLineData = nil;
-    
-    self.curMA5Array = nil;
-    self.curMA10Array = nil;
-    self.curMA30Array = nil;
-    self.curMA60Array = nil;
-    
-    self.curKArray = nil;
-    self.curDArray = nil;
-    self.curJArray = nil;
+    [self.viewModel resetMe];
     
     [self setNeedsDisplay];
 }
@@ -242,7 +132,7 @@ typedef enum _KDJ_FLAG {
 - (void)drawRect:(CGRect)rect
 {
     [self drawClearChart];
-    if (CHECK_VALID_ARRAY(self.modelsArray)) {
+    if (CHECK_VALID_ARRAY(self.viewModel.modelsArray)) {
         [self drawCandleAreaBorder];
         [self drawInfoAreaBorder];
         [self drawBackgroundDashLines];
@@ -287,24 +177,24 @@ typedef enum _KDJ_FLAG {
     float ma60Value = 0.0f;
     
     if (self.longPressFlag!=LONG_PRESS_FLAG_INDEX) {
-        candleModel = (HJCandleChartModel *)[self.modelsArray lastObject];
-        ma5Value = [[((NSArray *)[self.chartLineData dataForKey:@"ma5"]) lastObject] floatValue];
-        ma10Value = [[((NSArray *)[self.chartLineData dataForKey:@"ma10"]) lastObject] floatValue];
-        ma30Value = [[((NSArray *)[self.chartLineData dataForKey:@"ma30"]) lastObject] floatValue];
-        ma60Value = [[((NSArray *)[self.chartLineData dataForKey:@"ma60"]) lastObject] floatValue];
+        candleModel = (HJCandleChartModel *)[self.viewModel.modelsArray lastObject];
+        ma5Value = [[((NSArray *)[self.viewModel.chartLineData dataForKey:@"ma5"]) lastObject] floatValue];
+        ma10Value = [[((NSArray *)[self.viewModel.chartLineData dataForKey:@"ma10"]) lastObject] floatValue];
+        ma30Value = [[((NSArray *)[self.viewModel.chartLineData dataForKey:@"ma30"]) lastObject] floatValue];
+        ma60Value = [[((NSArray *)[self.viewModel.chartLineData dataForKey:@"ma60"]) lastObject] floatValue];
     }else {
-        candleModel = (HJCandleChartModel *)[self.curDrawModesArray objectAtIndex:self.curIndex];
-        ma5Value = [[self.curMA5Array objectAtIndex:self.curIndex+1] floatValue]
+        candleModel = (HJCandleChartModel *)[self.viewModel.curDrawModesArray objectAtIndex:self.curIndex];
+        ma5Value = [[self.viewModel.curMA5Array objectAtIndex:self.curIndex+1] floatValue]
         ;
-        ma10Value = [[self.curMA10Array objectAtIndex:self.curIndex+1] floatValue]
+        ma10Value = [[self.viewModel.curMA10Array objectAtIndex:self.curIndex+1] floatValue]
         ;
-        ma30Value = [[self.curMA30Array objectAtIndex:self.curIndex+1] floatValue]
+        ma30Value = [[self.viewModel.curMA30Array objectAtIndex:self.curIndex+1] floatValue]
         ;
-        ma60Value = [[self.curMA60Array objectAtIndex:self.curIndex+1] floatValue]
+        ma60Value = [[self.viewModel.curMA60Array objectAtIndex:self.curIndex+1] floatValue]
         ;
     }
     
-    NSArray *volumeArray = [[self transformToUnitWithVolume:candleModel.volume] componentsSeparatedByString:@","];
+    NSArray *volumeArray = [[self.viewModel transformToUnitWithVolume:candleModel.volume] componentsSeparatedByString:@","];
     NSString *volumeStr = @"";
     if (CHECK_VALID_ARRAY(volumeArray)) {
         if ([volumeArray count]==2) {
@@ -314,45 +204,45 @@ typedef enum _KDJ_FLAG {
         }
     }
     
-    STOCK_FLAG flag = [self getStockFlagByCanleData:candleModel];
+    STOCK_FLAG flag = [self.viewModel getStockFlagByCanleData:candleModel];
     
-    if ([self.stockInfo count]==2) {
-        [[NSString stringWithFormat:@"%@",[self.stockInfo lastObject]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
+    if ([self.viewModel.stockInfo count]==2) {
+        [[NSString stringWithFormat:@"%@",[self.viewModel.stockInfo lastObject]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
         
-        [[NSString stringWithFormat:@"%@",[self.stockInfo firstObject]] drawInRect:CGRectMake(curLabelLeft, curLabelTop+labelH+labelGap, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
+        [[NSString stringWithFormat:@"%@",[self.viewModel.stockInfo firstObject]] drawInRect:CGRectMake(curLabelLeft, curLabelTop+labelH+labelGap, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
         
         curLabelLeft += labelW + labelGap;
     }
     
-    [[NSString stringWithFormat:@"Open:%.2f",[candleModel openPrice]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
+    [[NSString stringWithFormat:@"Open:%.2f",[candleModel openPrice]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:flag]];
     
-    [[NSString stringWithFormat:@"Close:%.2f",[candleModel closePrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap), curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
+    [[NSString stringWithFormat:@"Close:%.2f",[candleModel closePrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap), curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:flag]];
     
-    [[NSString stringWithFormat:@"High:%.2f",[candleModel highPrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*2, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
+    [[NSString stringWithFormat:@"High:%.2f",[candleModel highPrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*2, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:flag]];
     
-    [[NSString stringWithFormat:@"Low:%.2f",[candleModel lowPrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*3, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
+    [[NSString stringWithFormat:@"Low:%.2f",[candleModel lowPrice]] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*3, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:flag]];
     
-    [[NSString stringWithFormat:@"Volume:%@",volumeStr] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*4, curLabelTop, labelW*2, labelH) withAttributes:[self getTopInfoAttributesByFlag:flag]];
+    [[NSString stringWithFormat:@"Volume:%@",volumeStr] drawInRect:CGRectMake(curLabelLeft+(labelW+labelGap)*4, curLabelTop, labelW*2, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:flag]];
     
     curLabelTop += labelH+labelGap;
     
-    [[NSString stringWithFormat:@"MA5:%.2f",ma5Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA5]];
+    [[NSString stringWithFormat:@"MA5:%.2f",ma5Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_MA5]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA10:%.2f",ma10Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA10]];
+    [[NSString stringWithFormat:@"MA10:%.2f",ma10Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_MA10]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA30:%.2f",ma30Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
+    [[NSString stringWithFormat:@"MA30:%.2f",ma30Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_MA30]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"MA60:%.2f",ma60Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
+    [[NSString stringWithFormat:@"MA60:%.2f",ma60Value] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_MA60]];
     
     curLabelLeft += labelW + labelGap;
     
-    [[NSString stringWithFormat:@"Date:%@",[candleModel date]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW*2, labelH) withAttributes:[self getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
+    [[NSString stringWithFormat:@"Date:%@",[candleModel date]] drawInRect:CGRectMake(curLabelLeft, curLabelTop, labelW*2, labelH) withAttributes:[self.viewModel getTopInfoAttributesByFlag:STOCK_FLAG_DEFAULT]];
 }
 
 - (void)drawCandleAreaBorder
@@ -391,26 +281,27 @@ typedef enum _KDJ_FLAG {
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
-    CGContextSetLineWidth(context, 0.5);
     if (self.longPressFlag == LONG_PRESS_FLAG_CHANGE_AREA) {
         [[self getColorByLongPressFlag:LONG_PRESS_FLAG_CHANGE_AREA] setStroke];
+        CGContextSetLineWidth(context, 1);
     }else {
         [[self getColorByLongPressFlag:LONG_PRESS_FLAG_NONE] setStroke];
+        CGContextSetLineWidth(context, 0.5);
     }
 
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, self.candleAreaPaddingLeft, [self transformVolumeToYPoint:self.maxVolume]);
+    CGContextMoveToPoint(context, self.candleAreaPaddingLeft, [self transformVolumeToYPoint:self.viewModel.maxVolume]);
     CGContextAddLineToPoint(context, self.candleAreaPaddingLeft, [self transformVolumeToYPoint:0]);
     CGContextStrokePath(context);
     
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, [self transformVolumeToYPoint:self.maxVolume]);
+    CGContextMoveToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, [self transformVolumeToYPoint:self.viewModel.maxVolume]);
     CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, [self transformVolumeToYPoint:0]);
     CGContextStrokePath(context);
     
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, self.candleAreaPaddingLeft, [self transformVolumeToYPoint:self.maxVolume]);
-    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, [self transformVolumeToYPoint:self.maxVolume]);
+    CGContextMoveToPoint(context, self.candleAreaPaddingLeft, [self transformVolumeToYPoint:self.viewModel.maxVolume]);
+    CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, [self transformVolumeToYPoint:self.viewModel.maxVolume]);
     CGContextStrokePath(context);
     
     CGContextBeginPath(context);
@@ -421,11 +312,11 @@ typedef enum _KDJ_FLAG {
 
 - (void)drawBackgroundDashLines
 {
-    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.maxPrice]];
-    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.averagePrice]];
-    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.minPrice]];
+    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.viewModel.maxPrice]];
+    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.viewModel.averagePrice]];
+    [self drawDashLinesWithYPoint:[self transformPriceToYPoint:self.viewModel.minPrice]];
     
-    [self drawDashLinesWithYPoint:[self transformVolumeToYPoint:self.maxVolume/2]];
+    [self drawDashLinesWithYPoint:[self transformVolumeToYPoint:self.viewModel.maxVolume/2]];
 }
 
 - (void)drawDashLinesWithYPoint:(float)pointY
@@ -435,7 +326,7 @@ typedef enum _KDJ_FLAG {
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 0.5);
     CGContextSetLineDash(context, 0, length, 2);
-    [[self getColorByStockFlag:STOCK_FLAG_DASH] setStroke];
+    [[self.viewModel getColorByStockFlag:STOCK_FLAG_DASH] setStroke];
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, self.candleAreaPaddingLeft, pointY);
     CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, pointY);
@@ -450,7 +341,7 @@ typedef enum _KDJ_FLAG {
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 0.5);
     CGContextSetLineDash(context, 0, length, 2);
-    [[self getColorByStockFlag:STOCK_FLAG_DASH] setStroke];
+    [[self.viewModel getColorByStockFlag:STOCK_FLAG_DASH] setStroke];
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, pointX, self.candleAreaPaddingTop);
     CGContextAddLineToPoint(context, pointX, CGRectGetHeight(self.bounds) - self.candleAreaPaddingDown);
@@ -463,7 +354,7 @@ typedef enum _KDJ_FLAG {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 1);
-    [[self getColorByStockFlag:STOCK_FLAG_DEFAULT] setStroke];
+    [[self.viewModel getColorByStockFlag:STOCK_FLAG_DEFAULT] setStroke];
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, self.candleAreaPaddingLeft, pointY);
     CGContextAddLineToPoint(context, CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight, pointY);
@@ -478,7 +369,7 @@ typedef enum _KDJ_FLAG {
     
     float pointX = self.candleAreaPaddingLeft + index*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
     
-    float pointY = [self transformPriceToYPoint:[[self.curDrawModesArray objectAtIndex:index] closePrice]];
+    float pointY = [self transformPriceToYPoint:[[self.viewModel.curDrawModesArray objectAtIndex:index] closePrice]];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
@@ -496,7 +387,7 @@ typedef enum _KDJ_FLAG {
     CGContextStrokePath(context);
     
     //边框圆
-    [[self getColorByStockFlag:STOCK_FLAG_DEFAULT] setStroke];
+    [[self.viewModel getColorByStockFlag:STOCK_FLAG_DEFAULT] setStroke];
     CGContextSetLineWidth(context, 1);
     CGContextAddArc(context, pointX, pointY, self.candleW/2, 0, 2*M_PI, 0);
     CGContextDrawPath(context, kCGPathStroke);
@@ -512,7 +403,7 @@ typedef enum _KDJ_FLAG {
     //绘制纵坐标值
     float labelH = 9;
     UIFont *font = [UIFont systemFontOfSize:8];
-    UIColor *color = [self getColorByStockFlag:STOCK_FLAG_DEFAULT];
+    UIColor *color = [self.viewModel getColorByStockFlag:STOCK_FLAG_DEFAULT];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentRight;
@@ -520,9 +411,9 @@ typedef enum _KDJ_FLAG {
                                   NSForegroundColorAttributeName: color,
                                   NSParagraphStyleAttributeName: paragraphStyle };
     
-    [[NSString stringWithFormat:@"%.2f",self.maxPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.maxPrice] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
-    [[NSString stringWithFormat:@"%.2f",self.averagePrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.averagePrice] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
-    [[NSString stringWithFormat:@"%.2f",self.minPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.minPrice] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.maxPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.viewModel.maxPrice] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.averagePrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.viewModel.averagePrice] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.minPrice] drawInRect:CGRectMake(0, [self transformPriceToYPoint:self.viewModel.minPrice] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
 }
 
 - (void)drawXAxis
@@ -533,7 +424,7 @@ typedef enum _KDJ_FLAG {
     float globalChg = self.candleAreaPaddingLeft - self.candleW/2 - labelW/2;
     
     UIFont *font = [UIFont systemFontOfSize:8];
-    UIColor *color = [self getColorByStockFlag:STOCK_FLAG_DEFAULT];
+    UIColor *color = [self.viewModel getColorByStockFlag:STOCK_FLAG_DEFAULT];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentCenter;
@@ -541,11 +432,11 @@ typedef enum _KDJ_FLAG {
                                   NSForegroundColorAttributeName: color,
                                   NSParagraphStyleAttributeName: paragraphStyle };
     
-    NSArray *dateIndexArr = [self getDateIndexFromCandleModels:self.curDrawModesArray];
+    NSArray *dateIndexArr = [self.viewModel getDateIndexFromCandleModels:self.viewModel.curDrawModesArray];
     
     for (NSNumber *num in dateIndexArr) {
         int curIndex = [num intValue];
-        HJCandleChartModel *candle = [self.curDrawModesArray objectAtIndex:curIndex];
+        HJCandleChartModel *candle = [self.viewModel.curDrawModesArray objectAtIndex:curIndex];
         
         float pointX = curIndex*(self.candleGap + self.candleW) + globalChg;
         
@@ -557,7 +448,7 @@ typedef enum _KDJ_FLAG {
 - (void)drawCandleVeiwsAndInfoViews
 {
     int i = 0;
-    for (HJCandleChartModel *candle in self.curDrawModesArray) {
+    for (HJCandleChartModel *candle in self.viewModel.curDrawModesArray) {
         
         float pointX = self.candleAreaPaddingLeft + i*(self.candleGap + self.candleW) + self.candleGap;
         float linePX = pointX + self.candleW/2;
@@ -602,7 +493,7 @@ typedef enum _KDJ_FLAG {
             }
         }
         
-        if (self.infoType == CHART_INFO_TYPE_VOLUME) {
+        if (self.viewModel.infoType == CHART_INFO_TYPE_VOLUME) {
             float volumePoint = [self transformVolumeToYPoint:candle.volume];
             [self drawVolumeWithPoint:volumePoint pointX:pointX flag:flag];
         }
@@ -610,7 +501,7 @@ typedef enum _KDJ_FLAG {
         i ++;
     }
     
-    if (self.infoType != CHART_INFO_TYPE_VOLUME) {
+    if (self.viewModel.infoType != CHART_INFO_TYPE_VOLUME) {
         [self drawKDJWithFlag:KDJ_FLAG_K];
         [self drawKDJWithFlag:KDJ_FLAG_D];
         [self drawKDJWithFlag:KDJ_FLAG_J];
@@ -624,8 +515,8 @@ typedef enum _KDJ_FLAG {
     CGPathAddRect(path, NULL, rectangle);
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
     CGContextAddPath(currentContext, path);
-    [[self getColorByStockFlag:flag] setFill];
-    [[self getColorByStockFlag:flag] setStroke];
+    [[self.viewModel getColorByStockFlag:flag] setFill];
+    [[self.viewModel getColorByStockFlag:flag] setStroke];
     CGContextSetLineWidth(currentContext, 0.5f);
     CGContextDrawPath(currentContext, kCGPathFillStroke);
     CGPathRelease(path);
@@ -636,7 +527,7 @@ typedef enum _KDJ_FLAG {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 0.5);
-    [[self getColorByStockFlag:flag] setStroke];
+    [[self.viewModel getColorByStockFlag:flag] setStroke];
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, linePX, pointA);
     CGContextAddLineToPoint(context, linePX, pointB);
@@ -646,7 +537,7 @@ typedef enum _KDJ_FLAG {
 - (void)drawInfoTips
 {
     UIFont *font = [UIFont systemFontOfSize:8];
-    UIColor *color = [self getColorByStockFlag:STOCK_FLAG_DEFAULT];
+    UIColor *color = [self.viewModel getColorByStockFlag:STOCK_FLAG_DEFAULT];
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentRight;
@@ -654,7 +545,7 @@ typedef enum _KDJ_FLAG {
 NSForegroundColorAttributeName: color,
 NSParagraphStyleAttributeName: paragraphStyle}];
     
-    switch (self.infoType) {
+    switch (self.viewModel.infoType) {
         case CHART_INFO_TYPE_VOLUME:
             [self drawVolumeTipsWithAttributes:attributes];
             break;
@@ -670,11 +561,11 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 - (void)drawVolumeTipsWithAttributes:(NSDictionary *)attributes
 {
     float labelH = 9;
-    NSString *maxVolumeStr = [self transformToUnitWithVolume:self.maxVolume];
+    NSString *maxVolumeStr = [self.viewModel transformToUnitWithVolume:self.viewModel.maxVolume];
     NSArray *maxVolumeArray = [maxVolumeStr componentsSeparatedByString:@","];
     
     if (CHECK_VALID_ARRAY(maxVolumeArray)) {
-        [[maxVolumeArray firstObject] drawInRect:CGRectMake(0, [self transformVolumeToYPoint:self.maxVolume] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+        [[maxVolumeArray firstObject] drawInRect:CGRectMake(0, [self transformVolumeToYPoint:self.viewModel.maxVolume] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
         if ([maxVolumeArray count]==2) {
             [[maxVolumeArray lastObject] drawInRect:CGRectMake(0, [self transformVolumeToYPoint:0] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
         }else {
@@ -686,11 +577,11 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 - (void)drawKDJTipsWithAttributes:(NSMutableDictionary *)attributes
 {
     float labelH = 9;
-    float averageValue = (self.maxKDJValue - self.minKDJValue)/2;
+    float averageValue = (self.viewModel.maxKDJValue - self.viewModel.minKDJValue)/2;
     
-    [[NSString stringWithFormat:@"%.2f",self.maxKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.maxKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.maxKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.viewModel.maxKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
     [[NSString stringWithFormat:@"%.2f",averageValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:averageValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
-    [[NSString stringWithFormat:@"%.2f",self.minKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.minKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.minKDJValue] drawInRect:CGRectMake(0, [self transformKDJToYPoint:self.viewModel.minKDJValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
     
     float left = self.candleAreaPaddingLeft + 2;
     float top = CGRectGetHeight(self.bounds)-self.infoAreaMaxViewHeight-self.infoAreaPaddingDown + 2;
@@ -698,30 +589,30 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     
     if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
         
-        NSString *kStr = [NSString stringWithFormat:@"k:%@",[self.curKArray objectAtIndex:self.curIndex]];
+        NSString *kStr = [NSString stringWithFormat:@"k:%@",[self.viewModel.curKArray objectAtIndex:self.curIndex]];
         float kLen = [kStr sizeWithAttributes:attributes].width;
         
-        NSString *dStr = [NSString stringWithFormat:@"d:%@",[self.curDArray objectAtIndex:self.curIndex]];
+        NSString *dStr = [NSString stringWithFormat:@"d:%@",[self.viewModel.curDArray objectAtIndex:self.curIndex]];
         float dLen = [dStr sizeWithAttributes:attributes].width;
         
-        NSString *jStr = [NSString stringWithFormat:@"j:%@",[self.curJArray objectAtIndex:self.curIndex]];
+        NSString *jStr = [NSString stringWithFormat:@"j:%@",[self.viewModel.curJArray objectAtIndex:self.curIndex]];
         float jLen = [jStr sizeWithAttributes:attributes].width;
         
-        if (self.curIndex < floor([self.curDrawModesArray count]/2)) {
+        if (self.curIndex < floor([self.viewModel.curDrawModesArray count]/2)) {
             left = CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - kLen - dLen - jLen - gap*2;
         }
         
-        [attributes setValue:[self getColorByKDJFlag:KDJ_FLAG_K] forKey:NSForegroundColorAttributeName];
+        [attributes setValue:[self.viewModel getColorByKDJFlag:KDJ_FLAG_K] forKey:NSForegroundColorAttributeName];
         [kStr drawInRect:CGRectMake(left, top, kLen, labelH) withAttributes:attributes];
         
         left += kLen + gap;
         
-        [attributes setValue:[self getColorByKDJFlag:KDJ_FLAG_D] forKey:NSForegroundColorAttributeName];
+        [attributes setValue:[self.viewModel getColorByKDJFlag:KDJ_FLAG_D] forKey:NSForegroundColorAttributeName];
         [dStr drawInRect:CGRectMake(left, top, dLen, labelH) withAttributes:attributes];
         
         left += dLen + gap;
         
-        [attributes setValue:[self getColorByKDJFlag:KDJ_FLAG_J] forKey:NSForegroundColorAttributeName];
+        [attributes setValue:[self.viewModel getColorByKDJFlag:KDJ_FLAG_J] forKey:NSForegroundColorAttributeName];
         [jStr drawInRect:CGRectMake(left, top, jLen, labelH) withAttributes:attributes];
     }else {
         NSString *kdjStr = [NSString stringWithFormat:@"KDJ[9,3,3]"];
@@ -738,8 +629,8 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     CGPathAddRect(path, NULL, rectangle);
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
     CGContextAddPath(currentContext, path);
-    [[self getColorByStockFlag:flag] setFill];
-    [[self getColorByStockFlag:flag] setStroke];
+    [[self.viewModel getColorByStockFlag:flag] setFill];
+    [[self.viewModel getColorByStockFlag:flag] setStroke];
     CGContextSetLineWidth(currentContext, 0.5f);
     CGContextDrawPath(currentContext, kCGPathFillStroke);
     CGPathRelease(path);
@@ -747,12 +638,12 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 
 - (void)drawMAWithFlag:(STOCK_FLAG)flag
 {
-    NSArray *maArr = [self getMAArrayByFlag:flag];
+    NSArray *maArr = [self.viewModel getMAArrayByFlag:flag];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 0.5);
-    [[self getColorByStockFlag:flag] setStroke];
+    [[self.viewModel getColorByStockFlag:flag] setStroke];
     CGContextBeginPath(context);
     
     for (int i=0; i<[maArr count]; i++) {
@@ -772,12 +663,12 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 
 - (void)drawKDJWithFlag:(KDJ_FLAG)flag
 {
-    NSArray *kdjArr = [self getKDJArrayByFlag:flag];
+    NSArray *kdjArr = [self.viewModel getKDJArrayByFlag:flag];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
     CGContextSetLineWidth(context, 0.5);
-    [[self getColorByKDJFlag:flag] setStroke];
+    [[self.viewModel getColorByKDJFlag:flag] setStroke];
     CGContextBeginPath(context);
     
     for (int i=0; i<[kdjArr count]; i++) {
@@ -797,432 +688,9 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 
 #pragma mark - help methods
 
-/**
- *  @author Hubbert, 16-01-19 13:01:08
- *
- *  @brief 基础数据转技术曲线数据
- *
- *  @return
- *
- *  @since 1.0
- */
-
-- (NSDictionary *)transformChartLineData
-{
-    NSMutableDictionary *dic = [[NSMutableDictionary alloc]initWithCapacity:10];
-    
-//    //price
-//    NSMutableArray *price = [[NSMutableArray alloc] init];
-//    for(int i = 60;i < data.count;i++){
-//        [price addObject:data[i]];
-//    }
-//    dic[@"price"] = price;
-//    
-//    //VOL
-//    NSMutableArray *vol = [[NSMutableArray alloc] init];
-//    for(int i = 60;i < data.count;i++){
-//        NSMutableArray *item = [[NSMutableArray alloc] init];
-//        [item addObject:[@"" stringByAppendingFormat:@"%f",[[data[i] objectAtIndex:4] floatValue]/100]];
-//        [vol addObject:item];
-//    }
-//    dic[@"vol"] = vol;
-    
-    //MA
-    dic[@"ma5"] = [self calculateMAWithDays:@"5"];
-    dic[@"ma10"] = [self calculateMAWithDays:@"10"];
-    dic[@"ma30"] = [self calculateMAWithDays:@"30"];
-    dic[@"ma60"] = [self calculateMAWithDays:@"60"];
-    
-//    //RSI6
-//    NSMutableArray *rsi6 = [[NSMutableArray alloc] init];
-//    for(int i = 60;i < data.count;i++){
-//        float incVal  = 0;
-//        float decVal = 0;
-//        float rs = 0;
-//        for(int j=i;j>i-6;j--){
-//            float interval = [[data[j] objectAtIndex:1] floatValue]-[[data[j] objectAtIndex:0] floatValue];
-//            if(interval >= 0){
-//                incVal += interval;
-//            }else{
-//                decVal -= interval;
-//            }
-//        }
-//        
-//        rs = incVal/decVal;
-//        float rsi =100-100/(1+rs);
-//        
-//        NSMutableArray *item = [[NSMutableArray alloc] init];
-//        [item addObject:[@"" stringByAppendingFormat:@"%f",rsi]];
-//        [rsi6 addObject:item];
-//        
-//    }
-//    dic[@"rsi6"] = rsi6;
-//    
-//    //RSI12
-//    NSMutableArray *rsi12 = [[NSMutableArray alloc] init];
-//    for(int i = 60;i < data.count;i++){
-//        float incVal  = 0;
-//        float decVal = 0;
-//        float rs = 0;
-//        for(int j=i;j>i-12;j--){
-//            float interval = [[data[j] objectAtIndex:1] floatValue]-[[data[j] objectAtIndex:0] floatValue];
-//            if(interval >= 0){
-//                incVal += interval;
-//            }else{
-//                decVal -= interval;
-//            }
-//        }
-//        
-//        rs = incVal/decVal;
-//        float rsi =100-100/(1+rs);
-//        
-//        NSMutableArray *item = [[NSMutableArray alloc] init];
-//        [item addObject:[@"" stringByAppendingFormat:@"%f",rsi]];
-//        [rsi12 addObject:item];
-//    }
-//    dic[@"rsi12"] = rsi12;
-//    
-//    //WR
-//    NSMutableArray *wr = [[NSMutableArray alloc] init];
-//    for(int i = 60;i < data.count;i++){
-//        float h  = [[data[i] objectAtIndex:2] floatValue];
-//        float l = [[data[i] objectAtIndex:3] floatValue];
-//        float c = [[data[i] objectAtIndex:1] floatValue];
-//        for(int j=i;j>i-10;j--){
-//            if([[data[j] objectAtIndex:2] floatValue] > h){
-//                h = [[data[j] objectAtIndex:2] floatValue];
-//            }
-//            
-//            if([[data[j] objectAtIndex:3] floatValue] < l){
-//                l = [[data[j] objectAtIndex:3] floatValue];
-//            }
-//        }
-//        
-//        float val = (h-c)/(h-l)*100;
-//        NSMutableArray *item = [[NSMutableArray alloc] init];
-//        [item addObject:[@"" stringByAppendingFormat:@"%f",val]];
-//        [wr addObject:item];
-//    }
-//    dic[@"wr"] = wr;
-//    
-    //KDJ
-    NSMutableArray *kdj_k = [[NSMutableArray alloc] init];
-    NSMutableArray *kdj_d = [[NSMutableArray alloc] init];
-    NSMutableArray *kdj_j = [[NSMutableArray alloc] init];
-    float prev_k = 50;
-    float prev_d = 50;
-    float rsv = 0;
-    for(int i = 0;i < self.modelsArray.count;i++){
-        
-        float k = 50.0f;
-        float d = 50.0f;
-        float j = 50.0f;
-        
-        if (i>=8) {
-            
-            NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(i-8, 9)];
-            NSArray *curArray = [self.modelsArray objectsAtIndexes:se];
-            
-            float h = [self getHighPriceFromCandleArray:curArray];
-            float l = [self getLowPriceFromCandleArray:curArray];
-            float c = [[self.modelsArray objectAtIndex:i] closePrice];
-            
-            if(h!=l)
-                rsv = (c-l)/(h-l)*100;
-            k = 2*prev_k/3+1*rsv/3;
-            d = 2*prev_d/3+1*k/3;
-            j = d+2*(d-k);
-        }
-        
-        prev_k = k;
-        prev_d = d;
-        
-        [kdj_k addObject:[@"" stringByAppendingFormat:@"%f",k]];
-        [kdj_d addObject:[@"" stringByAppendingFormat:@"%f",d]];
-        [kdj_j addObject:[@"" stringByAppendingFormat:@"%f",j]];
-    }
-    dic[@"kdj_k"] = kdj_k;
-    dic[@"kdj_d"] = kdj_d;
-    dic[@"kdj_j"] = kdj_j;
-
-//    //VR
-//    NSMutableArray *vr = [[NSMutableArray alloc] init];
-//    for(int i = 60;i < data.count;i++){
-//        float inc = 0;
-//        float dec = 0;
-//        float eq  = 0;
-//        for(int j=i;j>i-24;j--){
-//            float o = [[data[j] objectAtIndex:0] floatValue];
-//            float c = [[data[j] objectAtIndex:1] floatValue];
-//            
-//            if(c > o){
-//                inc += [[data[j] objectAtIndex:4] intValue];
-//            }else if(c < o){
-//                dec += [[data[j] objectAtIndex:4] intValue];
-//            }else{
-//                eq  += [[data[j] objectAtIndex:4] intValue];
-//            }
-//        }
-//        
-//        float val = (inc+1*eq/2)/(dec+1*eq/2);
-//        NSMutableArray *item = [[NSMutableArray alloc] init];
-//        [item addObject:[@"" stringByAppendingFormat:@"%f",val]];
-//        [vr addObject:item];
-//    }
-//    dic[@"vr"] = vr;
-    
-    return dic;
-}
-
-- (NSArray *)calculateMAWithDays:(NSString *)dayStr
-{
-    int daysCount = [dayStr intValue];
-    
-    NSMutableArray *maArray = [[NSMutableArray alloc] init];
-    for(int i = 0;i < self.modelsArray.count;i++){
-        float val = 0;
-        
-        int minValue = i>=daysCount-1?i-(daysCount-1):0;
-        
-        for(int j=i;j>=minValue;j--){
-            HJCandleChartModel *chartModel = self.modelsArray[j];
-            val += chartModel.closePrice;
-        }
-        
-        val = val/daysCount;
-        [maArray addObject:[@"" stringByAppendingFormat:@"%f",val]];
-    }
-    
-    return maArray;
-}
-
-//- (float)getHighPriceFromCurRange
-//{
-//    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
-//        
-//        if ([obj1 highPrice] > [obj2 highPrice]) {
-//            return (NSComparisonResult)NSOrderedDescending;
-//        }
-//        
-//        if ([obj1 highPrice] < [obj2 highPrice]) {
-//            return (NSComparisonResult)NSOrderedAscending;
-//        }
-//        
-//        return (NSComparisonResult)NSOrderedSame;
-//    };
-//    
-//    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
-//    HJCandleChartModel *highModel = [array lastObject];
-//    return highModel.highPrice;
-//}
-//
-//- (float)getLowPriceFromCurRange
-//{
-//    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
-//        
-//        if ([obj1 lowPrice] < [obj2 lowPrice]) {
-//            return (NSComparisonResult)NSOrderedDescending;
-//        }
-//        
-//        if ([obj1 lowPrice] > [obj2 lowPrice]) {
-//            return (NSComparisonResult)NSOrderedAscending;
-//        }
-//        
-//        return (NSComparisonResult)NSOrderedSame;
-//    };
-//    
-//    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
-//    HJCandleChartModel *lowModel = [array lastObject];
-//    return lowModel.lowPrice;
-//}
-
-- (float)getHighPriceFromCandleArray:(NSArray *)candleArray
-{
-    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
-        
-        if ([obj1 highPrice] > [obj2 highPrice]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        
-        if ([obj1 highPrice] < [obj2 highPrice]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    };
-    
-    NSArray *array = [candleArray sortedArrayUsingComparator:cmptr];
-    HJCandleChartModel *highModel = [array lastObject];
-    return highModel.highPrice;
-}
-
-- (float)getLowPriceFromCandleArray:(NSArray *)candleArray
-{
-    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
-        
-        if ([obj1 lowPrice] < [obj2 lowPrice]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        
-        if ([obj1 lowPrice] > [obj2 lowPrice]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    };
-    
-    NSArray *array = [candleArray sortedArrayUsingComparator:cmptr];
-    HJCandleChartModel *lowModel = [array lastObject];
-    return lowModel.lowPrice;
-}
-
-- (long)getMaxVolumeFromCurRange
-{
-    NSComparator cmptr = ^(HJCandleChartModel *obj1, HJCandleChartModel *obj2){
-        
-        if ([obj1 volume] > [obj2 volume]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        
-        if ([obj1 volume] < [obj2 volume]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    };
-    
-    NSArray *array = [self.curDrawModesArray sortedArrayUsingComparator:cmptr];
-    HJCandleChartModel *highModel = [array lastObject];
-    return highModel.volume;
-}
-
-- (NSDictionary *)getMaxAndMinFromArray:(NSArray *)array
-{
-    NSComparator cmptr = ^(id obj1, id obj2){
-        
-        if ([obj1 floatValue] > [obj2 floatValue]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        
-        if ([obj1 floatValue] < [obj2 floatValue]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    };
-    
-    NSArray *sortedArray = [array sortedArrayUsingComparator:cmptr];
-    return @{@"max":[sortedArray lastObject],@"min":[sortedArray firstObject]};
-}
-
-- (float)getMaxFromArray:(NSArray *)array
-{
-    NSComparator cmptr = ^(id obj1, id obj2){
-        
-        if ([obj1 floatValue] > [obj2 floatValue]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        
-        if ([obj1 floatValue] < [obj2 floatValue]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    };
-    
-    NSArray *sortedArray = [array sortedArrayUsingComparator:cmptr];
-    return [[sortedArray lastObject] floatValue];
-}
-
-- (float)getMinFromArray:(NSArray *)array
-{
-    NSComparator cmptr = ^(id obj1, id obj2){
-        
-        if ([obj1 floatValue] < [obj2 floatValue]) {
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        
-        if ([obj1 floatValue] > [obj2 floatValue]) {
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    };
-    
-    NSArray *sortedArray = [array sortedArrayUsingComparator:cmptr];
-    return [[sortedArray lastObject] floatValue];
-}
-
-- (NSArray *)getDateIndexFromCandleModels:(NSArray *)modelsArray
-{
-    NSMutableArray *array = [[NSMutableArray alloc]initWithCapacity:5];
-    
-    switch (self.modelType) {
-        case CHART_MODEL_TYPE_DAY:
-        {
-            for (int i=0; i<[modelsArray count]-1; i++) {
-                HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
-                HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
-                
-                NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
-                NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
-                
-                if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
-                    if (![[leftDateArr objectAtIndex:1] isEqualToString:[rightDateArr objectAtIndex:1]]) {
-                        [array addObject:[NSNumber numberWithInt:i+1]];
-                    }
-                }
-            }
-        }
-            break;
-        case CHART_MODEL_TYPE_WEEK:
-        {
-            for (int i=0; i<[modelsArray count]-1; i++) {
-                HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
-                HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
-                
-                NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
-                NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
-                
-                if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
-                    if (![[leftDateArr objectAtIndex:1] isEqualToString:[rightDateArr objectAtIndex:1]]) {
-                        int monthValue = [[rightDateArr objectAtIndex:1] intValue];
-                        if (monthValue % 2 == 1) {
-                            [array addObject:[NSNumber numberWithInt:i+1]];
-                        }
-                    }
-                }
-            }
-        }
-            break;
-        case CHART_MODEL_TYPE_MONTH:
-        {
-            for (int i=0; i<[modelsArray count]-1; i++) {
-                HJCandleChartModel *leftModel = [modelsArray objectAtIndex:i];
-                HJCandleChartModel *rightModel = [modelsArray objectAtIndex:i+1];
-                
-                NSArray *leftDateArr = [leftModel.date componentsSeparatedByString:@"-"];
-                NSArray *rightDateArr = [rightModel.date componentsSeparatedByString:@"-"];
-                
-                if (CHECK_VALID_ARRAY(leftDateArr) && CHECK_VALID_ARRAY(rightDateArr) && [leftDateArr count]==3 && [rightDateArr count]==3) {
-                    if (![[leftDateArr objectAtIndex:0] isEqualToString:[rightDateArr objectAtIndex:0]]) {
-                        [array addObject:[NSNumber numberWithInt:i+1]];
-                    }
-                }
-            }
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return array;
-}
-
 - (float)transformPriceToYPoint:(float)priceValue
 {
-    return CGRectGetHeight(self.bounds) - (priceValue - self.minPrice)*self.yAlixsScale - self.candleAreaPaddingDown - self.candleYAlixsToEdge;
+    return CGRectGetHeight(self.bounds) - (priceValue - self.viewModel.minPrice)*self.yAlixsScale - self.candleAreaPaddingDown - self.candleYAlixsToEdge;
 }
 
 - (float)transformVolumeToYPoint:(long)volume
@@ -1232,72 +700,17 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 
 - (float)transformKDJToYPoint:(float)kdjValue
 {
-    return CGRectGetHeight(self.bounds) - (kdjValue - self.minKDJValue)*self.kdjHScale - self.infoAreaPaddingDown;
+    return CGRectGetHeight(self.bounds) - (kdjValue - self.viewModel.minKDJValue)*self.kdjHScale - self.infoAreaPaddingDown;
 }
 
-- (NSDictionary *)getTopInfoAttributesByFlag:(STOCK_FLAG)flag
+- (long)getIndexByPointX:(float)pointX
 {
-    UIFont *font = [UIFont systemFontOfSize:12];
-    UIColor *color = [self getColorByStockFlag:flag];
-    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-    paragraphStyle.alignment = NSTextAlignmentLeft;
-    NSDictionary *attributes = @{ NSFontAttributeName: font,
-                                  NSForegroundColorAttributeName: color,
-                                  NSParagraphStyleAttributeName: paragraphStyle };
-    
-    return attributes;
-}
-
-- (UIColor *)getColorByStockFlag:(STOCK_FLAG)flag
-{
-    switch (flag) {
-        case STOCK_FLAG_DEFAULT:
-            return [UIColor colorWithRed:0.8f green:0.8f blue:0.8f alpha:0.8f];
-            break;
-        case STOCK_FLAG_UP:
-            return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-            break;
-        case STOCK_FLAG_DOWN:
-            return [UIColor colorWithRed:0.15 green:0.6 blue:0.1 alpha:1];
-            break;
-        case STOCK_FLAG_MA5:
-            return [UIColor colorWithRed:0 green:1 blue:1 alpha:1];
-            break;
-        case STOCK_FLAG_MA10:
-            return [UIColor colorWithRed:1 green:1 blue:0 alpha:1];
-            break;
-        case STOCK_FLAG_MA30:
-            return [UIColor colorWithRed:1 green:0 blue:1 alpha:1];
-            break;
-        case STOCK_FLAG_MA60:
-            return [UIColor colorWithRed:0.8 green:0.04 blue:0.05 alpha:1];
-            break;
-        case STOCK_FLAG_DASH:
-            return [UIColor colorWithRed:0.5f green:0.5f blue:0.5f alpha:0.5];
-            break;
-        default:
-            return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-            break;
-    }
-}
-
-
-- (UIColor *)getColorByKDJFlag:(KDJ_FLAG)flag
-{
-    switch (flag) {
-        case KDJ_FLAG_K:
-            return [UIColor colorWithRed:0.18f green:0.69f blue:0.19f alpha:0.8f];
-            break;
-        case KDJ_FLAG_D:
-            return [UIColor colorWithRed:0.94f green:0.27f blue:0.20f alpha:0.8f];
-            break;
-        case KDJ_FLAG_J:
-            return [UIColor colorWithRed:0.8f green:0.68f blue:0.36f alpha:0.8f];
-            break;
-        default:
-            return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-            break;
+    if (pointX>=CGRectGetWidth(self.bounds)-self.candleAreaPaddingRight) {
+        return [self.viewModel.curDrawModesArray count]-1;
+    }else if(pointX<=self.candleAreaPaddingLeft) {
+        return 0;
+    }else {
+        return (pointX - self.candleAreaPaddingLeft)/(self.candleW + self.candleGap);
     }
 }
 
@@ -1307,161 +720,12 @@ NSParagraphStyleAttributeName: paragraphStyle}];
         case LONG_PRESS_FLAG_INDEX:
             return [UIColor colorWithRed:44.0f/255.0f green:189.0f/255.0f blue:289.0f/255.0f alpha:1];
             break;
-            break;
-            
-        default:
-            return [self getColorByStockFlag:STOCK_FLAG_DEFAULT];
-            break;
-    }
-}
-
-- (UIColor *)getColorByCanleData:(HJCandleChartModel *)candleModel
-{
-    if (candleModel.openPrice > candleModel.closePrice) {
-        return [self getColorByStockFlag:STOCK_FLAG_DOWN];
-    }else if (candleModel.openPrice < candleModel.closePrice) {
-        return [self getColorByStockFlag:STOCK_FLAG_UP];
-    }else {
-        return [self getColorByStockFlag:STOCK_FLAG_DEFAULT];
-    }
-}
-
-- (STOCK_FLAG)getStockFlagByCanleData:(HJCandleChartModel *)candleModel
-{
-    if (candleModel.openPrice > candleModel.closePrice) {
-        return STOCK_FLAG_DOWN;
-    }else if (candleModel.openPrice < candleModel.closePrice) {
-        return STOCK_FLAG_UP;
-    }else {
-        return STOCK_FLAG_DEFAULT;
-    }
-}
-
-- (NSString *)getStringByFlag:(STOCK_FLAG)flag
-{
-    switch (flag) {
-        case STOCK_FLAG_MA5:
-            return @"ma5";
-            break;
-        case STOCK_FLAG_MA10:
-            return @"ma10";
-            break;
-        case STOCK_FLAG_MA30:
-            return @"ma30";
-            break;
-        case STOCK_FLAG_MA60:
-            return @"ma60";
+        case LONG_PRESS_FLAG_CHANGE_AREA:
+            return [UIColor colorWithRed:0.97f green:0.87f blue:0.5f alpha:0.8];
             break;
         default:
-            return @"";
+            return [self.viewModel getColorByStockFlag:STOCK_FLAG_DEFAULT];
             break;
-    }
-}
-
-- (NSString *)transformToUnitWithVolume:(long)volume
-{
-    return [self transformToUnitWithVolume:volume unitNum:100000000.0f];
-}
-
-- (NSString *)transformToUnitWithVolume:(long)volume unitNum:(float)unitNum
-{
-    int unitCount = volume/unitNum;
-    
-    if (unitNum == 1000.0f) {
-        return [NSString stringWithFormat:@"%ld%@",volume,[self getUnitNameByNumber:unitNum]];
-    }else {
-        if (unitCount > 0) {
-            return [NSString stringWithFormat:@"%.2f%@",volume/unitNum,[self getUnitNameByNumber:unitNum]];
-        }else {
-            return [self transformToUnitWithVolume:volume unitNum:unitNum/10];
-        }
-    }
-}
-
-- (NSArray *)getMAArrayByFlag:(STOCK_FLAG)flag
-{
-    NSArray *maArr = nil;
-    
-    switch (flag) {
-        case STOCK_FLAG_MA5:
-        {
-            maArr = self.curMA5Array;
-        }
-            break;
-        case STOCK_FLAG_MA10:
-        {
-            maArr = self.curMA10Array;
-        }
-            break;
-        case STOCK_FLAG_MA30:
-        {
-            maArr = self.curMA30Array;
-        }
-            break;
-        case STOCK_FLAG_MA60:
-        {
-            maArr = self.curMA60Array;
-        }
-            break;
-        default:
-            break;
-    }
-    
-    return maArr;
-}
-
-- (NSArray *)getKDJArrayByFlag:(KDJ_FLAG)flag
-{
-    NSArray *kdjArr = nil;
-    
-    switch (flag) {
-        case KDJ_FLAG_K:
-        {
-            kdjArr = self.curKArray;
-        }
-            break;
-        case KDJ_FLAG_D:
-        {
-            kdjArr = self.curDArray;
-        }
-            break;
-        case KDJ_FLAG_J:
-        {
-            kdjArr = self.curJArray;
-        }
-            break;
-        default:
-            break;
-    }
-    
-    return kdjArr;
-}
-
-- (NSString *)getUnitNameByNumber:(float)unitNum
-{
-    if (unitNum == 100000000.0f) {
-        return @",亿";
-    }else if (unitNum == 10000000.0f) {
-        return @",千万";
-    }else if (unitNum == 1000000.0f) {
-        return @",百万";
-    }else if (unitNum == 100000.0f) {
-        return @",十万";
-    }else if (unitNum == 10000.0f) {
-        return @",万";
-    }else{
-        return @"";
-    }
-}
-
-- (long)getIndexByPointX:(float)pointX
-{
-    if (pointX>=CGRectGetWidth(self.bounds)-self.candleAreaPaddingRight) {
-        return [self.curDrawModesArray count]-1;
-    }else if(pointX<=self.candleAreaPaddingLeft) {
-        return 0;
-    }else {
-        return (pointX - self.candleAreaPaddingLeft)/(self.candleW + self.candleGap);
     }
 }
 
@@ -1474,7 +738,7 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         
-        if (point.y >= screenH - self.candleAreaPaddingDown && point.y <= screenH - self.candleAreaPaddingDown + self.candleWithInfoAreaGap) {
+        if (point.y >= screenH - self.candleAreaPaddingDown - 10 && point.y <= screenH - self.candleAreaPaddingDown + self.candleWithInfoAreaGap + 10) {
             self.longPressFlag = LONG_PRESS_FLAG_CHANGE_AREA;
             self.curBeginLongPressPointY = point.y;
             
@@ -1552,20 +816,20 @@ NSParagraphStyleAttributeName: paragraphStyle}];
             
             if (indexChg > 0) {
                 if (touchChg>0) {
-                    if (self.rangeFrom == 0) {
+                    if (self.viewModel.rangeFrom == 0) {
                         return;
-                    }else if (self.rangeFrom -indexChg < 0) {
-                        self.rangeFrom = 0;
+                    }else if (self.viewModel.rangeFrom -indexChg < 0) {
+                        self.viewModel.rangeFrom = 0;
                     }else {
-                        self.rangeFrom -= indexChg;
+                        self.viewModel.rangeFrom -= indexChg;
                     }
                 }else {
-                    if (self.rangeFrom + self.rangeSize == [self.modelsArray count]) {
+                    if (self.viewModel.rangeFrom + self.viewModel.rangeSize == [self.viewModel.modelsArray count]) {
                         return;
-                    }else if (self.rangeFrom + self.rangeSize + indexChg > [self.modelsArray count]) {
-                        self.rangeFrom = [self.modelsArray count] - self.rangeSize;
+                    }else if (self.viewModel.rangeFrom + self.viewModel.rangeSize + indexChg > [self.viewModel.modelsArray count]) {
+                        self.viewModel.rangeFrom = [self.viewModel.modelsArray count] - self.viewModel.rangeSize;
                     }else {
-                        self.rangeFrom += indexChg;
+                        self.viewModel.rangeFrom += indexChg;
                     }
                 }
                 self.curBeginTouchPointX = touchPointX;
@@ -1594,36 +858,36 @@ NSParagraphStyleAttributeName: paragraphStyle}];
             }
             
             long curRangeSize = (CGRectGetWidth(self.bounds) - self.candleAreaPaddingLeft - self.candleAreaPaddingRight)/(curCandleW + self.candleGap);
-            long curRangeFrom = self.rangeFrom;
+            long curRangeFrom = self.viewModel.rangeFrom;
             
-            if (curRangeSize > self.rangeSize) {
+            if (curRangeSize > self.viewModel.rangeSize) {
                 if (curRangeFrom==0) {
                     curRangeFrom = 0;
-                }else if (curRangeFrom + curRangeSize >= [self.modelsArray count]){
-                    curRangeFrom = [self.modelsArray count] - curRangeSize;
+                }else if (curRangeFrom + curRangeSize >= [self.viewModel.modelsArray count]){
+                    curRangeFrom = [self.viewModel.modelsArray count] - curRangeSize;
                 }else {
-                    curRangeFrom = self.rangeFrom - ceil((curRangeSize - self.rangeSize)/2);
+                    curRangeFrom = self.viewModel.rangeFrom - ceil((curRangeSize - self.viewModel.rangeSize)/2);
                 }
-            }else if (curRangeSize < self.rangeSize){
-                curRangeFrom = self.rangeFrom + floor((self.rangeSize - curRangeSize)/2);
+            }else if (curRangeSize < self.viewModel.rangeSize){
+                curRangeFrom = self.viewModel.rangeFrom + floor((self.viewModel.rangeSize - curRangeSize)/2);
             }else {
                 self.curBeginMutipleTouchPointXChange = curChg;
                 return;
             }
             
-            self.rangeSize = curRangeSize;
-            self.candleW = (CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - self.candleAreaPaddingLeft)/self.rangeSize - self.candleGap;//需要重新计算准确的candle宽度值
-            self.rangeFrom = curRangeFrom;
+            self.viewModel.rangeSize = curRangeSize;
+            self.candleW = (CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - self.candleAreaPaddingLeft)/self.viewModel.rangeSize - self.candleGap;//需要重新计算准确的candle宽度值
+            self.viewModel.rangeFrom = curRangeFrom;
             
             /**
              *  做最后的容错处理
              */
-            if (self.rangeFrom < 0) {
-                self.rangeFrom = 0;
+            if (self.viewModel.rangeFrom < 0) {
+                self.viewModel.rangeFrom = 0;
             }
             
-            if (self.rangeFrom + self.rangeSize > [self.modelsArray count]) {
-                self.rangeSize = [self.modelsArray count] - self.rangeFrom;
+            if (self.viewModel.rangeFrom + self.viewModel.rangeSize > [self.viewModel.modelsArray count]) {
+                self.viewModel.rangeSize = [self.viewModel.modelsArray count] - self.viewModel.rangeFrom;
             }
             
             self.curBeginMutipleTouchPointXChange = curChg;
