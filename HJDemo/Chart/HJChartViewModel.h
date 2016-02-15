@@ -18,7 +18,8 @@ typedef enum _CHART_MODEL_TYPE {
 
 typedef enum _CHART_INFO_TYPE {
     CHART_INFO_TYPE_VOLUME = 0,
-    CHART_INFO_TYPE_KDJ
+    CHART_INFO_TYPE_KDJ,
+    CHART_INFO_TYPE_RSI
 }CHART_INFO_TYPE;
 
 typedef enum _STOCK_FLAG {
@@ -37,6 +38,12 @@ typedef enum _KDJ_FLAG {
     KDJ_FLAG_D,
     KDJ_FLAG_J
 }KDJ_FLAG;
+
+typedef enum _RSI_FLAG {
+    RSI_FLAG_6 = 0,
+    RSI_FLAG_12,
+    RSI_FLAG_24
+}RSI_FLAG;
 
 @interface HJChartViewModel : NSObject
 
@@ -61,6 +68,10 @@ typedef enum _KDJ_FLAG {
 @property (nonatomic,strong) NSArray *curDArray;
 @property (nonatomic,strong) NSArray *curJArray;
 
+@property (nonatomic,strong) NSArray *curRSI6Array;
+@property (nonatomic,strong) NSArray *curRSI12Array;
+@property (nonatomic,strong) NSArray *curRSI24Array;
+
 @property (nonatomic) float maxPrice;
 @property (nonatomic) float minPrice;
 @property (nonatomic) float averagePrice;
@@ -68,6 +79,9 @@ typedef enum _KDJ_FLAG {
 
 @property (nonatomic) float maxKDJValue;
 @property (nonatomic) float minKDJValue;
+
+@property (nonatomic) float maxRSIValue;
+@property (nonatomic) float minRSIValue;
 
 - (instancetype)initWithData:(NSArray *)array;
 - (void)reCaculateChartData;
@@ -86,6 +100,7 @@ typedef enum _KDJ_FLAG {
 - (NSDictionary *)getTopInfoAttributesByFlag:(STOCK_FLAG)flag;
 - (UIColor *)getColorByStockFlag:(STOCK_FLAG)flag;
 - (UIColor *)getColorByKDJFlag:(KDJ_FLAG)flag;
+- (UIColor *)getColorByRSIFlag:(RSI_FLAG)flag;
 - (UIColor *)getColorByCanleData:(HJCandleChartModel *)candleModel;
 - (STOCK_FLAG)getStockFlagByCanleData:(HJCandleChartModel *)candleModel;
 - (NSString *)getStringByFlag:(STOCK_FLAG)flag;
@@ -93,5 +108,6 @@ typedef enum _KDJ_FLAG {
 - (NSString *)transformToUnitWithVolume:(long)volume unitNum:(float)unitNum;
 - (NSArray *)getMAArrayByFlag:(STOCK_FLAG)flag;
 - (NSArray *)getKDJArrayByFlag:(KDJ_FLAG)flag;
+- (NSArray *)getRSIArrayByFlag:(RSI_FLAG)flag;
 
 @end

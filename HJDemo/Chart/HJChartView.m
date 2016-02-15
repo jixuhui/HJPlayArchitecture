@@ -29,14 +29,15 @@ typedef enum _LONG_PRESS_FLAG {
 @property (nonatomic) float candleWithInfoAreaGap;
 
 @property (nonatomic) float yAlixsScale;
+@property (nonatomic) float volumeHScale;
+@property (nonatomic) float kdjHScale;
+@property (nonatomic) float rsiHScale;
 @property (nonatomic) float candleYAlixsToEdge;
 @property (nonatomic) float candleGap;
 @property (nonatomic) float candleW;
 @property (nonatomic) float minCandleW;
 @property (nonatomic) float maxCandleW;
 @property (nonatomic) float infoAreaMaxViewHeight;
-@property (nonatomic) float volumeHScale;
-@property (nonatomic) float kdjHScale;
 @property (nonatomic) long curIndex;
 @property (nonatomic) LONG_PRESS_FLAG longPressFlag;
 @property (nonatomic) float curBeginLongPressPointY;
@@ -112,6 +113,8 @@ typedef enum _LONG_PRESS_FLAG {
     self.yAlixsScale = (CGRectGetHeight(self.bounds) - self.candleAreaPaddingDown - self.candleAreaPaddingTop - self.candleYAlixsToEdge*2)/(self.viewModel.maxPrice - self.viewModel.minPrice);
    
     self.kdjHScale = self.infoAreaMaxViewHeight/(self.viewModel.maxKDJValue - self.viewModel.minKDJValue);
+    
+    self.rsiHScale = self.infoAreaMaxViewHeight/(self.viewModel.maxRSIValue - self.viewModel.minRSIValue);
 }
 
 - (void)renderMe
@@ -123,7 +126,6 @@ typedef enum _LONG_PRESS_FLAG {
 - (void)resetMe
 {
     [self.viewModel resetMe];
-    
     [self setNeedsDisplay];
 }
 
@@ -194,7 +196,7 @@ typedef enum _LONG_PRESS_FLAG {
         ;
     }
     
-    NSArray *volumeArray = [[self.viewModel transformToUnitWithVolume:candleModel.volume] componentsSeparatedByString:@","];
+    NSArray *volumeArray = [[self.viewModel transformToUnitWithVolume:candleModel.volume/100] componentsSeparatedByString:@","];
     NSString *volumeStr = @"";
     if (CHECK_VALID_ARRAY(volumeArray)) {
         if ([volumeArray count]==2) {
@@ -249,10 +251,11 @@ typedef enum _LONG_PRESS_FLAG {
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
-    CGContextSetLineWidth(context, 0.5);
     if (self.longPressFlag == LONG_PRESS_FLAG_CHANGE_AREA) {
+        CGContextSetLineWidth(context, 1);
         [[self getColorByLongPressFlag:LONG_PRESS_FLAG_CHANGE_AREA] setStroke];
     }else {
+        CGContextSetLineWidth(context, 0.5);
         [[self getColorByLongPressFlag:LONG_PRESS_FLAG_NONE] setStroke];
     }
     
@@ -438,7 +441,7 @@ typedef enum _LONG_PRESS_FLAG {
         int curIndex = [num intValue];
         HJCandleChartModel *candle = [self.viewModel.curDrawModesArray objectAtIndex:curIndex];
         
-        float pointX = curIndex*(self.candleGap + self.candleW) + globalChg;
+        float pointX = (curIndex+1)*(self.candleGap + self.candleW) + globalChg;
         
         [candle.date drawInRect:CGRectMake(pointX, pointY, labelW, labelH) withAttributes:attributes];
         [self drawDashLinesWithXPoint:pointX+labelW/2];
@@ -501,10 +504,14 @@ typedef enum _LONG_PRESS_FLAG {
         i ++;
     }
     
-    if (self.viewModel.infoType != CHART_INFO_TYPE_VOLUME) {
+    if (self.viewModel.infoType == CHART_INFO_TYPE_KDJ) {
         [self drawKDJWithFlag:KDJ_FLAG_K];
         [self drawKDJWithFlag:KDJ_FLAG_D];
         [self drawKDJWithFlag:KDJ_FLAG_J];
+    }else if (self.viewModel.infoType == CHART_INFO_TYPE_RSI) {
+        [self drawRSIWithFlag:RSI_FLAG_6];
+        [self drawRSIWithFlag:RSI_FLAG_12];
+        [self drawRSIWithFlag:RSI_FLAG_24];
     }
 }
 
@@ -552,7 +559,9 @@ NSParagraphStyleAttributeName: paragraphStyle}];
         case CHART_INFO_TYPE_KDJ:
             [self drawKDJTipsWithAttributes:attributes];
             break;
-            
+        case CHART_INFO_TYPE_RSI:
+            [self drawRSITipsWithAttributes:attributes];
+            break;
         default:
             break;
     }
@@ -561,7 +570,7 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 - (void)drawVolumeTipsWithAttributes:(NSDictionary *)attributes
 {
     float labelH = 9;
-    NSString *maxVolumeStr = [self.viewModel transformToUnitWithVolume:self.viewModel.maxVolume];
+    NSString *maxVolumeStr = [self.viewModel transformToUnitWithVolume:self.viewModel.maxVolume/100];//1手是一股
     NSArray *maxVolumeArray = [maxVolumeStr componentsSeparatedByString:@","];
     
     if (CHECK_VALID_ARRAY(maxVolumeArray)) {
@@ -619,6 +628,54 @@ NSParagraphStyleAttributeName: paragraphStyle}];
         float kdjLen = [kdjStr sizeWithAttributes:attributes].width;
         
         [kdjStr drawInRect:CGRectMake(left, top, kdjLen, labelH) withAttributes:attributes];
+    }
+}
+
+- (void)drawRSITipsWithAttributes:(NSMutableDictionary *)attributes
+{
+    float labelH = 9;
+    float averageValue = (self.viewModel.maxRSIValue - self.viewModel.minRSIValue)/2;
+    
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.maxRSIValue] drawInRect:CGRectMake(0, [self transformRSIToYPoint:self.viewModel.maxRSIValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",averageValue] drawInRect:CGRectMake(0, [self transformRSIToYPoint:averageValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    [[NSString stringWithFormat:@"%.2f",self.viewModel.minRSIValue] drawInRect:CGRectMake(0, [self transformRSIToYPoint:self.viewModel.minRSIValue] - labelH/2, self.candleAreaPaddingLeft-2, labelH) withAttributes:attributes];
+    
+    float left = self.candleAreaPaddingLeft + 2;
+    float top = CGRectGetHeight(self.bounds)-self.infoAreaMaxViewHeight-self.infoAreaPaddingDown + 2;
+    float gap = 10;
+    
+    if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
+        
+        NSString *kStr = [NSString stringWithFormat:@"RSI6:%@",[self.viewModel.curKArray objectAtIndex:self.curIndex]];
+        float kLen = [kStr sizeWithAttributes:attributes].width;
+        
+        NSString *dStr = [NSString stringWithFormat:@"RSI12:%@",[self.viewModel.curDArray objectAtIndex:self.curIndex]];
+        float dLen = [dStr sizeWithAttributes:attributes].width;
+        
+        NSString *jStr = [NSString stringWithFormat:@"RSI24:%@",[self.viewModel.curJArray objectAtIndex:self.curIndex]];
+        float jLen = [jStr sizeWithAttributes:attributes].width;
+        
+        if (self.curIndex < floor([self.viewModel.curDrawModesArray count]/2)) {
+            left = CGRectGetWidth(self.bounds) - self.candleAreaPaddingRight - kLen - dLen - jLen - gap*2;
+        }
+        
+        [attributes setValue:[self.viewModel getColorByRSIFlag:RSI_FLAG_6] forKey:NSForegroundColorAttributeName];
+        [kStr drawInRect:CGRectMake(left, top, kLen, labelH) withAttributes:attributes];
+        
+        left += kLen + gap;
+        
+        [attributes setValue:[self.viewModel getColorByRSIFlag:RSI_FLAG_12] forKey:NSForegroundColorAttributeName];
+        [dStr drawInRect:CGRectMake(left, top, dLen, labelH) withAttributes:attributes];
+        
+        left += dLen + gap;
+        
+        [attributes setValue:[self.viewModel getColorByRSIFlag:RSI_FLAG_24] forKey:NSForegroundColorAttributeName];
+        [jStr drawInRect:CGRectMake(left, top, jLen, labelH) withAttributes:attributes];
+    }else {
+        NSString *rsiStr = [NSString stringWithFormat:@"RSI[6,12,24]"];
+        float rsiLen = [rsiStr sizeWithAttributes:attributes].width;
+        
+        [rsiStr drawInRect:CGRectMake(left, top, rsiLen, labelH) withAttributes:attributes];
     }
 }
 
@@ -686,6 +743,31 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     CGContextStrokePath(context);
 }
 
+- (void)drawRSIWithFlag:(RSI_FLAG)flag
+{
+    NSArray *rsiArr = [self.viewModel getRSIArrayByFlag:flag];
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetLineWidth(context, 0.5);
+    [[self.viewModel getColorByRSIFlag:flag] setStroke];
+    CGContextBeginPath(context);
+    
+    for (int i=0; i<[rsiArr count]; i++) {
+        float maValue = [[rsiArr objectAtIndex:i] floatValue];
+        float pointX = self.candleAreaPaddingLeft;
+        
+        if (i==0) {
+            CGContextMoveToPoint(context, pointX, [self transformRSIToYPoint:maValue]);
+        }else {
+            pointX = self.candleAreaPaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
+            CGContextAddLineToPoint(context, pointX, [self transformRSIToYPoint:maValue]);
+        }
+    }
+    
+    CGContextStrokePath(context);
+}
+
 #pragma mark - help methods
 
 - (float)transformPriceToYPoint:(float)priceValue
@@ -701,6 +783,11 @@ NSParagraphStyleAttributeName: paragraphStyle}];
 - (float)transformKDJToYPoint:(float)kdjValue
 {
     return CGRectGetHeight(self.bounds) - (kdjValue - self.viewModel.minKDJValue)*self.kdjHScale - self.infoAreaPaddingDown;
+}
+
+- (float)transformRSIToYPoint:(float)rsiValue
+{
+    return CGRectGetHeight(self.bounds) - (rsiValue - self.viewModel.minRSIValue)*self.rsiHScale - self.infoAreaPaddingDown;
 }
 
 - (long)getIndexByPointX:(float)pointX

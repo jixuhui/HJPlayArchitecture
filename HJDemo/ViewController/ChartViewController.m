@@ -134,8 +134,6 @@
     NSArray *stockArr = [self readFromPlistByName:[NSString stringWithFormat:@"%@_%@_%@.plist",_stockCode,_candleType,date]];
     
     if (CHECK_VALID_ARRAY(stockArr) && [stockArr count]>0) {
-        [self stopLoading];
-        
         [self.chartView.viewModel setModelsArray:stockArr];
         [self.chartView.viewModel setStockInfo:_stockInfo];
         [self.chartView renderMe];
@@ -152,6 +150,7 @@
     task.responseDataType = @"Serial";
     
     [[HJURLService shareService] handleSessionTask:task success:^(NSURLSessionDataTask *task, id responseObject) {
+        [self stopLoading];
         NSString *result = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
         [self generateData:result];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -313,6 +312,11 @@
     [kdjBtn setFrame:CGRectMake(0, 50, 50, 30)];
     [scrollView addSubview:kdjBtn];
     [_candleInfoBtnArr addObject:kdjBtn];
+    
+    HJButton *rsiBtn = [self createHJButtonWithActionName:@"RSI"];
+    [rsiBtn setFrame:CGRectMake(0, 100, 50, 30)];
+    [scrollView addSubview:rsiBtn];
+    [_candleInfoBtnArr addObject:rsiBtn];
 }
 
 - (HJButton *)createHJButtonWithActionName:(NSString *)actionName
@@ -339,6 +343,9 @@
         [self doInfoPublicAction];
     }else if ([sender.actionName isEqualToString:@"KDJ"]) {
         self.chartView.viewModel.infoType = CHART_INFO_TYPE_KDJ;
+        [self doInfoPublicAction];
+    }else if ([sender.actionName isEqualToString:@"RSI"]) {
+        self.chartView.viewModel.infoType = CHART_INFO_TYPE_RSI;
         [self doInfoPublicAction];
     }else if ([sender.actionName isEqualToString:@"DAY"]) {
         _candleType = @"d";
@@ -367,11 +374,10 @@
     
     [self.chartView resetMe];
     
-    [self startLoading];
-    
     [self deleteOldStockFileByNewFileNamePrefix:[NSString stringWithFormat:@"%@_%@",_stockCode,_candleType]];
     
     if (![self getCacheData]) {
+        [self startLoading];
         [self getURLData];
     }
 }

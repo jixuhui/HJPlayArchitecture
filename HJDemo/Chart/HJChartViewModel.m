@@ -71,21 +71,33 @@
     //volume
     self.maxVolume = [self getMaxVolumeFromCurRange];
     
+    //kdj
     self.curKArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_k"] objectsAtIndexes:maSe];
     self.curDArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_d"] objectsAtIndexes:maSe];
     self.curJArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_j"] objectsAtIndexes:maSe];
     
-    
     NSDictionary *kDic = [self getMaxAndMinFromArray:self.curKArray];
     NSDictionary *dDic = [self getMaxAndMinFromArray:self.curDArray];
     NSDictionary *jDic = [self getMaxAndMinFromArray:self.curJArray];
-    
     NSArray *maxKDJArr = @[kDic[@"max"],dDic[@"max"],jDic[@"max"]];
     NSArray *minKDJArr = @[kDic[@"min"],dDic[@"min"],jDic[@"min"]];
-    
-    //kdj
+   
     self.maxKDJValue = [self getMaxFromArray:maxKDJArr];
     self.minKDJValue = [self getMinFromArray:minKDJArr];
+    
+    //rsi
+    self.curRSI6Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi6"] objectsAtIndexes:maSe];
+    self.curRSI12Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi12"] objectsAtIndexes:maSe];
+    self.curRSI24Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi24"] objectsAtIndexes:maSe];
+    
+    NSDictionary *rsi6Dic = [self getMaxAndMinFromArray:self.curRSI6Array];
+    NSDictionary *rsi12Dic = [self getMaxAndMinFromArray:self.curRSI12Array];
+    NSDictionary *rsi24Dic = [self getMaxAndMinFromArray:self.curRSI24Array];
+    NSArray *maxRSIArr = @[rsi6Dic[@"max"],rsi12Dic[@"max"],rsi24Dic[@"max"]];
+    NSArray *minRSIArr = @[rsi6Dic[@"min"],rsi12Dic[@"min"],rsi24Dic[@"min"]];
+    
+    self.maxRSIValue = [self getMaxFromArray:maxRSIArr];
+    self.minRSIValue = [self getMinFromArray:minRSIArr];
 }
 
 - (void)setModelsArray:(NSArray *)modelsArray
@@ -110,6 +122,10 @@
     self.curKArray = nil;
     self.curDArray = nil;
     self.curJArray = nil;
+    
+    self.curRSI6Array = nil;
+    self.curRSI12Array = nil;
+    self.curRSI24Array = nil;
 }
 
 #pragma mark - help methods
@@ -118,22 +134,6 @@
 - (NSDictionary *)transformChartLineData
 {
     NSMutableDictionary *dic = [[NSMutableDictionary alloc]initWithCapacity:10];
-    
-    //    //price
-    //    NSMutableArray *price = [[NSMutableArray alloc] init];
-    //    for(int i = 60;i < data.count;i++){
-    //        [price addObject:data[i]];
-    //    }
-    //    dic[@"price"] = price;
-    //
-    //    //VOL
-    //    NSMutableArray *vol = [[NSMutableArray alloc] init];
-    //    for(int i = 60;i < data.count;i++){
-    //        NSMutableArray *item = [[NSMutableArray alloc] init];
-    //        [item addObject:[@"" stringByAppendingFormat:@"%f",[[data[i] objectAtIndex:4] floatValue]/100]];
-    //        [vol addObject:item];
-    //    }
-    //    dic[@"vol"] = vol;
     
     //MA
     dic[@"ma5"] = [self calculateMAWithDays:5];
@@ -166,13 +166,13 @@
             
             float h = [self getHighPriceFromCandleArray:curArray];
             float l = [self getLowPriceFromCandleArray:curArray];
-            float c = [[self.modelsArray objectAtIndex:i] closePrice];
+            float c = [[curArray lastObject] closePrice];
             
             if(h!=l)
                 rsv = (c-l)/(h-l)*100;
             k = 2*prev_k/3+1*rsv/3;
             d = 2*prev_d/3+1*k/3;
-            j = d+2*(d-k);
+            j = 3*k-2*d;
         }
         
         prev_k = k;
@@ -522,6 +522,24 @@
     }
 }
 
+- (UIColor *)getColorByRSIFlag:(RSI_FLAG)flag
+{
+    switch (flag) {
+        case RSI_FLAG_6:
+            return [UIColor colorWithRed:0.18f green:0.69f blue:0.19f alpha:0.8f];
+            break;
+        case RSI_FLAG_12:
+            return [UIColor colorWithRed:0.94f green:0.27f blue:0.20f alpha:0.8f];
+            break;
+        case RSI_FLAG_24:
+            return [UIColor colorWithRed:0.8f green:0.68f blue:0.36f alpha:0.8f];
+            break;
+        default:
+            return [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+            break;
+    }
+}
+
 - (UIColor *)getColorByCanleData:(HJCandleChartModel *)candleModel
 {
     if (candleModel.openPrice > candleModel.closePrice) {
@@ -659,6 +677,33 @@
     }
     
     return kdjArr;
+}
+
+- (NSArray *)getRSIArrayByFlag:(RSI_FLAG)flag
+{
+    NSArray *rsiArr = nil;
+    
+    switch (flag) {
+        case RSI_FLAG_6:
+        {
+            rsiArr = self.curRSI6Array;
+        }
+            break;
+        case RSI_FLAG_12:
+        {
+            rsiArr = self.curRSI12Array;
+        }
+            break;
+        case RSI_FLAG_24:
+        {
+            rsiArr = self.curRSI24Array;
+        }
+            break;
+        default:
+            break;
+    }
+    
+    return rsiArr;
 }
 
 @end
