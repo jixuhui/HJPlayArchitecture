@@ -186,13 +186,13 @@ typedef enum _LONG_PRESS_FLAG {
         ma60Value = [[((NSArray *)[self.viewModel.chartLineData dataForKey:@"ma60"]) lastObject] floatValue];
     }else {
         candleModel = (HJCandleChartModel *)[self.viewModel.curDrawModesArray objectAtIndex:self.curIndex];
-        ma5Value = [[self.viewModel.curMA5Array objectAtIndex:self.curIndex+1] floatValue]
+        ma5Value = [[self.viewModel.curMA5Array objectAtIndex:self.curIndex] floatValue]
         ;
-        ma10Value = [[self.viewModel.curMA10Array objectAtIndex:self.curIndex+1] floatValue]
+        ma10Value = [[self.viewModel.curMA10Array objectAtIndex:self.curIndex] floatValue]
         ;
-        ma30Value = [[self.viewModel.curMA30Array objectAtIndex:self.curIndex+1] floatValue]
+        ma30Value = [[self.viewModel.curMA30Array objectAtIndex:self.curIndex] floatValue]
         ;
-        ma60Value = [[self.viewModel.curMA60Array objectAtIndex:self.curIndex+1] floatValue]
+        ma60Value = [[self.viewModel.curMA60Array objectAtIndex:self.curIndex] floatValue]
         ;
     }
     
@@ -646,13 +646,13 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     
     if (self.longPressFlag == LONG_PRESS_FLAG_INDEX) {
         
-        NSString *kStr = [NSString stringWithFormat:@"RSI6:%@",[self.viewModel.curKArray objectAtIndex:self.curIndex]];
+        NSString *kStr = [NSString stringWithFormat:@"RSI6:%@",[self.viewModel.curRSI6Array objectAtIndex:self.curIndex]];
         float kLen = [kStr sizeWithAttributes:attributes].width;
         
-        NSString *dStr = [NSString stringWithFormat:@"RSI12:%@",[self.viewModel.curDArray objectAtIndex:self.curIndex]];
+        NSString *dStr = [NSString stringWithFormat:@"RSI12:%@",[self.viewModel.curRSI12Array objectAtIndex:self.curIndex]];
         float dLen = [dStr sizeWithAttributes:attributes].width;
         
-        NSString *jStr = [NSString stringWithFormat:@"RSI24:%@",[self.viewModel.curJArray objectAtIndex:self.curIndex]];
+        NSString *jStr = [NSString stringWithFormat:@"RSI24:%@",[self.viewModel.curRSI24Array objectAtIndex:self.curIndex]];
         float jLen = [jStr sizeWithAttributes:attributes].width;
         
         if (self.curIndex < floor([self.viewModel.curDrawModesArray count]/2)) {
@@ -703,16 +703,12 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     [[self.viewModel getColorByStockFlag:flag] setStroke];
     CGContextBeginPath(context);
     
-    for (int i=0; i<[maArr count]; i++) {
+    float pointX = self.candleAreaPaddingLeft + (self.candleGap + self.candleW)/2;
+    CGContextMoveToPoint(context, pointX, [self transformPriceToYPoint:[[maArr objectAtIndex:0] floatValue]]);
+    for (int i=1; i<[maArr count]; i++) {
         float maValue = [[maArr objectAtIndex:i] floatValue];
-        float pointX = self.candleAreaPaddingLeft;
-        
-        if (i==0) {
-            CGContextMoveToPoint(context, pointX, [self transformPriceToYPoint:maValue]);
-        }else {
-            pointX = self.candleAreaPaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
-            CGContextAddLineToPoint(context, pointX, [self transformPriceToYPoint:maValue]);
-        }
+        pointX += self.candleGap + self.candleW;
+        CGContextAddLineToPoint(context, pointX, [self transformPriceToYPoint:maValue]);
     }
     
     CGContextStrokePath(context);
@@ -728,16 +724,12 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     [[self.viewModel getColorByKDJFlag:flag] setStroke];
     CGContextBeginPath(context);
     
-    for (int i=0; i<[kdjArr count]; i++) {
+    float pointX = self.candleAreaPaddingLeft + (self.candleGap + self.candleW)/2;
+    CGContextMoveToPoint(context, pointX, [self transformKDJToYPoint:[[kdjArr objectAtIndex:0] floatValue]]);
+    for (int i=1; i<[kdjArr count]; i++) {
         float maValue = [[kdjArr objectAtIndex:i] floatValue];
-        float pointX = self.candleAreaPaddingLeft;
-        
-        if (i==0) {
-            CGContextMoveToPoint(context, pointX, [self transformKDJToYPoint:maValue]);
-        }else {
-            pointX = self.candleAreaPaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
-            CGContextAddLineToPoint(context, pointX, [self transformKDJToYPoint:maValue]);
-        }
+        pointX += self.candleGap + self.candleW;
+        CGContextAddLineToPoint(context, pointX, [self transformKDJToYPoint:maValue]);
     }
     
     CGContextStrokePath(context);
@@ -753,16 +745,12 @@ NSParagraphStyleAttributeName: paragraphStyle}];
     [[self.viewModel getColorByRSIFlag:flag] setStroke];
     CGContextBeginPath(context);
     
-    for (int i=0; i<[rsiArr count]; i++) {
+    float pointX = self.candleAreaPaddingLeft + (self.candleGap + self.candleW)/2;
+    CGContextMoveToPoint(context, pointX, [self transformRSIToYPoint:[[rsiArr objectAtIndex:0] floatValue]]);
+    for (int i=1; i<[rsiArr count]; i++) {
         float maValue = [[rsiArr objectAtIndex:i] floatValue];
-        float pointX = self.candleAreaPaddingLeft;
-        
-        if (i==0) {
-            CGContextMoveToPoint(context, pointX, [self transformRSIToYPoint:maValue]);
-        }else {
-            pointX = self.candleAreaPaddingLeft + (i-1)*(self.candleGap + self.candleW) + self.candleGap + self.candleW/2;
-            CGContextAddLineToPoint(context, pointX, [self transformRSIToYPoint:maValue]);
-        }
+        pointX += self.candleGap + self.candleW;
+        CGContextAddLineToPoint(context, pointX, [self transformRSIToYPoint:maValue]);
     }
     
     CGContextStrokePath(context);

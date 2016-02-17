@@ -43,15 +43,10 @@
     NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom, self.rangeSize)];
     self.curDrawModesArray = [self.modelsArray objectsAtIndexes:se];
     
-    //重新获取当前需要绘制的MA数据
-    NSIndexSet *maSe = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.rangeFrom-1, self.rangeSize+1)];
-    if (self.rangeFrom == 0) {
-        maSe = se;
-    }
-    self.curMA5Array = [(NSArray *)[self.chartLineData dataForKey:@"ma5"] objectsAtIndexes:maSe];
-    self.curMA10Array = [(NSArray *)[self.chartLineData dataForKey:@"ma10"] objectsAtIndexes:maSe];
-    self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:maSe];
-    self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:maSe];
+    self.curMA5Array = [(NSArray *)[self.chartLineData dataForKey:@"ma5"] objectsAtIndexes:se];
+    self.curMA10Array = [(NSArray *)[self.chartLineData dataForKey:@"ma10"] objectsAtIndexes:se];
+    self.curMA30Array = [(NSArray *)[self.chartLineData dataForKey:@"ma30"] objectsAtIndexes:se];
+    self.curMA60Array = [(NSArray *)[self.chartLineData dataForKey:@"ma60"] objectsAtIndexes:se];
     
     NSString *maxHighPrice = [NSString stringWithFormat:@"%f",[self getHighPriceFromCandleArray:self.curDrawModesArray]];
     NSString *minLowPrice = [NSString stringWithFormat:@"%f",[self getLowPriceFromCandleArray:self.curDrawModesArray]];
@@ -72,9 +67,9 @@
     self.maxVolume = [self getMaxVolumeFromCurRange];
     
     //kdj
-    self.curKArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_k"] objectsAtIndexes:maSe];
-    self.curDArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_d"] objectsAtIndexes:maSe];
-    self.curJArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_j"] objectsAtIndexes:maSe];
+    self.curKArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_k"] objectsAtIndexes:se];
+    self.curDArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_d"] objectsAtIndexes:se];
+    self.curJArray = [(NSArray *)[self.chartLineData dataForKey:@"kdj_j"] objectsAtIndexes:se];
     
     NSDictionary *kDic = [self getMaxAndMinFromArray:self.curKArray];
     NSDictionary *dDic = [self getMaxAndMinFromArray:self.curDArray];
@@ -86,9 +81,9 @@
     self.minKDJValue = [self getMinFromArray:minKDJArr];
     
     //rsi
-    self.curRSI6Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi6"] objectsAtIndexes:maSe];
-    self.curRSI12Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi12"] objectsAtIndexes:maSe];
-    self.curRSI24Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi24"] objectsAtIndexes:maSe];
+    self.curRSI6Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi6"] objectsAtIndexes:se];
+    self.curRSI12Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi12"] objectsAtIndexes:se];
+    self.curRSI24Array = [(NSArray *)[self.chartLineData dataForKey:@"rsi24"] objectsAtIndexes:se];
     
     NSDictionary *rsi6Dic = [self getMaxAndMinFromArray:self.curRSI6Array];
     NSDictionary *rsi12Dic = [self getMaxAndMinFromArray:self.curRSI12Array];
@@ -102,7 +97,8 @@
 
 - (void)setModelsArray:(NSArray *)modelsArray
 {
-    _modelsArray = modelsArray;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"volume>0"];
+    _modelsArray = [modelsArray filteredArrayUsingPredicate:predicate];
     self.chartLineData = [self transformChartLineData];
 }
 
@@ -147,70 +143,7 @@
     dic[@"rsi24"] = [self calculateRSIWithDays:24];
     
     //KDJ
-    NSMutableArray *kdj_k = [[NSMutableArray alloc] init];
-    NSMutableArray *kdj_d = [[NSMutableArray alloc] init];
-    NSMutableArray *kdj_j = [[NSMutableArray alloc] init];
-    float prev_k = 50;
-    float prev_d = 50;
-    float rsv = 0;
-    for(int i = 0;i < self.modelsArray.count;i++){
-        
-        float k = 50.0f;
-        float d = 50.0f;
-        float j = 50.0f;
-        
-        if (i>=8) {
-            
-            NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(i-8, 9)];
-            NSArray *curArray = [self.modelsArray objectsAtIndexes:se];
-            
-            float h = [self getHighPriceFromCandleArray:curArray];
-            float l = [self getLowPriceFromCandleArray:curArray];
-            float c = [[curArray lastObject] closePrice];
-            
-            if(h!=l)
-                rsv = (c-l)/(h-l)*100;
-            k = 2*prev_k/3+1*rsv/3;
-            d = 2*prev_d/3+1*k/3;
-            j = 3*k-2*d;
-        }
-        
-        prev_k = k;
-        prev_d = d;
-        
-        [kdj_k addObject:[@"" stringByAppendingFormat:@"%f",k]];
-        [kdj_d addObject:[@"" stringByAppendingFormat:@"%f",d]];
-        [kdj_j addObject:[@"" stringByAppendingFormat:@"%f",j]];
-    }
-    dic[@"kdj_k"] = kdj_k;
-    dic[@"kdj_d"] = kdj_d;
-    dic[@"kdj_j"] = kdj_j;
-    
-    //    //VR
-    //    NSMutableArray *vr = [[NSMutableArray alloc] init];
-    //    for(int i = 60;i < data.count;i++){
-    //        float inc = 0;
-    //        float dec = 0;
-    //        float eq  = 0;
-    //        for(int j=i;j>i-24;j--){
-    //            float o = [[data[j] objectAtIndex:0] floatValue];
-    //            float c = [[data[j] objectAtIndex:1] floatValue];
-    //
-    //            if(c > o){
-    //                inc += [[data[j] objectAtIndex:4] intValue];
-    //            }else if(c < o){
-    //                dec += [[data[j] objectAtIndex:4] intValue];
-    //            }else{
-    //                eq  += [[data[j] objectAtIndex:4] intValue];
-    //            }
-    //        }
-    //        
-    //        float val = (inc+1*eq/2)/(dec+1*eq/2);
-    //        NSMutableArray *item = [[NSMutableArray alloc] init];
-    //        [item addObject:[@"" stringByAppendingFormat:@"%f",val]];
-    //        [vr addObject:item];
-    //    }
-    //    dic[@"vr"] = vr;
+    [dic setValuesForKeysWithDictionary:[self calculateKDJ]];
     
     return dic;
 }
@@ -229,7 +162,7 @@
         }
         
         val = val/dayNum;
-        [maArray addObject:[@"" stringByAppendingFormat:@"%f",val]];
+        [maArray addObject:[@"" stringByAppendingFormat:@"%.3f",val]];
     }
     
     return maArray;
@@ -260,11 +193,83 @@
         }
         rs = incVal/decVal;
         float rsi =100-100/(1+rs);
-        [rsiArray addObject:[@""stringByAppendingFormat:@"%f",rsi]];
+        [rsiArray addObject:[@""stringByAppendingFormat:@"%.3f",rsi]];
         
     }
     
     return rsiArray;
+}
+
+- (NSDictionary *)calculateKDJ
+{
+    NSMutableArray *kdj_k = [[NSMutableArray alloc] init];
+    NSMutableArray *kdj_d = [[NSMutableArray alloc] init];
+    NSMutableArray *kdj_j = [[NSMutableArray alloc] init];
+    float rsv = 0;
+    
+    int ek = 3;
+    int ed = 3;
+    int em = 9;
+    float defaultLTK = 17.0f;
+    
+    float k = -1;
+    float d = -1;
+    float j = -1;
+    
+    HJCandleChartModel *firstModel = [self.modelsArray firstObject];
+    
+    if (firstModel.lowPrice==firstModel.highPrice) {
+        k = defaultLTK;
+    }
+    else
+    {
+        k = (firstModel.closePrice-firstModel.lowPrice)/(firstModel.highPrice-firstModel.lowPrice)*100/ek;
+    }
+    d = k/ed;
+    j = 3*k-2*d;
+    
+    [kdj_k addObject:[@"" stringByAppendingFormat:@"%.3f",k]];
+    [kdj_d addObject:[@"" stringByAppendingFormat:@"%.3f",d]];
+    [kdj_j addObject:[@"" stringByAppendingFormat:@"%.3f",j]];
+    
+    float prev_k = k;
+    float prev_d = d;
+    
+    for(int i = 1;i < self.modelsArray.count;i++){
+        
+        int index = 0;
+        int num = i+1;
+        if (i>=em) {
+            index = i - em + 1;
+            num = em;
+        }
+        
+        NSIndexSet *se = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(index, num)];
+        NSArray *curArray = [self.modelsArray objectsAtIndexes:se];
+        
+        float h = [self getHighPriceFromCandleArray:curArray];
+        float l = [self getLowPriceFromCandleArray:curArray];
+        float c = [[curArray lastObject] closePrice];
+        
+        if(h==l){
+            k = defaultLTK;
+        }else {
+            rsv = (c-l)/(h-l)*100;
+            k = (ek-1)*prev_k/ek+rsv/ek;
+        }
+        
+        d = (ed-1)*prev_d/ed+k/ed;
+        j = 3*k-2*d;
+        
+        prev_k = k;
+        prev_d = d;
+        
+        [kdj_k addObject:[@"" stringByAppendingFormat:@"%.3f",k]];
+        [kdj_d addObject:[@"" stringByAppendingFormat:@"%.3f",d]];
+        [kdj_j addObject:[@"" stringByAppendingFormat:@"%.3f",j]];
+    }
+    
+    return @{@"kdj_k":kdj_k,@"kdj_d":kdj_d,@"kdj_j":kdj_j};
 }
 
 - (float)getHighPriceFromCandleArray:(NSArray *)candleArray
