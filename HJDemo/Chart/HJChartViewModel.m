@@ -138,9 +138,10 @@
     dic[@"ma60"] = [self calculateMAWithDays:60];
     
     //RSI
-    dic[@"rsi6"] = [self calculateRSIWithDays:6];
-    dic[@"rsi12"] = [self calculateRSIWithDays:12];
-    dic[@"rsi24"] = [self calculateRSIWithDays:24];
+//    dic[@"rsi6"] = [self calculateRSIWithDays:6];
+//    dic[@"rsi12"] = [self calculateRSIWithDays:12];
+//    dic[@"rsi24"] = [self calculateRSIWithDays:24];
+    [dic setValuesForKeysWithDictionary:[self calculateRSI]];
     
     //KDJ
     [dic setValuesForKeysWithDictionary:[self calculateKDJ]];
@@ -198,6 +199,142 @@
     }
     
     return rsiArray;
+}
+
+- (NSDictionary *)calculateRSI
+{
+    if (!CHECK_VALID_ARRAY(self.modelsArray)) {
+        return nil;
+    }
+    
+    long len = [self.modelsArray count];
+    
+    int e1 = 6;
+    int e2 = 12;
+    int e3 = 24;
+    
+    float sum1,sum2,sum3,sum4,sum5,sum6;
+    float c,max,abs;
+    
+    typedef struct _MA
+    {
+        float ma1;
+        float ma2;
+        float ma3;
+        float ma4;
+        float ma5;
+        float ma6;
+    }MA;
+    
+    float *maxArr = malloc(sizeof(float)*len);
+    float *absArr = malloc(sizeof(float)*len);
+    MA *maArr = malloc(sizeof(MA)*len);
+    
+    NSMutableArray *rsi6Arr = [[NSMutableArray alloc] init];
+    NSMutableArray *rsi12Arr = [[NSMutableArray alloc] init];
+    NSMutableArray *rsi24Arr = [[NSMutableArray alloc] init];
+    
+    HJCandleChartModel *item = [self.modelsArray firstObject];
+    float oldclose = item.closePrice;
+    float oldopen = item.openPrice;
+    
+    float firstClose = 0.0f;
+    if (firstClose<=0.0000001f) {
+        firstClose = oldopen;
+    }
+    if(firstClose<=0.0000001f || firstClose<0)
+    {
+        sum1 = sum2 = sum3 = sum4 = sum5 = sum6 = max = abs = oldclose*.1;
+    }else
+    {
+        c=oldclose-firstClose;
+        sum1 = sum2 = sum3 = max =MAX(c, 0);
+        sum4 = sum5 = sum6 = abs =fabsf(c);
+    }
+    MA ma;
+    ma.ma1 = max;
+    ma.ma2 = max;
+    ma.ma3 = max;
+    ma.ma4 = abs;
+    ma.ma5 = abs;
+    ma.ma6 = abs;
+    
+    maxArr[0]=max;
+    absArr[0]=abs;
+    maArr[0]=ma;
+    
+    float preClose = oldclose;
+    MA prema = ma;
+    for(int i=1;i<len;i++){
+        item = [self.modelsArray objectAtIndex:i];
+        oldclose = item.closePrice;
+        c=oldclose-preClose;
+        preClose = oldclose;
+        max=MAX(c,0);
+        abs=fabsf(c);
+        maxArr[i]=max;
+        absArr[i]=abs;
+        
+        sum1+=max;
+        if(i>=e1){
+            sum1=max+prema.ma1*(e1-1);
+            ma.ma1=sum1/e1;
+        }else	ma.ma1=sum1/(i+1);
+        
+        sum2+=max;
+        if(i>=e2){
+            sum2=max+prema.ma2*(e2-1);
+            ma.ma2=sum2/e2;
+        }else	ma.ma2=sum2/(i+1);
+        
+        sum3+=max;
+        if(i>=e3){
+            sum3=max+prema.ma3*(e3-1);
+            ma.ma3=sum3/e3;
+        }else	ma.ma3=sum3/(i+1);
+        
+        sum4+=abs;
+        if(i>=e1){
+            sum4=abs+prema.ma4*(e1-1);
+            ma.ma4=sum4/e1;
+        }else	ma.ma4=sum4/(i+1);
+        
+        sum5+=abs;
+        if(i>=e2){
+            sum5=abs+prema.ma5*(e2-1);
+            ma.ma5=sum5/e2;
+        }else	ma.ma5=sum5/(i+1);
+        
+        sum6+=abs;
+        if(i>=e3){
+            sum6=abs+prema.ma6*(e3-1);
+            ma.ma6=sum6/e3;
+        }else	ma.ma6=sum6/(i+1);
+        
+        maArr[i] = ma;
+        prema = ma;
+    }
+    
+    for(int i=0;i<len;i++){
+        ma=maArr[i];
+        float preris6 = [rsi6Arr count]>i?[[rsi6Arr objectAtIndex:i] floatValue]:-1;
+        float preris12 = [rsi12Arr count]>i?[[rsi12Arr objectAtIndex:i] floatValue]:-1;
+        float preris24 = [rsi24Arr count]>i?[[rsi24Arr objectAtIndex:i] floatValue]:-1;
+        
+        float rsi6 = ma.ma4>0?(ma.ma1/ma.ma4)*100:preris6;
+        float rsi12 = ma.ma5>0?(ma.ma2/ma.ma5)*100:preris12;
+        float rsi24 = ma.ma6>0?(ma.ma3/ma.ma6)*100:preris24;
+        
+        [rsi6Arr addObject:[NSString stringWithFormat:@"%.3f",rsi6]];
+        [rsi12Arr addObject:[NSString stringWithFormat:@"%.3f",rsi12]];
+        [rsi24Arr addObject:[NSString stringWithFormat:@"%.3f",rsi24]];
+    }
+    
+    free(maxArr);
+    free(absArr);
+    free(maArr);
+    
+    return @{@"rsi6":rsi6Arr,@"rsi12":rsi12Arr,@"rsi24":rsi24Arr};
 }
 
 - (NSDictionary *)calculateKDJ
