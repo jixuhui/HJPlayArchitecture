@@ -138,9 +138,6 @@
     dic[@"ma60"] = [self calculateMAWithDays:60];
     
     //RSI
-//    dic[@"rsi6"] = [self calculateRSIWithDays:6];
-//    dic[@"rsi12"] = [self calculateRSIWithDays:12];
-//    dic[@"rsi24"] = [self calculateRSIWithDays:24];
     [dic setValuesForKeysWithDictionary:[self calculateRSI]];
     
     //KDJ
@@ -155,50 +152,21 @@
     for(int i = 0;i < self.modelsArray.count;i++){
         float val = 0;
         
-        int minValue = i>=dayNum-1?i-(dayNum-1):0;
+        int dayCount = i + 1;
+        if (i>=dayNum-1) {
+            dayCount = dayNum;
+        }
         
-        for(int j=i;j>=minValue;j--){
+        for(int j=i;j>i-dayCount;j--){
             HJCandleChartModel *chartModel = self.modelsArray[j];
             val += chartModel.closePrice;
         }
         
-        val = val/dayNum;
+        val = val/dayCount;
         [maArray addObject:[@"" stringByAppendingFormat:@"%.3f",val]];
     }
     
     return maArray;
-}
-
-- (NSArray *)calculateRSIWithDays:(int)dayNum
-{
-    NSMutableArray *rsiArray = [[NSMutableArray alloc] init];
-    
-    for(int i = 0;i < self.modelsArray.count;i++){
-        
-        float incVal  = 0;
-        
-        float decVal = 0;
-        
-        float rs = 0;
-        
-        int min = i-dayNum+1>=0?i-dayNum+1:0;
-        
-        for(int j=i;j>=min;j--){
-            HJCandleChartModel *model = (HJCandleChartModel *)[self.modelsArray objectAtIndex:j];
-            float interval = model.closePrice-model.openPrice;
-            if(interval >= 0){
-                incVal += interval;
-            }else{
-                decVal -= interval;
-            }
-        }
-        rs = incVal/decVal;
-        float rsi =100-100/(1+rs);
-        [rsiArray addObject:[@""stringByAppendingFormat:@"%.3f",rsi]];
-        
-    }
-    
-    return rsiArray;
 }
 
 - (NSDictionary *)calculateRSI
